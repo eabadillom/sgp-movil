@@ -10,7 +10,7 @@ class LoginRepositoryImpl extends LoginRepository
   }) : dataSource = dataSource ?? LoginDatasourceImpl();
 
   @override
-  Future<Token> checkTokenStatus(String token) 
+  Future<int> checkTokenStatus(String token) 
   {
     return dataSource.checkTokenStatus(token);
   }

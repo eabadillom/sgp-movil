@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sgp_movil/conf/loggers/logger_singleton.dart';
 import 'package:sgp_movil/features/dashboard/presentation/screens/dashbord_screen.dart';
 import 'package:sgp_movil/features/login/login.dart';
 import 'package:sgp_movil/features/login/presentation/providers/login_provider.dart';
@@ -9,6 +10,8 @@ import 'app_router_notifier.dart';
 final goRouterProvider = Provider((ref) 
 {
   final goRouterNotifier = ref.read(goRouterNotifierProvider);
+  final LoggerSingleton log = LoggerSingleton.getInstance('LoginProvider'); 
+  log.setupLoggin();
 
   return GoRouter(
     initialLocation: '/splash',
@@ -39,10 +42,9 @@ final goRouterProvider = Provider((ref)
       final isGoingTo = state.matchedLocation;
       final loginStatus = goRouterNotifier.loginStatus;
 
-      //Pantalla de inicio de aplicacion
+      //Pantalla de inicio de aplicacion dashboard
       if(isGoingTo == '/splash' && loginStatus == LoginStatus.checking)
       {
-        
         if(loginStatus == LoginStatus.authenticated)
         {
           return '/dashboard';
@@ -52,6 +54,7 @@ final goRouterProvider = Provider((ref)
         {
           return '/login';
         }
+        return null;
       }
 
       //Pantalla de login y cuando el usuario no esta autenticado
@@ -64,7 +67,7 @@ final goRouterProvider = Provider((ref)
 
       if(loginStatus == LoginStatus.authenticated) 
       {
-        if (isGoingTo == '/login' || isGoingTo != '/splash')
+        if(isGoingTo == '/login' || isGoingTo == '/splash')
         {
           return '/dashboard';
         }

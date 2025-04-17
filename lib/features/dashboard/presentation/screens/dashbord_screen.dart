@@ -19,7 +19,7 @@ class DashbordScreen extends StatelessWidget
         title: const Text('Dashboard')
       ),
       body: _DashboardView(),
-      drawer: SideMenu(scaffoldKey: scaffoldKey,),
+      drawer: SideMenu(scaffoldKey: scaffoldKey,),  
     );
   }
 
@@ -32,14 +32,24 @@ class _DashboardView extends StatelessWidget
   @override
   Widget build(BuildContext context) 
   {
-    return ListView.builder(
-      //physics: BouncingScrollPhysics(),
-      itemCount: appMenuItem.length,
-      itemBuilder: (context, index){
-        final menuItem = appMenuItem[index];
-
-        return CustomListTile(menuItem: menuItem);
-      },
+    return Scaffold(
+      body: GridView.builder(
+        padding: EdgeInsets.all(10),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2, // número de columnas
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
+          childAspectRatio: 1, // relación ancho/alto para ListTile
+        ),
+        itemCount: appMenuItem.length,
+        itemBuilder: (context, index){
+          final menuItem = appMenuItem[index];
+          return Card(
+            elevation: 2,
+            child: CustomListTile(menuItem: menuItem),
+          );
+        },
+      ),
     );
   }
 }
@@ -54,13 +64,11 @@ class CustomListTile extends StatelessWidget
   final MenuItems menuItem;
 
   @override
-  Widget build(BuildContext context) 
-  {
+  Widget build(BuildContext context){
     final colors = Theme.of(context).colorScheme;
     
     return ListTile(
-      leading: Icon(menuItem.icon, color: colors.primary),
-      trailing: Icon(Icons.arrow_forward_ios_rounded, color: colors.primary), 
+      trailing: Icon(menuItem.icon, color: colors.primary),
       title: Text(menuItem.title),
       subtitle: Text(menuItem.subTitle),
       onTap:()

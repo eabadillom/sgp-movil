@@ -16,17 +16,17 @@ class DioClient
     _dio?.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) 
       {
-        log.logger.info('Solicitud: ${options.method} ${options.path}');
+        //log.logger.info('Solicitud: ${options.method} ${options.path}');
         return handler.next(options);
       },
       onResponse: (response, handler) 
       {
-        log.logger.info('Respuesta: ${response.statusCode}');
+        //log.logger.info('Respuesta: ${response.statusCode}');
         return handler.next(response);
       },
       onError: (DioException e, handler) 
       {
-        log.logger.warning('Error: ${e.message}');
+        //log.logger.warning('Error: ${e.message}');
         return handler.next(e);
       },
     ));
@@ -63,6 +63,7 @@ class DioClient
     _dio?.options.headers['Authorization'] = 'Bearer $token';
   }
 
+  // Método para establecer la authenticacion basica
   void setBasicAuth(String nombre, String contrasenia) 
   {
     final basicAuth = 'Basic ${base64Encode(utf8.encode('$nombre:$contrasenia'))}';

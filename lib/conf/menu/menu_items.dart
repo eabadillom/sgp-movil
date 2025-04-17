@@ -11,59 +11,59 @@ class MenuItems
     required this.title,
     required this.subTitle,
     required this.link,
-    required this.icon
+    required this.icon,
   });
 }
 
 const appMenuItem = <MenuItems> 
 [
   MenuItems(
-    title: 'Incapacidades', 
-    subTitle: 'Solicitud de incapacidades del empleado', 
-    link: '/incapacidades', 
-    icon: Icons.clear_all_rounded
+    title: 'Incapacidad', 
+    subTitle: 'Solicitud de incapacidades', 
+    link: '/incapacidades',
+    icon: Icons.health_and_safety_outlined,
   ),
 
   MenuItems(
     title: 'Vacaciones',
-    subTitle: 'Solicitud de vacaciones del empleado',
+    subTitle: 'Solicitud de vacaciones',
     link: '/vacaciones',
-    icon: Icons.clear_all_rounded
+    icon: Icons.airplanemode_active,
   ),
 
   MenuItems(
     title: 'Permisos',
-    subTitle: 'Solicitud de permisos del empleado',
+    subTitle: 'Solicitud de permisos',
     link: '/permisos',
-    icon: Icons.clear_all_rounded
+    icon: Icons.assignment_turned_in,
   ),
 
   MenuItems(
-    title: 'Justificar Faltas',
-    subTitle: 'Justificar las faltas del empleado',
+    title: 'Faltas',
+    subTitle: 'Justificar las faltas',
     link: '/justificar_faltas',
-    icon: Icons.clear_all_rounded
+    icon: Icons.account_box_rounded,
   ),
 
   MenuItems(
-    title: 'Justificar Retardos',
-    subTitle: 'Justificar los retardos del empleado',
+    title: 'Retardos',
+    subTitle: 'Justificar los retardos',
     link: '/justificar_retardos',
-    icon: Icons.clear_all_rounded
+    icon: Icons.alarm,
   ),
 
   MenuItems(
     title: 'Uniformes',
-    subTitle: 'Solicitud de uniformes del empleado',
+    subTitle: 'Solicitud de uniformes',
     link: '/uniformes',
-    icon: Icons.clear_all_rounded
+    icon: Icons.dry_cleaning,
   ),
   
   MenuItems(
     title: 'Articulos',
-    subTitle: 'Solicitud de articulos del empleado',
+    subTitle: 'Solicitud de articulos',
     link: '/articulos',
-    icon: Icons.clear_all_rounded
+    icon: Icons.handyman,
   ),
 
 ];

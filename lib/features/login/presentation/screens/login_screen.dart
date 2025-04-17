@@ -33,7 +33,6 @@ class LoginScreen extends StatelessWidget
                   colorBlendMode: BlendMode.darken,
                 ),
 
-
                 const SizedBox(height: 80),
     
                 Container(
@@ -117,7 +116,7 @@ class _LoginForm extends ConsumerWidget
             )
           ),
 
-          const Spacer( flex: 2 ),
+          const Spacer(flex: 2),
 
         ],
       ),

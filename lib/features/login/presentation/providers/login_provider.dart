@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sgp_movil/conf/loggers/logger_singleton.dart';
 import 'package:sgp_movil/features/login/domain/domain.dart';
@@ -34,8 +37,8 @@ class LoginNotifier extends StateNotifier<LoginState>
 
     try 
     {
+      log.logger.info('Inicio Sesion');
       final Usuario usuario = Usuario(nombre: nombre, contrasenia: contrasenia);
-      log.logger.info('Usuario: $usuario');
       final token = await loginRepository.login(usuario.nombre, usuario.contrasenia);
       _setLoggedUser(token, usuario);
 
@@ -45,65 +48,81 @@ class LoginNotifier extends StateNotifier<LoginState>
       logout(e.message);
     } catch (e)
     {
-      log.logger.severe(e.toString());
-      logout('Error no controlado');
+      if(e is SocketException)
+      {
+        log.logger.warning('Socket exception: ${e.toString()}');
+        logout('No hay conexión a internet');
+      }else if(e is TimeoutException)
+      {
+        log.logger.warning('Timeout exception: ${e.toString()}');
+        logout('No hay conexión a internet');
+      }
+      log.logger.severe('Error: $e');
+      logout('Error: contacte a su administrador de sistemas');
     }
   }
 
   void checkLoginStatus() async 
   {
     log.setupLoggin();
-    log.logger.info('Obteniendo nombre');
-    final nombre = await keyValueStorageService.getValue<String>('nombre');
-    log.logger.info('Obteniendo contrasenia');
-    final contrasenia = await keyValueStorageService.getValue<String>('contrasenia');
-    
-    if(nombre == null || contrasenia == null)
-    {
-      log.logger.info('No hay usuario/contrasenia guardado en cache');
-      state = state.copyWith(
-        usuario: null,
-        token: null,
-        loginStatus: LoginStatus.notAuthenticated,
-        errorMessage: 'No se encuentra guardado el usuario'
-      );
-      return logout();
-    }
-    
+    log.logger.info('Validando estatus');
     try 
     {
-      final Usuario usuario = Usuario(nombre: nombre, contrasenia: contrasenia);
+      final token = await keyValueStorageService.getValue<String>('token');
+      final tokenRe = await keyValueStorageService.getValue<String>('tokenRe');
+      final nombre = await keyValueStorageService.getValue<String>('nombre');
+      final contrasenia = await keyValueStorageService.getValue<String>('contrasenia');
       
-      log.logger.info('Obteniendo token');
-      final token = await loginRepository.login(usuario.nombre, usuario.contrasenia);
-      await keyValueStorageService.setKeyValue('token', token.accessToken);
+      if(token != null && tokenRe != null)
+      {
+        int status = await loginRepository.checkTokenStatus(token);
 
-      state = state.copyWith
-      (
-        usuario: usuario,
-        token: token,
-        loginStatus: LoginStatus.authenticated,
-        errorMessage: 'Usuario Authenticado'
-      );
+        if(status == 200)
+        {
+          Token tokenOb = Token(accessToken: token, refreshToken: tokenRe);
+          if(nombre != null && contrasenia != null) 
+          {  
+            final Usuario usuario = Usuario(nombre: nombre, contrasenia: contrasenia);
+            _setLoggedUser(tokenOb, usuario);
+          }
+        }
+      }
+    
+      if(nombre == null || contrasenia == null)
+      {
+        return logout();
+      }
 
-      _setLoggedUser(token, usuario);
+      final Usuario usuario = Usuario(nombre: nombre, contrasenia: contrasenia);
+      final Token tokenOb = await loginRepository.login(usuario.nombre, usuario.contrasenia);
+      await keyValueStorageService.setKeyValue('token', tokenOb.accessToken);
+
+      _setLoggedUser(tokenOb, usuario);
     } catch (e) 
     {
-      logout();
+      if(e is SocketException)
+      {
+        log.logger.warning('Socket exception: ${e.toString()}');
+        logout('No hay conexión a internet');
+      }else if(e is TimeoutException)
+      {
+        log.logger.warning('Timeout exception: ${e.toString()}');
+        logout('No hay conexión a internet');
+      }
+      log.logger.warning('Error no controlado: $e');
+      logout('Error: contacte a su administrador de sistemas');
     }
   }
 
   void _setLoggedUser(Token token, Usuario usuario) async
   {
     log.setupLoggin();
-    log.logger.info('Guardando token');
     await keyValueStorageService.setKeyValue('token', token.accessToken);
-    log.logger.info('Guardando nombre');
+    await keyValueStorageService.setKeyValue('tokenRe', token.refreshToken);
     await keyValueStorageService.setKeyValue('nombre', usuario.nombre);
-    log.logger.info('Guardando usuario');
     await keyValueStorageService.setKeyValue('contrasenia', usuario.contrasenia);
 
-    log.logger.info('Usuario ingresado con credenciales validas');
+    log.logger.info('Usuario ingresado correctamente');
     state = state.copyWith(
       usuario: usuario,
       token: token,
@@ -115,6 +134,7 @@ class LoginNotifier extends StateNotifier<LoginState>
   Future<void> logout([String? errorMessage]) async 
   {
     await keyValueStorageService.removeKey('token');
+    await keyValueStorageService.removeKey('tokenRe');
 
     state = state.copyWith(
       loginStatus: LoginStatus.notAuthenticated,

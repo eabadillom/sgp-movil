@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:sgp_movil/conf/config.dart';
 import 'package:sgp_movil/features/login/contoller/mappers/token_mapper.dart';
@@ -10,27 +13,54 @@ class LoginDatasourceImpl extends LoginDatasource
   final LoggerSingleton log = LoggerSingleton.getInstance('UserInstance');
   
   @override
-  Future<Token> checkTokenStatus(String token) async
+  Future<int> checkTokenStatus(String token) async
   {
     log.setupLoggin();
+    final int status;
     try 
     {
       httpService.setAccessToken(token);
-      final response = await httpService.dio.get('/login/check-status-token');
+      final response = await httpService.dio.get('/verificar');
 
-      final tokenOb = TokenMapper.tokenJsonToEntity(response.data);
-      return tokenOb;
+      if(response.statusCode == 200)
+      {
+        log.logger.info('Token con salud');
+        status = 200;
+      }else{
+        log.logger.info('Token expirado');
+        status = -1;
+      }
 
+      //Token tokenOb = TokenMapper.tokenJsonToEntity(response.data);
+      //log.logger.info('Token: $tokenOb');
+      return status;
     }on DioException catch (e) 
     {
+      if(e.response?.statusCode == 400)
+      {
+        log.logger.warning('Error 400: $e');
+        throw CustomError(e.response?.data['message'] ?? 'Solicitud malformada');
+      }
+
       if(e.response?.statusCode == 401)
       {
-        throw CustomError('Token incorrecto');
+        log.logger.warning('Error 401: $e');
+        throw CustomError('Token incorrecto, ingrese usuario/contraseña');
       }
       throw Exception();
-    } catch (e) 
+    }catch (e) 
     {
-      throw Exception();
+      if(e is SocketException)
+      {
+        log.logger.warning('Socket exception: ${e.toString()}');
+        throw CustomError('No hay conexión a internet');
+      }else if(e is TimeoutException)
+      {
+        log.logger.warning('Timeout exception: ${e.toString()}');
+      }
+      log.logger.warning('Error no controlado: ${e.toString()}');
+      throw CustomError('Contacte a su administrador de sistemas');
+      //throw Exception();
     }
   }
   
@@ -40,10 +70,8 @@ class LoginDatasourceImpl extends LoginDatasource
     log.setupLoggin();
     try 
     {
-      log.logger.info('Usuario: $nombre');
-      log.logger.info('Contraseña: $contrasenia');
       httpService.setBasicAuth(nombre, contrasenia);
-      final response = await httpService.dio.get('/inicio');
+      final response = await httpService.dio.get('/generar');
 
       Token token = TokenMapper.tokenJsonToEntity(response.data);
       return token;
@@ -69,7 +97,9 @@ class LoginDatasourceImpl extends LoginDatasource
       throw Exception();
     } catch (e) 
     {
-      throw Exception();
+      log.logger.warning('Error de conexión de internet: $e');
+      throw CustomError('Contacte a su administrador de sistemas');
+      //throw Exception();
     }
   }
 
