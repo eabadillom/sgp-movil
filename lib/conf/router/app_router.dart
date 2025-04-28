@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sgp_movil/conf/loggers/logger_singleton.dart';
 import 'package:sgp_movil/features/dashboard/presentation/screens/dashbord_screen.dart';
+import 'package:sgp_movil/features/justificar/screens/justificar_list_screen.dart';
 import 'package:sgp_movil/features/login/login.dart';
 import 'package:sgp_movil/features/login/presentation/providers/login_provider.dart';
 
@@ -14,7 +15,7 @@ final goRouterProvider = Provider((ref)
   log.setupLoggin();
 
   return GoRouter(
-    initialLocation: '/splash',
+    initialLocation: '/dashboard',
     refreshListenable: goRouterNotifier,
     routes: [
       ///* Primera pantalla de validación de datos
@@ -34,7 +35,18 @@ final goRouterProvider = Provider((ref)
         path: '/dashboard',
         builder: (context, state) => const DashbordScreen(),
       ),
-      
+
+      ///* 
+      GoRoute(
+        path: '/justificar_faltas',
+        builder: (context, state) => const FaltasRetardosScreen(),
+      ),
+
+      ///* 
+      GoRoute(
+        path: '/justificar_retardos',
+        builder: (context, state) => const FaltasRetardosScreen(),
+      ),
     ],
 
     redirect: (context, state) 
