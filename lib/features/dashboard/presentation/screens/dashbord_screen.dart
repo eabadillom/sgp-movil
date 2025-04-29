@@ -85,31 +85,7 @@ class CustomListTile extends StatelessWidget
       subtitle: Text(menuItem.subTitle),
       onTap:()
       {
-        DateTime fecha = DateTime.now().subtract(const Duration(days: 7));
-        
-        if(menuItem.title == 'Faltas')
-        {
-          context.push(
-            menuItem.link,
-            extra: {
-              'fecha': fecha,
-              'codigo': 'F',
-              'nombrePantalla': 'Faltas',
-            },
-          );
-        }else if(menuItem.title == 'Retardos')
-        {
-          context.push(
-            menuItem.link,
-            extra: {
-              'fecha': fecha,
-              'codigo': 'R',
-              'nombrePantalla': 'Retardos',
-            },
-          );
-        }else{
-          context.push(menuItem.link);
-        }
+        context.push(menuItem.link);
       }
     
     );

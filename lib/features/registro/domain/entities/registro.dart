@@ -16,6 +16,29 @@ class Registro
     required this.segundoApEmpleado,
   });
 
+  factory Registro.fromJson(Map<String, dynamic> json) 
+  {
+    return Registro(
+      id: json['id'],
+      codigoRegistro: json['codigoRegistro'],
+      nombreEmpleado: json['nombreEmpleado'],
+      primerApEmpleado: json['primerApEmpleado'],
+      segundoApEmpleado: json['segundoApEmpleado'],
+      fechaEntrada: DateTime.parse(json['fechaEntrada']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'codigoRegistro': codigoRegistro,
+      'nombreEmpleado': nombreEmpleado,
+      'primerApEmpleado': primerApEmpleado,
+      'segundoApEmpleado': segundoApEmpleado,
+      'fechaEntrada': fechaEntrada.toIso8601String(),
+    };
+  }
+
   @override
   String toString() 
   {

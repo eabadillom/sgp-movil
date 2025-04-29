@@ -1,40 +1,46 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sgp_movil/conf/util/format_util.dart';
+import 'package:sgp_movil/features/justificar/providers/justificar_list_provider.dart';
 //import 'package:sgp_movil/conf/util/format_util.dart';
 
-class FaltasRetardosScreen extends StatefulWidget 
+class JustificarListScreen extends ConsumerStatefulWidget 
 {
-  const FaltasRetardosScreen({super.key,});
+  final DateTime fechaIni;
+  final String codigo;
+  final String nombrePantalla;
+  
+  const JustificarListScreen({
+    super.key,
+    required this.fechaIni,
+    required this.codigo,
+    required this.nombrePantalla,
+  });
 
-  /*@override
-  Widget build(BuildContext context) 
-  {
-    //final scaffoldKey = GlobalKey<ScaffoldState>();
-    final extra = GoRouterState.of(context).extra as Map<String, dynamic>?;
-
-    final DateTime fechaIni = extra?['fecha'] ?? DateTime.now();
-    final String codigo = extra?['codigo'] ?? 'Sin Código';
-    final String nombrePantalla = extra?['nombrePantalla'] ?? 'Sin Nombre';
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(nombrePantalla),
-      ),
-      body: _FaltasRetardosView(
-        fechaIni: fechaIni,
-        codigo: codigo,
-      ),
-    );
-  }*/
   @override
-  State<FaltasRetardosScreen> createState() => _FaltasRetardosView();
+  ConsumerState<JustificarListScreen> createState() => _JustificarListState();
 }
 
-class _FaltasRetardosView extends State<FaltasRetardosScreen>
+class _JustificarListState extends ConsumerState<JustificarListScreen>
 {
   final TextEditingController _fechaController = TextEditingController();
-  DateTime? fechaSeleccionada;
+  late DateTime fechaSeleccionada;
+  late String codigo;
+  late String nombrePantalla;
+
+  @override
+  void initState() 
+  {
+    super.initState();
+    fechaSeleccionada = FormatUtil.dateFormated(widget.fechaIni);
+    codigo = widget.codigo;
+    nombrePantalla = widget.nombrePantalla;
+    
+    Future.microtask(() 
+    {
+      ref.read(justificarNotifierProvider.notifier).cargarRegistros(fechaSeleccionada, codigo);
+    });
+  }
 
   @override
   void dispose() 
@@ -43,79 +49,94 @@ class _FaltasRetardosView extends State<FaltasRetardosScreen>
     super.dispose();
   }
 
-  Future<void> seleccionarFecha({DateTime? fechaInicial}) async {
-    final DateTime fechaMostrar = fechaInicial ?? DateTime.now();
-
-    final DateTime? fechaEscogida = await showDatePicker(
+  Future<void> _cambiarFecha() async 
+  {
+    final nuevaFecha = await showDatePicker(
       context: context,
-      initialDate: fechaMostrar,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
+      initialDate: fechaSeleccionada,
+      firstDate: DateTime(2000), //Cambiar fecha de inicio de calendario
+      lastDate: DateTime(2100), //Cambiar fecha de fin de calendario
     );
 
-    if (fechaEscogida != null) {
-      setState(() {
-        fechaSeleccionada = fechaEscogida;
-        _fechaController.text = FormatUtil.formatearFecha(fechaEscogida);
+    if (nuevaFecha != null) 
+    {
+      setState(() 
+      {
+        fechaSeleccionada = nuevaFecha;
       });
+
+      // Llamar manualmente al notifier
+      ref.read(justificarNotifierProvider.notifier).cargarRegistros(nuevaFecha, codigo);
     }
   }
-
 
   @override
   Widget build(BuildContext context) 
   {
-    final extra = GoRouterState.of(context).extra as Map<String, dynamic>?;
-    final DateTime fechaIni = extra?['fecha'] ?? DateTime.now();
-    final String codigo = extra?['codigo'] ?? 'Sin Código';
-    final String nombrePantalla = extra?['nombrePantalla'] ?? 'Sin Nombre';
-    final String fecha = FormatUtil.formatearFecha(fechaIni);
+    final registroState = ref.watch(justificarNotifierProvider);
 
-    /*return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Código: $codigo', style: const TextStyle(fontSize: 20)),
-            const SizedBox(height: 20),
-            Text('Fecha hace una semana: ${FormatUtil.formatearFecha(fechaIni.toLocal())}', style: const TextStyle(fontSize: 20)),
-          ],
-        )
-      ),
-    );*/
     return Scaffold(
-      appBar: AppBar(title: Text(nombrePantalla)), // aquí uso el parámetro "titulo"
+      appBar: AppBar(
+        title: Text(nombrePantalla),
+        actions: [
+          IconButton(
+            onPressed: (){}, 
+            icon: const Icon(Icons.search_rounded)
+          )
+        ],
+      ), 
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: TextFormField(
-                controller: _fechaController,
-                readOnly: true,
-                onTap: () {
-                  seleccionarFecha(fechaInicial: fechaIni); // aquí uso el parámetro "fechaBase"
-                },
-                decoration: InputDecoration(
-                  labelText: 'Fecha',
-                  border: OutlineInputBorder(),
-                  suffixIcon: Icon(Icons.calendar_today),
-                  hintText: fecha,  
+            Row(
+              children: [
+                // Campo de búsqueda dentro del Row
+                Expanded
+                (
+                  child: TextField
+                  (
+                    decoration: const InputDecoration(
+                      hintText: 'Buscar por nombre',
+                      prefixIcon: Icon(Icons.search),
+                      border: OutlineInputBorder(),
+                    ),
+                    onChanged: (value) 
+                    {
+                      ref.read(justificarNotifierProvider.notifier).setBusqueda(value);
+                    },
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Text('Fecha:'),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: _cambiarFecha,
+                  child: Text(FormatUtil.stringDateFormated(fechaSeleccionada)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            if(registroState.isLoading) 
+              const Expanded(child: Center(child: CircularProgressIndicator()))
+            else if(registroState.registros.isEmpty)
+              const Center(child: Center(child: Text('No hay registros disponibles.')))
+            else
+              Expanded(// Lista de registros
+                child: ListView.builder(
+                  itemCount: registroState.registros.length,
+                  itemBuilder: (context, index) 
+                  {
+                    final registro = registroState.registros[index];
+                    return ListTile(
+                      title: Text('${registro.nombreEmpleado} ${registro.primerApEmpleado} ${registro.segundoApEmpleado}'),
+                      subtitle: Text(FormatUtil.stringDateFormated(registro.fechaEntrada)),
+                    );
+                  },
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Código: $codigo', style: const TextStyle(fontSize: 20)),
-                  const SizedBox(height: 20),
-                  Text('Fecha hace una semana: ${FormatUtil.formatearFecha(fechaIni.toLocal())}', style: const TextStyle(fontSize: 20)),
-                ],
-              )
-            ),
           ],
         ),
       ),

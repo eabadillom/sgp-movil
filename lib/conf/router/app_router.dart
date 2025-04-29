@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sgp_movil/conf/loggers/logger_singleton.dart';
+import 'package:sgp_movil/conf/config.dart';
 import 'package:sgp_movil/features/dashboard/presentation/screens/dashbord_screen.dart';
 import 'package:sgp_movil/features/justificar/screens/justificar_list_screen.dart';
 import 'package:sgp_movil/features/login/login.dart';
@@ -11,7 +11,7 @@ import 'app_router_notifier.dart';
 final goRouterProvider = Provider((ref) 
 {
   final goRouterNotifier = ref.read(goRouterNotifierProvider);
-  final LoggerSingleton log = LoggerSingleton.getInstance('LoginProvider'); 
+  final LoggerSingleton log = LoggerSingleton.getInstance('GoRouterProvider'); 
   log.setupLoggin();
 
   return GoRouter(
@@ -39,13 +39,28 @@ final goRouterProvider = Provider((ref)
       ///* 
       GoRoute(
         path: '/justificar_faltas',
-        builder: (context, state) => const FaltasRetardosScreen(),
+        builder: (context, state)
+        {
+          DateTime fechaIni = DateTime.now().subtract(const Duration(days: 7));
+          fechaIni = FormatUtil.dateFormated(fechaIni);
+          log.logger.info("Fecha: $fechaIni");
+          String codigo = "F";
+          String nombrePantalla = "Faltas";
+          return JustificarListScreen(fechaIni: fechaIni, codigo: codigo, nombrePantalla: nombrePantalla,);
+        }
       ),
 
       ///* 
       GoRoute(
         path: '/justificar_retardos',
-        builder: (context, state) => const FaltasRetardosScreen(),
+        builder: (context, state) 
+        {
+          DateTime fechaIni = DateTime.now().subtract(const Duration(days: 7));
+          fechaIni = FormatUtil.dateFormated(fechaIni);
+          String codigo = "R";
+          String nombrePantalla = "Retardos";
+          return JustificarListScreen(fechaIni: fechaIni, codigo: codigo, nombrePantalla: nombrePantalla,);
+        },
       ),
     ],
 

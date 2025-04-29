@@ -6,9 +6,9 @@ class RegistroMapper
   (
     id: json['id'],
     codigoRegistro: json['codigoRegistro'],
-    fechaEntrada: json['fechaEntrada'],
     nombreEmpleado: json['nombreEmpleado'],
     primerApEmpleado: json['primerApEmpleado'],
     segundoApEmpleado: json['segundoApEmpleado'],
+    fechaEntrada: DateTime.parse(json['fechaEntrada']),
   );
 }

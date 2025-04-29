@@ -15,15 +15,23 @@ class FormatUtil
   static String formatearFecha(DateTime fecha) 
   {
     // Puedes formatear como quieras, aquí ejemplo simple:
-    return '${fecha.day}/${fecha.month}/${fecha.year}';
+    return '${fecha.year}-${fecha.month}-${fecha.day}';
   }
 
   static DateTime dateFormated(DateTime fecha)
   {
-    DateFormat formatter = DateFormat('dd/MM/yyyy');
+    DateFormat formatter = DateFormat('yyyy-MM-dd');
     String formatted = formatter.format(fecha);
     DateTime parsed = formatter.parse(formatted);
     return parsed;
+  }
+
+  static String stringDateFormated(DateTime fecha)
+  {
+    String formatter = DateFormat('yyyy-MM-dd').format(fecha);
+    //String formatted = formatter.format(fecha);
+    //DateTime parsed = formatter.parse(formatted);
+    return formatter;
   }
 
 }
