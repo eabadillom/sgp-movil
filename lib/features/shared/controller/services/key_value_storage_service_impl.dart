@@ -1,15 +1,13 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'key_value_storage_service.dart';
 
-class KeyValueStorageServiceImpl extends KeyValueStorageService 
+class KeyValueStorageServiceImpl 
 {
-  Future<SharedPreferences> getSharedPrefs() async 
+  static Future<SharedPreferences> getSharedPrefs() async 
   {
     return await SharedPreferences.getInstance();
   }
 
-  @override
-  Future<T?> getValue<T>(String key) async
+  static Future<T?> getValue<T>(String key) async
   {
     final prefs = await getSharedPrefs();
 
@@ -26,15 +24,13 @@ class KeyValueStorageServiceImpl extends KeyValueStorageService
     }
   }
 
-  @override
-  Future<bool> removeKey(String key) async 
+  static Future<bool> removeKey(String key) async 
   {
     final prefs = await getSharedPrefs();
     return await prefs.remove(key);
   }
 
-  @override
-  Future<void> setKeyValue<T>(String key, T value) async
+  static Future<void> setKeyValue<T>(String key, T value) async
    {
     final prefs = await getSharedPrefs();
 

@@ -5,29 +5,24 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sgp_movil/conf/loggers/logger_singleton.dart';
 import 'package:sgp_movil/features/login/domain/domain.dart';
 import 'package:sgp_movil/features/login/contoller/controller.dart';
-import 'package:sgp_movil/features/shared/controller/services/key_value_storage_service.dart';
 import 'package:sgp_movil/features/shared/controller/services/key_value_storage_service_impl.dart';
 
 final loginProvider = StateNotifierProvider<LoginNotifier, LoginState>((ref) 
 {
   final loginRepository = LoginRepositoryImpl();
-  final keyValueStorageService = KeyValueStorageServiceImpl();
 
   return LoginNotifier(
-    loginRepository: loginRepository,
-    keyValueStorageService: keyValueStorageService
+    loginRepository: loginRepository
   );
 });
 
 class LoginNotifier extends StateNotifier<LoginState> 
 {
   final LoginRepository loginRepository;
-  final KeyValueStorageService keyValueStorageService;
   final LoggerSingleton log = LoggerSingleton.getInstance('LoginProvider'); 
 
   LoginNotifier({
     required this.loginRepository,
-    required this.keyValueStorageService,
   }): super(LoginState()){checkLoginStatus();} 
 
   Future<void> loginUser(String nombre, String contrasenia) async 
@@ -68,10 +63,10 @@ class LoginNotifier extends StateNotifier<LoginState>
     log.logger.info('Validando estatus');
     try 
     {
-      final token = await keyValueStorageService.getValue<String>('token');
-      final tokenRe = await keyValueStorageService.getValue<String>('tokenRe');
-      final nombre = await keyValueStorageService.getValue<String>('nombre');
-      final contrasenia = await keyValueStorageService.getValue<String>('contrasenia');
+      final token = await KeyValueStorageServiceImpl.getValue<String>('token');
+      final tokenRe = await KeyValueStorageServiceImpl.getValue<String>('tokenRe');
+      final nombre = await KeyValueStorageServiceImpl.getValue<String>('nombre');
+      final contrasenia = await KeyValueStorageServiceImpl.getValue<String>('contrasenia');
       
       if(token != null && tokenRe != null)
       {
@@ -95,7 +90,7 @@ class LoginNotifier extends StateNotifier<LoginState>
 
       final Usuario usuario = Usuario(nombre: nombre, contrasenia: contrasenia);
       final Token tokenOb = await loginRepository.login(usuario.nombre, usuario.contrasenia);
-      await keyValueStorageService.setKeyValue('token', tokenOb.accessToken);
+      await KeyValueStorageServiceImpl.setKeyValue('token', tokenOb.accessToken);
 
       _setLoggedUser(tokenOb, usuario);
     } catch (e) 
@@ -117,10 +112,10 @@ class LoginNotifier extends StateNotifier<LoginState>
   void _setLoggedUser(Token token, Usuario usuario) async
   {
     log.setupLoggin();
-    await keyValueStorageService.setKeyValue('token', token.accessToken);
-    await keyValueStorageService.setKeyValue('tokenRe', token.refreshToken);
-    await keyValueStorageService.setKeyValue('nombre', usuario.nombre);
-    await keyValueStorageService.setKeyValue('contrasenia', usuario.contrasenia);
+    await KeyValueStorageServiceImpl.setKeyValue('token', token.accessToken);
+    await KeyValueStorageServiceImpl.setKeyValue('tokenRe', token.refreshToken);
+    await KeyValueStorageServiceImpl.setKeyValue('nombre', usuario.nombre);
+    await KeyValueStorageServiceImpl.setKeyValue('contrasenia', usuario.contrasenia);
 
     log.logger.info('Usuario ingresado correctamente');
     state = state.copyWith(
@@ -133,8 +128,8 @@ class LoginNotifier extends StateNotifier<LoginState>
 
   Future<void> logout([String? errorMessage]) async 
   {
-    await keyValueStorageService.removeKey('token');
-    await keyValueStorageService.removeKey('tokenRe');
+    await KeyValueStorageServiceImpl.removeKey('token');
+    await KeyValueStorageServiceImpl.removeKey('tokenRe');
 
     state = state.copyWith(
       loginStatus: LoginStatus.notAuthenticated,
