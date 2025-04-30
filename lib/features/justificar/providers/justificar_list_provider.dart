@@ -8,6 +8,7 @@ import 'package:sgp_movil/features/registro/domain/repositories/registro_reposit
 final justificarNotifierProvider = StateNotifierProvider<JustificarNotifier, JustificarState>((ref)
 {
   final registroRepository = ref.watch(justificarRepositoryProvider);
+  //final regitroDetalleRepository = ref.watch(justificarDetalleRepositoryProvider);
 
   return JustificarNotifier(registroRepository);
 });
@@ -51,13 +52,14 @@ class JustificarState
 
   List<Registro> get registrosFiltrados 
   {
-    if (busqueda.isEmpty) return registros;
+    if(busqueda.isEmpty) return registros;
 
     final query = busqueda.toLowerCase();
 
     return registros.where((r) 
     {
-      return r.nombreEmpleado.toLowerCase().contains(query) || r.primerApEmpleado.toLowerCase().contains(query) || r.segundoApEmpleado.toLowerCase().contains(query);
+      final nombreCompleto = '${r.nombreEmpleado} ${r.primerApEmpleado} ${r.segundoApEmpleado}'.toLowerCase();
+      return nombreCompleto.contains(query);
     }).toList();
   }
 

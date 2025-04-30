@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sgp_movil/conf/util/format_util.dart';
 import 'package:sgp_movil/features/justificar/providers/justificar_list_provider.dart';
+import 'package:sgp_movil/features/justificar/screens/justificar_detalle.dart';
 //import 'package:sgp_movil/conf/util/format_util.dart';
 
 class JustificarListScreen extends ConsumerStatefulWidget 
@@ -78,12 +79,6 @@ class _JustificarListState extends ConsumerState<JustificarListScreen>
     return Scaffold(
       appBar: AppBar(
         title: Text(nombrePantalla),
-        actions: [
-          IconButton(
-            onPressed: (){}, 
-            icon: const Icon(Icons.search_rounded)
-          )
-        ],
       ), 
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -126,13 +121,30 @@ class _JustificarListState extends ConsumerState<JustificarListScreen>
             else
               Expanded(// Lista de registros
                 child: ListView.builder(
-                  itemCount: registroState.registros.length,
+                  itemCount: registroState.registrosFiltrados.length,
                   itemBuilder: (context, index) 
                   {
-                    final registro = registroState.registros[index];
-                    return ListTile(
-                      title: Text('${registro.nombreEmpleado} ${registro.primerApEmpleado} ${registro.segundoApEmpleado}'),
-                      subtitle: Text(FormatUtil.stringDateFormated(registro.fechaEntrada)),
+                    final registro = registroState.registrosFiltrados[index];
+                    return Card(
+                      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      elevation: 4, // sombra
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: ListTile(
+                        title: Text('${registro.nombreEmpleado} ${registro.primerApEmpleado} ${registro.segundoApEmpleado}'),
+                        subtitle: Text(FormatUtil.stringDateFormated(registro.fechaEntrada)),
+                        leading: const Icon(Icons.person),
+                        onTap: () 
+                        {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => JusitificarDetalle(id: registro.id, codigo: registro.codigoRegistro),
+                            ),
+                          );
+                        },
+                      ),
                     );
                   },
                 ),

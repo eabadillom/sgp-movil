@@ -1,3 +1,4 @@
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sgp_movil/conf/config.dart';
@@ -21,6 +22,15 @@ class MainApp extends ConsumerWidget
     return MaterialApp.router(
       routerConfig: appRouter,
       //theme: AppTheme().getTheme(),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('es', 'ES'), // Español
+      ],
+      locale: const Locale('es', 'ES'), // fuerza español
       theme: appTheme.getTheme(),
       debugShowCheckedModeBanner: false,
     );

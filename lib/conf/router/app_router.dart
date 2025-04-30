@@ -36,7 +36,7 @@ final goRouterProvider = Provider((ref)
         builder: (context, state) => const DashbordScreen(),
       ),
 
-      ///* 
+      ///* Justificar Faltas
       GoRoute(
         path: '/justificar_faltas',
         builder: (context, state)
@@ -50,7 +50,7 @@ final goRouterProvider = Provider((ref)
         }
       ),
 
-      ///* 
+      ///* Justificar Retardos
       GoRoute(
         path: '/justificar_retardos',
         builder: (context, state) 

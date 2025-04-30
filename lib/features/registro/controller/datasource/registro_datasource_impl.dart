@@ -15,15 +15,10 @@ class RegistroDatasourceImpl extends RegistroDatasource
   @override
   Future<List<Registro>> getRegistro(DateTime fechaIni, String codigo) async
   {
-    log.logger.info("Token: $accessToken");
     httpService.setAccessToken(accessToken);
 
     String fecha = FormatUtil.stringDateFormated(fechaIni);
-
-    log.logger.info("Fecha: $fecha");
-    log.logger.info("Codigo: $codigo");
     String url = '/registros/$fecha/$codigo';
-    log.logger.info("URL: $url");
 
     final response = await httpService.dio.get<List>(url);
     
@@ -34,15 +29,6 @@ class RegistroDatasourceImpl extends RegistroDatasource
     }
 
     return registros;
-
-    /*if(response.statusCode == 200) 
-    {
-      return (response.data as List)
-        .map((json) => Registro.fromJson(json))
-        .toList();
-    } else {
-      throw Exception('Error al obtener la lista');
-    }*/
   }
 
 }

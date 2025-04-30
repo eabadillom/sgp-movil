@@ -1,19 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:sgp_movil/features/registro/domain/domain.dart';
 import 'package:sgp_movil/features/shared/widgets/side_menu.dart';
 
-class JusitificarDetalle extends StatefulWidget {
-  const JusitificarDetalle({super.key});
+class JusitificarDetalle extends ConsumerStatefulWidget {
+  final int id;
+  final String codigo;
+
+  const JusitificarDetalle({
+    required this.id,
+    required this.codigo,
+    super.key
+  });
 
   @override
-  State<JusitificarDetalle> createState() => _JusitificarDetalleState();
+  ConsumerState<JusitificarDetalle> createState() => _JusitificarDetalleState();
 }
 
-class _JusitificarDetalleState extends State<JusitificarDetalle> {
+class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
   late final String titulo;
-  late final RegistroDetalle registroDetalle;
+  //late final RegistroDetalle registroDetalle;
+  late int idRegistro;
+  late String codigoRegistro;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() 
+  {
+    super.initState();
+    idRegistro = widget.id;
+    codigoRegistro = widget.codigo;
+    
+    if(codigoRegistro.contains('F'))
+    {
+      titulo = 'Falta';
+    }
+    if(codigoRegistro.contains('R'))
+    {
+      titulo = 'Retardo';
+    }
+  }
 
   String formtearFecha(DateTime? fecha) {
     return DateFormat('dd/MM/yyyy - HH:mm:ss').format(fecha!);
@@ -37,19 +64,22 @@ class _JusitificarDetalleState extends State<JusitificarDetalle> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Nombre: ${registroDetalle.nombreEmpleado} ${registroDetalle.primerApEmpleado} ${registroDetalle.segundoApEmpleado}',
+            Text('id: $idRegistro'),
+            const SizedBox(height: 8),
+
+            /*Text(
+              'Nombre: ${registroState.registro?.nombreEmpleado} ${registroState.registro?.primerApEmpleado} ${registroState.registro?.segundoApEmpleado}',
             ),
             const SizedBox(height: 8),
-            Text('Lugar: ${registroDetalle.plantaEmpleado}'),
+            Text('Lugar: ${registroState.registro?.plantaEmpleado}'),
             const SizedBox(height: 8),
             Text(
-              'Fecha de entrada: ${formtearFecha(registroDetalle.fechaEntrada)}',
+              'Fecha de entrada: ${formtearFecha(registroState.registro?.fechaEntrada)}',
             ),
             const SizedBox(height: 8),
             Text(
-              'Fecha de salida: ${formtearFecha(registroDetalle.fechaSalida)}',
-            ),
+              'Fecha de salida: ${formtearFecha(registroState.registro?.fechaSalida)}',
+            ),*/
             const Spacer(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,

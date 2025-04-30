@@ -14,7 +14,6 @@ class FormatUtil
 
   static String formatearFecha(DateTime fecha) 
   {
-    // Puedes formatear como quieras, aquí ejemplo simple:
     return '${fecha.year}-${fecha.month}-${fecha.day}';
   }
 
