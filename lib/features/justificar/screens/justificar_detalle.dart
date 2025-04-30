@@ -1,19 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:sgp_movil/features/registro/domain/domain.dart';
+import 'package:sgp_movil/features/justificar/providers/justificar_detalle_provider.dart';
 import 'package:sgp_movil/features/shared/widgets/side_menu.dart';
 
-class JusitificarDetalle extends StatefulWidget {
-  const JusitificarDetalle({super.key});
+class JusitificarDetalle extends ConsumerStatefulWidget {
+  final int id;
+  final String codigo;
+
+  const JusitificarDetalle({required this.id, required this.codigo, super.key});
 
   @override
-  State<JusitificarDetalle> createState() => _JusitificarDetalleState();
+  ConsumerState<JusitificarDetalle> createState() => _JusitificarDetalleState();
 }
 
-class _JusitificarDetalleState extends State<JusitificarDetalle> {
+class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
   late final String titulo;
-  late final RegistroDetalle registroDetalle;
+  //late final RegistroDetalle registroDetalle;
+  late int idRegistro;
+  late String codigoRegistro;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    super.initState();
+    idRegistro = widget.id;
+    codigoRegistro = widget.codigo;
+
+    if (codigoRegistro.contains('F')) {
+      titulo = 'Falta';
+    }
+    if (codigoRegistro.contains('R')) {
+      titulo = 'Retardo';
+    }
+
+    Future.microtask(() {
+      ref.read(justificarDetalleProvider.notifier).cargarRegistro(idRegistro);
+    });
+  }
 
   String formtearFecha(DateTime? fecha) {
     return DateFormat('dd/MM/yyyy - HH:mm:ss').format(fecha!);
@@ -21,6 +45,8 @@ class _JusitificarDetalleState extends State<JusitificarDetalle> {
 
   @override
   Widget build(BuildContext context) {
+    final registroState = ref.watch(justificarDetalleProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Justificacion de "$titulo"'),
@@ -37,18 +63,20 @@ class _JusitificarDetalleState extends State<JusitificarDetalle> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            /*Text('id: $idRegistro'),
+            const SizedBox(height: 8),*/
             Text(
-              'Nombre: ${registroDetalle.nombreEmpleado} ${registroDetalle.primerApEmpleado} ${registroDetalle.segundoApEmpleado}',
+              'Nombre: ${registroState.registroDetalle?.nombreEmpleado} ${registroState.registroDetalle?.primerApEmpleado} ${registroState.registroDetalle?.segundoApEmpleado}',
             ),
             const SizedBox(height: 8),
-            Text('Lugar: ${registroDetalle.plantaEmpleado}'),
+            Text('Lugar: ${registroState.registroDetalle?.plantaEmpleado}'),
             const SizedBox(height: 8),
             Text(
-              'Fecha de entrada: ${formtearFecha(registroDetalle.fechaEntrada)}',
+              'Fecha de entrada: ${formtearFecha(registroState.registroDetalle?.fechaEntrada)}',
             ),
             const SizedBox(height: 8),
             Text(
-              'Fecha de salida: ${formtearFecha(registroDetalle.fechaSalida)}',
+              'Fecha de salida: ${formtearFecha(registroState.registroDetalle?.fechaSalida)}',
             ),
             const Spacer(),
             Row(
