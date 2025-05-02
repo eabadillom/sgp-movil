@@ -12,11 +12,6 @@ class FormatUtil
     return formatterNumber;
   }
 
-  static String formatearFecha(DateTime fecha) 
-  {
-    return '${fecha.year}-${fecha.month}-${fecha.day}';
-  }
-
   static DateTime dateFormated(DateTime fecha)
   {
     DateFormat formatter = DateFormat('yyyy-MM-dd');
@@ -25,11 +20,15 @@ class FormatUtil
     return parsed;
   }
 
-  static String stringDateFormated(DateTime fecha)
+  static String stringToISO(DateTime fecha)
   {
     String formatter = DateFormat('yyyy-MM-dd').format(fecha);
-    //String formatted = formatter.format(fecha);
-    //DateTime parsed = formatter.parse(formatted);
+    return formatter;
+  }
+
+  static String stringToStandard(DateTime fecha) 
+  {
+    String formatter = DateFormat('dd-MM-yyyy').format(fecha);
     return formatter;
   }
 

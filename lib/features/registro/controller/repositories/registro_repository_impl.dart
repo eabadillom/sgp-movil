@@ -7,9 +7,9 @@ class RegistroRepositoryImpl extends RegistroRepository
   RegistroRepositoryImpl(this.datasource);
 
   @override
-  Future<List<Registro>> getRegistro(DateTime fechaIni, String codigo) 
+  Future<List<Registro>> getRegistro(DateTime fechaIni, DateTime fechaFin, String codigo) 
   {
-    return datasource.getRegistro(fechaIni, codigo);
+    return datasource.getRegistro(fechaIni, fechaFin, codigo);
   }
 
 }

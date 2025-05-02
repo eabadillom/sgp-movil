@@ -6,8 +6,8 @@ class RegistroDetalleMapper
   (
     id: json['id'],
     codigoRegistro: json['codigoRegistro'],
-    fechaEntrada: json['fechaEntrada'],
-    fechaSalida: json['fechaEntrada'] ?? '',
+    fechaEntrada: DateTime.parse(json['fechaEntrada']),
+    fechaSalida: json['fechaSalida'] != null ? DateTime.parse(json['fechaEntrada']) : null,
     nombreEmpleado: json['nombreEmpleado'],
     primerApEmpleado: json['primerApEmpleado'],
     segundoApEmpleado: json['segundoApEmpleado'],
@@ -17,8 +17,8 @@ class RegistroDetalleMapper
   static RegistroDetalle registroJsonToEntity(Map<String, dynamic> json) => RegistroDetalle(
     id: json['id'],
     codigoRegistro: json['codigoRegistro'],
-    fechaEntrada: json['fechaEntrada'],
-    fechaSalida: json['fechaEntrada'] ?? '',
+    fechaEntrada: DateTime.parse(json['fechaEntrada']),
+    fechaSalida: json['fechaSalida'] != null ? DateTime.parse(json['fechaEntrada']) : null,
     nombreEmpleado: json['nombreEmpleado'],
     primerApEmpleado: json['primerApEmpleado'],
     segundoApEmpleado: json['segundoApEmpleado'],

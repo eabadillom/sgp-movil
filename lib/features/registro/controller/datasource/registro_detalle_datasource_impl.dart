@@ -15,7 +15,7 @@ class RegistroDetalleDatasourceImpl extends RegistroDetalleDatasource
   
   //registros/{id}/estatus
   @override
-  Future<RegistroDetalle> updateProduct(int id, Map<String, dynamic> registro) async
+  Future<RegistroDetalle> actualizarRegistro(int id, Map<String, dynamic> registro) async
   {
     httpService.setAccessToken(accessToken);
     try 
@@ -36,14 +36,14 @@ class RegistroDetalleDatasourceImpl extends RegistroDetalleDatasource
 
   //registros/{id}/estatus
   @override
-  Future<RegistroDetalle> registroDetalle(int idRegistro) async
+  Future<RegistroDetalle> registroDetalle(int id) async
   {
+    httpService.setAccessToken(accessToken);
     try 
     {
-      final response = await httpService.dio.get('/registros/$idRegistro/estatus');
-
+      String ruta = '/registros/$id/estatus';
+      final response = await httpService.dio.get(ruta);
       final registro = RegistroDetalleMapper.jsonToEntity(response.data);
-
       return registro;
     }on DioException catch (e) 
     {

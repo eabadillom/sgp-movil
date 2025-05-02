@@ -41,7 +41,8 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
   }
 
   String formtearFecha(DateTime? fecha) {
-    return DateFormat('dd/MM/yyyy - HH:mm:ss').format(fecha!);
+    if(fecha == null) return '';
+    return DateFormat('dd/MM/yyyy - HH:mm:ss').format(fecha);
   }
 
   @override
@@ -51,12 +52,7 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Justificacion de "$titulo"'),
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {
-            _scaffoldKey.currentState?.openDrawer();
-          },
-        ),
+        
       ),
       drawer: SideMenu(scaffoldKey: _scaffoldKey),
       body: Padding(
