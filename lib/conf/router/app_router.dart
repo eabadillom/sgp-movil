@@ -43,10 +43,11 @@ final goRouterProvider = Provider((ref)
         {
           DateTime fechaIni = DateTime.now().subtract(const Duration(days: 7));
           fechaIni = FormatUtil.dateFormated(fechaIni);
-          log.logger.info("Fecha: $fechaIni");
+          DateTime fechaFin = DateTime.now();
+          fechaFin =  FormatUtil.dateFormated(fechaFin);
           String codigo = "F";
-          String nombrePantalla = "Faltas";
-          return JustificarListScreen(fechaIni: fechaIni, codigo: codigo, nombrePantalla: nombrePantalla,);
+          String nombrePantalla = "Ausencias";
+          return JustificarListScreen(fechaIni: fechaIni, fechaFin: fechaFin, codigo: codigo, nombrePantalla: nombrePantalla,);
         }
       ),
 
@@ -57,9 +58,11 @@ final goRouterProvider = Provider((ref)
         {
           DateTime fechaIni = DateTime.now().subtract(const Duration(days: 7));
           fechaIni = FormatUtil.dateFormated(fechaIni);
+          DateTime fechaFin = DateTime.now();
+          fechaFin = FormatUtil.dateFormated(fechaFin);
           String codigo = "R";
           String nombrePantalla = "Retardos";
-          return JustificarListScreen(fechaIni: fechaIni, codigo: codigo, nombrePantalla: nombrePantalla,);
+          return JustificarListScreen(fechaIni: fechaIni, fechaFin: fechaFin, codigo: codigo, nombrePantalla: nombrePantalla,);
         },
       ),
     ],
@@ -81,7 +84,6 @@ final goRouterProvider = Provider((ref)
         {
           return '/login';
         }
-        return null;
       }
 
       //Pantalla de login y cuando el usuario no esta autenticado

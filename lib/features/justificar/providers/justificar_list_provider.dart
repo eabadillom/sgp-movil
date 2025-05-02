@@ -8,7 +8,6 @@ import 'package:sgp_movil/features/registro/domain/repositories/registro_reposit
 final justificarNotifierProvider = StateNotifierProvider<JustificarNotifier, JustificarState>((ref)
 {
   final registroRepository = ref.watch(justificarRepositoryProvider);
-  //final regitroDetalleRepository = ref.watch(justificarDetalleRepositoryProvider);
 
   return JustificarNotifier(registroRepository);
 });
@@ -20,11 +19,10 @@ class JustificarNotifier extends StateNotifier<JustificarState>
 
   JustificarNotifier(this.registroRepository) : super(JustificarState.initial());
 
-  Future<void> cargarRegistros(DateTime fecha, String codigo) async 
+  Future<void> cargarRegistros(DateTime fechaIni, DateTime fechaFin, String codigo) async 
   {
     state = state.copyWith(isLoading: true, errorMessage: null);
-    final DateTime fechaString = FormatUtil.dateFormated(fecha);
-    final registros = await registroRepository.getRegistro(fechaString, codigo);
+    final registros = await registroRepository.getRegistro(FormatUtil.dateFormated(fechaIni), FormatUtil.dateFormated(fechaFin), codigo);
 
     state = state.copyWith(isLoading: false, registros: registros);
   }

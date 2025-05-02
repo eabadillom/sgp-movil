@@ -13,9 +13,9 @@ class RegistroDetalleRepositoryImpl extends RegistroDetalleRepository
   }
   
   @override
-  Future<RegistroDetalle> updateProduct(int id, Map<String, dynamic> registro) 
+  Future<RegistroDetalle> actualizarRegistro(int id, Map<String, dynamic> registro) 
   {
-    return datasource.updateProduct(id, registro);
+    return datasource.actualizarRegistro(id, registro);
   }
 
 }

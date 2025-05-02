@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
+import 'package:sgp_movil/conf/util/format_util.dart';
+import 'package:sgp_movil/features/dashboard/presentation/screens/dashbord_screen.dart';
 import 'package:sgp_movil/features/justificar/providers/justificar_detalle_provider.dart';
 import 'package:sgp_movil/features/justificar/widgets/widgets.dart';
+import 'package:sgp_movil/features/shared/widgets/dialogo_confirmacion.dart';
 import 'package:sgp_movil/features/shared/widgets/side_menu.dart';
 
 class JusitificarDetalle extends ConsumerStatefulWidget {
@@ -17,7 +19,6 @@ class JusitificarDetalle extends ConsumerStatefulWidget {
 
 class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
   late final String titulo;
-  //late final RegistroDetalle registroDetalle;
   late int idRegistro;
   late String codigoRegistro;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -29,7 +30,7 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
     codigoRegistro = widget.codigo;
 
     if (codigoRegistro.contains('F')) {
-      titulo = 'Falta';
+      titulo = 'Ausencia';
     }
     if (codigoRegistro.contains('R')) {
       titulo = 'Retardo';
@@ -40,70 +41,10 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
     });
   }
 
-  String formtearFecha(DateTime? fecha) {
-    return DateFormat('dd/MM/yyyy - HH:mm:ss').format(fecha ?? DateTime.now());
-  }
-
-  /*
   @override
   Widget build(BuildContext context) {
     final registroState = ref.watch(justificarDetalleProvider);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Justificacion de "$titulo"'),
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {
-            _scaffoldKey.currentState?.openDrawer();
-          },
-        ),
-      ),
-      drawer: SideMenu(scaffoldKey: _scaffoldKey),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-
-            /*Text('id: $idRegistro'),
-            const SizedBox(height: 8),*/
-            Text(
-              'Nombre: ${registroState.registroDetalle?.nombreEmpleado} ${registroState.registroDetalle?.primerApEmpleado} ${registroState.registroDetalle?.segundoApEmpleado}',
-            ),
-            const SizedBox(height: 8),
-            Text('Lugar: ${registroState.registroDetalle?.plantaEmpleado}'),
-            const SizedBox(height: 8),
-            Text(
-              'Fecha de entrada: ${formtearFecha(registroState.registroDetalle?.fechaEntrada)}',
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Fecha de salida: ${formtearFecha(registroState.registroDetalle?.fechaSalida)}',
-            ),
-
-            const Spacer(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(onPressed: () {}, child: Text('Justificar')),
-                OutlinedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Mantener'),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }*/
-
-  @override
-  Widget build(BuildContext context) {
-    final registroState = ref.watch(justificarDetalleProvider);
+    Map<String, dynamic> nuevoEstadoRegistro;
 
     if (registroState.isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -147,26 +88,88 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
                 ),
                 EtiquetaRegistroWidget(
                   label: 'Entrada',
-                  value: formtearFecha(detalle?.fechaEntrada),
+                  value: FormatUtil.formatearFecha(detalle?.fechaEntrada),
                 ),
                 EtiquetaRegistroWidget(
                   label: 'Salida',
-                  value: formtearFecha(detalle?.fechaSalida),
+                  value: FormatUtil.formatearFecha(detalle?.fechaSalida),
                 ),
                 const SizedBox(height: 32),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ElevatedButton.icon(
-                      icon: const Icon(Icons.check),
-                      label: const Text('Justificar'),
+                      icon: const Icon(Icons.check, color: Colors.white),
+                      label: const Text(
+                        'Justificar',
+                        style: TextStyle(fontSize: 18.0, color: Colors.white),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue, // Fondo azul
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24.0,
+                          vertical: 12.0,
+                        ),
+                      ),
                       onPressed: () {
                         // Acción para justificar
+                        dialogoConfirmacion(
+                          context,
+                          '¿Estás seguro de que deseas justificar?',
+                          () async {
+                            ref
+                                .read(justificarDetalleProvider.notifier)
+                                .actualizarEstadoRegistro(idRegistro, {
+                                  'codigoRegistro': 'J',
+                                });
+
+                            final state = ref.read(justificarDetalleProvider);
+
+                            if (state.errorMessage == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Registro justificado exitosamente',
+                                  ),
+                                  duration: Duration(
+                                    seconds: 2,
+                                  ), // visible por 2 segundos
+                                ),
+                              );
+
+                              // Esperar a que el SnackBar se muestre antes de navegar
+                              await Future.delayed(Duration(seconds: 5));
+
+                              // Navegar a la pantalla deseada (ajusta según tu navegación)
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => DashbordScreen(),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(state.errorMessage!)),
+                              );
+                              // No se navega, simplemente se muestra el error y permanece en pantalla
+                            }
+                          },
+                        );
                       },
                     ),
-                    OutlinedButton.icon(
-                      icon: const Icon(Icons.close),
-                      label: const Text('Mantener'),
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.close, color: Colors.white),
+                      label: const Text(
+                        'Mantener',
+                        style: TextStyle(fontSize: 18.0, color: Colors.white),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueGrey, // Fondo rojo
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24.0,
+                          vertical: 12.0,
+                        ),
+                      ),
                       onPressed: () {
                         Navigator.pop(context);
                       },

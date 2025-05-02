@@ -5,10 +5,10 @@ class EtiquetaRegistroWidget extends StatelessWidget {
   final String value;
 
   const EtiquetaRegistroWidget({
-    Key? key,
+    super.key,
     required this.label,
     required this.value,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,14 +19,17 @@ class EtiquetaRegistroWidget extends StatelessWidget {
         children: [
           Text(
             '$label: ',
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              fontSize: 18.0,
+            ),
           ),
           Expanded(
             child: Text(
               value,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontSize: 18.0),
               overflow: TextOverflow.ellipsis,
             ),
           ),
