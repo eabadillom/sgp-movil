@@ -25,38 +25,51 @@ class JustificarDetalleNotifier extends StateNotifier<JustificarDetalleState> {
   Future<void> cargarRegistro(int idRegistro) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
-    final registroDetalle = await registroDetalleRepository.registroDetalle(
-      idRegistro,
-    );
+    try {
+      final registroDetalle = await registroDetalleRepository.registroDetalle(
+        idRegistro,
+      );
 
-    state = state.copyWith(isLoading: true, registroDetalle: registroDetalle);
+      state = state.copyWith(
+        isLoading: false,
+        registroDetalle: registroDetalle,
+      );
+    } catch (e, stack) {
+      log.logger.severe('Error al cargar el registro', e, stack);
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: 'No se pudo cargar el registro',
+      );
+    }
+  }
+
+  Future<void> actualizarEstadoRegistro(
+    int idRegistro,
+    Map<String, dynamic> registro,
+  ) async {
+    state = state.copyWith(isLoading: true, errorMessage: null);
+
+    try {
+      final registroDetalle = await registroDetalleRepository
+          .actualizarRegistro(idRegistro, registro);
+
+      state = state.copyWith(
+        isLoading: false,
+        registroDetalle: registroDetalle,
+      );
+    } catch (e, stack) {
+      log.logger.severe(
+        'Error al actualizar el estado del registro $idRegistro',
+        e,
+        stack,
+      );
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: 'No se pudo actualizar el registro',
+      );
+    }
   }
 }
-
-/*factory JustificarDetalleState.initial() =>  JustificarDetalleState();
-
-class JustificarDetalleState{
-  final bool isLoading;
-  final Registro registro;
-  final String? errorMessage;
-
-  JustificarDetalleState({
-    this.isLoading = false,
-     required this.registro,
-    this.errorMessage,
-  });
-
-
-  JustificarDetalleState copyWith({
-    String? codigo,
-    bool? isLoading,
-    Registro? registro,
-    String? errorMessage,
-  })  => JustificarDetalleState(
-    isLoading: isLoading ?? this.isLoading,
-    registro: registro ?? this.registro,
-    errorMessage: errorMessage ?? this.errorMessage,
-  );*/
 
 class JustificarDetalleState {
   final bool isLoading;
