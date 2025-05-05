@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sgp_movil/conf/util/format_util.dart';
-import 'package:sgp_movil/features/dashboard/presentation/screens/dashbord_screen.dart';
 import 'package:sgp_movil/features/justificar/providers/justificar_detalle_provider.dart';
 import 'package:sgp_movil/features/justificar/screens/justificar_list_screen.dart';
 import 'package:sgp_movil/features/justificar/widgets/widgets.dart';
@@ -45,7 +44,6 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
   @override
   Widget build(BuildContext context) {
     final registroState = ref.watch(justificarDetalleProvider);
-    Map<String, dynamic> nuevoEstadoRegistro;
 
     if (registroState.isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -138,10 +136,8 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
                                 ),
                               );
 
-                              // Esperar a que el SnackBar se muestre antes de navegar
                               await Future.delayed(Duration(seconds: 5));
 
-                              // Navegar a la pantalla deseada (ajusta según tu navegación)
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -152,7 +148,6 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text(state.errorMessage!)),
                               );
-                              // No se navega, simplemente se muestra el error y permanece en pantalla
                             }
                           },
                         );
