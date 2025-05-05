@@ -7,17 +7,11 @@ import 'package:sgp_movil/features/registro/domain/domain.dart';
 
 class JustificarListScreen extends ConsumerStatefulWidget 
 {
-  final DateTime fechaIni;
-  final DateTime fechaFin;
   final String codigo;
-  final String nombrePantalla;
   
   const JustificarListScreen({
     super.key,
-    required this.fechaIni,
-    required this.fechaFin,
     required this.codigo,
-    required this.nombrePantalla,
   });
 
   @override
@@ -36,11 +30,18 @@ class _JustificarListState extends ConsumerState<JustificarListScreen>
   void initState() 
   {
     super.initState();
-    fechaIni = FormatUtil.dateFormated(widget.fechaIni);
-    fechaFin = FormatUtil.dateFormated(widget.fechaFin);
+    fechaIni = FormatUtil.dateFormated(DateTime.now().subtract(const Duration(days: 7)));
+    fechaFin = FormatUtil.dateFormated(DateTime.now());
     codigo = widget.codigo;
-    nombrePantalla = widget.nombrePantalla;
-    
+
+    if(codigo == 'F') {
+      nombrePantalla = 'Ausencias';
+    }
+
+    if(codigo == 'R'){
+      nombrePantalla = 'Retardos';
+    }
+
     Future.microtask(() 
     {
       ref.read(justificarNotifierProvider.notifier).cargarRegistros(fechaIni, fechaFin, codigo);
