@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sgp_movil/conf/util/format_util.dart';
-import 'package:sgp_movil/features/dashboard/presentation/screens/dashbord_screen.dart';
 import 'package:sgp_movil/features/justificar/providers/justificar_detalle_provider.dart';
+import 'package:sgp_movil/features/justificar/screens/justificar_list_screen.dart';
 import 'package:sgp_movil/features/justificar/widgets/widgets.dart';
 import 'package:sgp_movil/features/shared/widgets/dialogo_confirmacion.dart';
 import 'package:sgp_movil/features/shared/widgets/side_menu.dart';
@@ -131,27 +131,25 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
                                   content: Text(
                                     'Registro justificado exitosamente',
                                   ),
-                                  duration: Duration(
-                                    seconds: 2,
-                                  ), // visible por 2 segundos
+                                  duration: Duration(seconds: 2),
                                 ),
                               );
 
-                              // Esperar a que el SnackBar se muestre antes de navegar
                               await Future.delayed(Duration(seconds: 5));
 
-                              // Navegar a la pantalla deseada (ajusta según tu navegación)
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) => DashbordScreen(),
+                                  builder:
+                                      (_) => JustificarListScreen(
+                                        codigo: codigoRegistro,
+                                      ),
                                 ),
                               );
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text(state.errorMessage!)),
                               );
-                              // No se navega, simplemente se muestra el error y permanece en pantalla
                             }
                           },
                         );
@@ -164,7 +162,7 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
                         style: TextStyle(fontSize: 18.0, color: Colors.white),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueGrey, // Fondo rojo
+                        backgroundColor: Colors.blueGrey,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 24.0,
                           vertical: 12.0,
