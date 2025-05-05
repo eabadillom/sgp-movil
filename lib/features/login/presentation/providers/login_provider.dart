@@ -51,9 +51,18 @@ class LoginNotifier extends StateNotifier<LoginState>
       {
         log.logger.warning('Timeout exception: ${e.toString()}');
         logout('No hay conexión a internet');
+      }else if(e is ConnectionTimeout)
+      {
+        log.logger.warning('Connection exception: ${e.toString()}');
+        logout('No hay conexión a internet');
       }
-      log.logger.severe('Error: $e');
-      logout('Error: contacte a su administrador de sistemas');
+      else if(e is Exception)
+      {
+        log.logger.warning('Exception: $e');
+        logout('No hay conexión a internet');
+      }
+      log.logger.severe('Error: ${e.toString()}');
+      logout('Error, contacte a su administrador de sistemas');
     }
   }
 
@@ -103,8 +112,12 @@ class LoginNotifier extends StateNotifier<LoginState>
       {
         log.logger.warning('Timeout exception: ${e.toString()}');
         logout('No hay conexión a internet');
+      }else if(e is ConnectionTimeout)
+      {
+        log.logger.warning('Connection exception: ${e.toString()}');
+        logout('No hay conexión a internet');
       }
-      log.logger.warning('Error no controlado: $e');
+      log.logger.warning('Error: $e');
       logout('Error: contacte a su administrador de sistemas');
     }
   }

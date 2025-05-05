@@ -41,13 +41,8 @@ final goRouterProvider = Provider((ref)
         path: '/justificar_faltas',
         builder: (context, state)
         {
-          DateTime fechaIni = DateTime.now().subtract(const Duration(days: 7));
-          fechaIni = FormatUtil.dateFormated(fechaIni);
-          DateTime fechaFin = DateTime.now();
-          fechaFin =  FormatUtil.dateFormated(fechaFin);
           String codigo = "F";
-          String nombrePantalla = "Ausencias";
-          return JustificarListScreen(fechaIni: fechaIni, fechaFin: fechaFin, codigo: codigo, nombrePantalla: nombrePantalla,);
+          return JustificarListScreen(codigo: codigo);
         }
       ),
 
@@ -56,13 +51,8 @@ final goRouterProvider = Provider((ref)
         path: '/justificar_retardos',
         builder: (context, state) 
         {
-          DateTime fechaIni = DateTime.now().subtract(const Duration(days: 7));
-          fechaIni = FormatUtil.dateFormated(fechaIni);
-          DateTime fechaFin = DateTime.now();
-          fechaFin = FormatUtil.dateFormated(fechaFin);
           String codigo = "R";
-          String nombrePantalla = "Retardos";
-          return JustificarListScreen(fechaIni: fechaIni, fechaFin: fechaFin, codigo: codigo, nombrePantalla: nombrePantalla,);
+          return JustificarListScreen(codigo: codigo);
         },
       ),
     ],
