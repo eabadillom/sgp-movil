@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sgp_movil/conf/util/format_util.dart';
 import 'package:sgp_movil/features/dashboard/presentation/screens/dashbord_screen.dart';
 import 'package:sgp_movil/features/justificar/providers/justificar_detalle_provider.dart';
+import 'package:sgp_movil/features/justificar/screens/justificar_list_screen.dart';
 import 'package:sgp_movil/features/justificar/widgets/widgets.dart';
 import 'package:sgp_movil/features/shared/widgets/dialogo_confirmacion.dart';
 import 'package:sgp_movil/features/shared/widgets/side_menu.dart';
@@ -144,7 +145,7 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) => DashbordScreen(),
+                                  builder: (_) => JustificarListScreen(codigo: codigoRegistro),
                                 ),
                               );
                             } else {
