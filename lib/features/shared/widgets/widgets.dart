@@ -4,3 +4,6 @@ export 'full_screen_loader.dart';
 export 'geometrical_background.dart';
 export 'side_menu.dart';
 export 'dialogo_confirmacion.dart';
+export 'barra_busqueda_nombre.dart';
+export 'selector_periodo_fecha.dart';
+export 'lista_tarjeta_generica.dart';

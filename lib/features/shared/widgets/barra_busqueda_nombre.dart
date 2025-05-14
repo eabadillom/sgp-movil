@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 
-class BarraBusqueda extends StatelessWidget {
-  final Function(String) onSearchChanged;
+class BarraBusquedaNombre extends StatelessWidget {
+  final void Function(String) onChanged;
 
-  const BarraBusqueda({Key? key, required this.onSearchChanged})
-    : super(key: key);
+  const BarraBusquedaNombre({super.key, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
     return TextField(
-      onChanged: onSearchChanged,
       decoration: const InputDecoration(
         labelText: 'Buscar por nombre',
         border: OutlineInputBorder(),
         prefixIcon: Icon(Icons.search),
       ),
+      onChanged: onChanged,
     );
   }
 }
