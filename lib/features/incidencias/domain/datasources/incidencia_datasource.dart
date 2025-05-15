@@ -1,10 +1,10 @@
 import "../entities/incidencia.dart";
 
-abstract class IncidenciaDatasoutce {
+abstract class IncidenciaDatasource {
   Future<List<Incidencia>> getIncidencias(
     String tipo,
     String estatus,
-    String fechaInicial,
-    String fechaFinal,
+    DateTime fechaInicial,
+    DateTime fechaFinal,
   );
 }

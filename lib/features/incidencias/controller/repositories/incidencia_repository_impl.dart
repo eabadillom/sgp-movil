@@ -1,0 +1,19 @@
+import 'package:sgp_movil/features/incidencias/domain/datasources/incidencia_datasource.dart';
+import 'package:sgp_movil/features/incidencias/domain/entities/incidencia.dart';
+import 'package:sgp_movil/features/incidencias/domain/respositories/incidencia_repository.dart';
+
+class IncidenciaRepositoryImpl extends IncidenciaRepository {
+  final IncidenciaDatasource datasource;
+
+  IncidenciaRepositoryImpl(this.datasource);
+
+  @override
+  Future<List<Incidencia>> getInicidencias(
+    String tipo,
+    String estatus,
+    DateTime fechaInicial,
+    DateTime fechaFinal,
+  ) {
+    return datasource.getIncidencias(tipo, estatus, fechaInicial, fechaFinal);
+  }
+}
