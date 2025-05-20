@@ -6,9 +6,9 @@ class Incidencia {
   final String primerApSolicitante;
   final String segundoApSolicitante;
   final DateTime fechaCaptura;
-  final int solicitudPermiso;
-  final int solicitudPrenda;
-  final int solicitudArticulo;
+  final int? solicitudPermiso;
+  final int? solicitudPrenda;
+  final int? solicitudArticulo;
 
   Incidencia({
     required this.idIncidencia,
@@ -18,10 +18,34 @@ class Incidencia {
     required this.primerApSolicitante,
     required this.segundoApSolicitante,
     required this.fechaCaptura,
-    required this.solicitudArticulo,
-    required this.solicitudPermiso,
-    required this.solicitudPrenda,
+    this.solicitudPermiso,
+    this.solicitudPrenda,
+    this.solicitudArticulo,
   });
+
+  factory Incidencia.fromJson(Map<String, dynamic> json) {
+    return Incidencia(
+      idIncidencia: json['idIncidencia'] as int,
+      codigoEstadoIncidencia: json['codigoEstadoIncidencia'] as String,
+      codigoTipoIncidencia: json['codigoTipoIncidencia'] as String,
+      nombreSolicitante: json['nombreSolicitante'] as String,
+      primerApSolicitante: json['primerApSolicitante'] as String,
+      segundoApSolicitante: json['segundoApSolicitante'] as String,
+      fechaCaptura: DateTime.parse(json['fechaCaptura']),
+      solicitudPermiso:
+          json['solicitudPermiso'] != null
+              ? json['solicitudPermiso'] as int
+              : null,
+      solicitudPrenda:
+          json['solicitudPrenda'] != null
+              ? json['solicitudPrenda'] as int
+              : null,
+      solicitudArticulo:
+          json['solicitudArticulo'] != null
+              ? json['solicitudArticulo'] as int
+              : null,
+    );
+  }
 
   @override
   String toString() {

@@ -23,14 +23,21 @@ class ListarNotifier extends StateNotifier<ListarState> {
     DateTime fechaFinal,
   ) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
-    final incidencias = await incidenciaRepository.getInicidencias(
-      tipo,
-      estatus,
-      FormatUtil.dateFormated(fechaInicial),
-      FormatUtil.dateFormated(fechaFinal),
-    );
-
-    state = state.copyWith(isLoading: false, incidencias: incidencias);
+    try {
+      final incidencias = await incidenciaRepository.getInicidencias(
+        tipo,
+        estatus,
+        FormatUtil.dateFormated(fechaInicial),
+        FormatUtil.dateFormated(fechaFinal),
+      );
+      state = state.copyWith(isLoading: false, incidencias: incidencias);
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: 'Error al cargar las incidencias',
+      );
+      log.logger.warning('Error al cargar incidencias: $e');
+    }
   }
 
   void setBusqueda(String value) {
