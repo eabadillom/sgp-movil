@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-class MenuItems 
-{
+class MenuItems {
   final String title;
   final String subTitle;
   final String link;
@@ -15,11 +14,10 @@ class MenuItems
   });
 }
 
-const appMenuItem = <MenuItems> 
-[
+const appMenuItem = <MenuItems>[
   MenuItems(
-    title: 'Incapacidad', 
-    subTitle: 'Solicitud de incapacidades', 
+    title: 'Incapacidad',
+    subTitle: 'Solicitud de incapacidades',
     link: '/incapacidades',
     icon: Icons.health_and_safety_outlined,
   ),
@@ -34,7 +32,7 @@ const appMenuItem = <MenuItems>
   MenuItems(
     title: 'Permisos',
     subTitle: 'Solicitud de permisos',
-    link: '/permisos',
+    link: '/Permisos',
     icon: Icons.assignment_turned_in,
   ),
 
@@ -58,12 +56,11 @@ const appMenuItem = <MenuItems>
     link: '/uniformes',
     icon: Icons.dry_cleaning,
   ),
-  
+
   MenuItems(
     title: 'Articulos',
     subTitle: 'Solicitud de articulos',
     link: '/articulos',
     icon: Icons.handyman,
   ),
-
 ];

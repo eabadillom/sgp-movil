@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sgp_movil/conf/util/format_util.dart';
 import 'package:sgp_movil/features/atender/providers/incidencia_permiso_detalle_provider.dart';
 import 'package:sgp_movil/features/justificar/widgets/etiqueta_registro_widget.dart';
@@ -18,7 +19,7 @@ class IncidenciaPermisoScreen extends ConsumerStatefulWidget
 
 class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen> 
 {
-  late String titulo;
+  late final String titulo;
   late int idIncidencia;
   late String codigoIncidencia;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -31,12 +32,16 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen>
     idIncidencia = widget.id;
     codigoIncidencia = widget.codigo;
 
-    if (codigoIncidencia.contains('PE')) {
-      titulo = 'Permiso';
+    titulo = codigoIncidencia.contains('PE')
+        ? 'Permiso'
+        : 'Vacaciones';
+
+    /*if (codigoIncidencia.contains('PE')) {
+      titulo = "Permiso";
     }
     if (codigoIncidencia.contains('V')) {
-      titulo = 'Vacaciones';
-    }
+      titulo = "Vacaciones";
+    }*/
     
     Future.microtask(() {
       ref.watch(incidenciaPermisoDetalleProvider.notifier).obtenerIncidenciaPermiso(idIncidencia);
@@ -72,7 +77,12 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen>
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
-              Navigator.pop(context); // Regresa a la pantalla anterior
+              if (Navigator.of(context).canPop()) 
+              {
+                Navigator.of(context).pop();
+              } else {
+                context.go('/dashboard');
+              }
             },
           ),
         ),

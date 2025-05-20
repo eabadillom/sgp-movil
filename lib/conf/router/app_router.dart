@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sgp_movil/conf/config.dart';
 import 'package:sgp_movil/features/atender/screens/incidencia_permiso_screen.dart';
+import 'package:sgp_movil/features/atender/screens/listar_incidencias_screen.dart';
 import 'package:sgp_movil/features/dashboard/presentation/screens/dashbord_screen.dart';
 import 'package:sgp_movil/features/justificar/screens/justificar_list_screen.dart';
 import 'package:sgp_movil/features/justificar/screens/justificar_detalle.dart';
@@ -49,6 +50,24 @@ final goRouterProvider = Provider((ref) {
         builder: (context, state) {
           String codigo = "R";
           return JustificarListScreen(codigo: codigo);
+        },
+      ),
+
+      ///* Atender Vacaciones
+      GoRoute(
+        path: '/vacaciones',
+        builder: (context, state) {
+          String tipo = "V";
+          return ListarIncidenciasScreen(tipo: tipo);
+        },
+      ),
+
+      ///* Atender Permisos
+      GoRoute(
+        path: '/permisos',
+        builder: (context, state) {
+          String tipo = "PE";
+          return ListarIncidenciasScreen(tipo: tipo);
         },
       ),
 
