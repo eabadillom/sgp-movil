@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sgp_movil/conf/config.dart';
+import 'package:sgp_movil/features/atender/screens/incidencia_permiso_screen.dart';
 import 'package:sgp_movil/features/dashboard/presentation/screens/dashbord_screen.dart';
 import 'package:sgp_movil/features/justificar/screens/justificar_list_screen.dart';
 import 'package:sgp_movil/features/justificar/screens/justificar_detalle.dart';
@@ -60,6 +61,16 @@ final goRouterProvider = Provider((ref) {
           return JusitificarDetalle(id: id, codigo: codigo);
         },
       ),
+
+      GoRoute(
+        path: '/incidenciaPermisoDetalle/:idParametro/:codigo',
+        builder: (context, state) {
+          int id = int.tryParse(state.pathParameters['idParametro']!) ?? 0;
+          String codigo = state.pathParameters['codigo']!;
+          return IncidenciaPermisoScreen(id: id, codigo: codigo);
+        },
+      ),
+
     ],
 
     redirect: (context, state) {

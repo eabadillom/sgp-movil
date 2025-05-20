@@ -9,7 +9,7 @@ class IncidenciaPermisoDetalleMapper
     primerApEmpleado: json['primerApSolicitante'], 
     segundoApEmpleado: json['segundoApSolicitante'], 
     fechaInicio: DateTime.parse(json['fechaInicio']), 
-    fechaFin: json['fechaFin'] != null ? DateTime.parse(json['fechaSalida']) : null,
+    fechaFin: json['fechaFin'] != null ? DateTime.parse(json['fechaFin']) : null,
     descripcionRechazo: json['descripcionRechazo'] ?? '',
   );
 
@@ -21,7 +21,7 @@ class IncidenciaPermisoDetalleMapper
     primerApEmpleado: json['primerApSolicitante'], 
     segundoApEmpleado: json['segundoApSolicitante'], 
     fechaInicio: DateTime.parse(json['fechaInicio']), 
-    fechaFin: json['fechaFin'] != null ? DateTime.parse(json['fechaSalida']) : null,
+    fechaFin: json['fechaFin'] != null ? DateTime.parse(json['fechaFin']) : null,
     descripcionRechazo: json['descripcionRechazo'] ?? '',
   );
 

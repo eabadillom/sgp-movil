@@ -33,4 +33,12 @@ class FormatUtil {
     final fechaZonaHoraria = fecha.toUtc().add(Duration(hours: -6));
     return DateFormat('dd/MM/yyyy - HH:mm:ss').format(fechaZonaHoraria);
   }
+
+  static String formatearFechaSimple(DateTime? fecha) {
+    if (fecha == null) return '';
+    // Ajustar manualmente a UTC-6
+    final fechaZonaHoraria = fecha.toUtc().add(Duration(hours: -6));
+    return DateFormat('dd/MM/yyyy').format(fechaZonaHoraria);
+  }
+  
 }

@@ -12,7 +12,7 @@ final incidenciaPermisoDetalleProvider = StateNotifierProvider<IncidenciaPermiso
 class IncidenciaPermisoDetalleNotifier extends StateNotifier<IncidenciaPermisoDetalleState>
 {
   final IncidenciaPermisoDetalleRepository incidenciaPermisoDetalleRepository;
-  final LoggerSingleton log = LoggerSingleton.getInstance('RegistroDetalleProvider');
+  final LoggerSingleton log = LoggerSingleton.getInstance('IncidenciaPermisoDetalleNotifier');
 
   IncidenciaPermisoDetalleNotifier(this.incidenciaPermisoDetalleRepository) : super(IncidenciaPermisoDetalleState.initial());
 

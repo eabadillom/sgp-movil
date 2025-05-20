@@ -7,3 +7,4 @@ export 'dialogo_confirmacion.dart';
 export 'barra_busqueda_nombre.dart';
 export 'selector_periodo_fecha.dart';
 export 'lista_tarjeta_generica.dart';
+export 'dialogo_confirmacion_rechazo.dart';
