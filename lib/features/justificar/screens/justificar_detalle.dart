@@ -18,10 +18,10 @@ class JusitificarDetalle extends ConsumerStatefulWidget {
 }
 
 class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late final String titulo;
   late int idRegistro;
   late String codigoRegistro;
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -60,10 +60,16 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
       appBar: AppBar(
         title: Text('Justificación de "$titulo"'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.menu),
           onPressed: () {
-            if (Navigator.of(context).canPop()) 
-              {
+            _scaffoldKey.currentState?.openDrawer();
+          },
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.keyboard_return_sharp),
+            onPressed: () {
+              if (Navigator.of(context).canPop()) {
                 Navigator.of(context).pop();
               } else {
                 if (codigoRegistro.contains('F')) {
@@ -73,8 +79,9 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
                   context.go('/justificar_retardos');
                 }
               }
-          },
-        ),
+            },
+          ),
+        ],
       ),
       drawer: SideMenu(scaffoldKey: _scaffoldKey),
       body: SingleChildScrollView(
@@ -126,27 +133,29 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
                           context,
                           '¿Estás seguro de que deseas justificar?',
                           () async {
-                            ref
-                                .read(justificarDetalleProvider.notifier)
-                                .actualizarEstadoRegistro(idRegistro, {
-                                  'codigoRegistro': 'J',
-                                });
+                            final notifier = ref.read(justificarDetalleProvider.notifier);
+                            await notifier.actualizarEstadoRegistro(idRegistro, {
+                              'codigoRegistro': 'J',
+                            });
+
+                            // Verifica si el widget sigue montado
+                            if (!context.mounted) return;
 
                             final state = ref.read(justificarDetalleProvider);
+                            final messenger = ScaffoldMessenger.of(context);
 
                             if (state.errorMessage == null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'Registro justificado exitosamente',
-                                  ),
-                                  duration: Duration(
-                                    seconds: 2,
-                                  ), // visible por 2 segundos
+                              messenger.showSnackBar(
+                                const SnackBar(
+                                  content: Text('Registro justificado exitosamente'),
+                                  duration: Duration(seconds: 2),
                                 ),
                               );
 
-                              await Future.delayed(Duration(seconds: 5));
+                              await Future.delayed(const Duration(seconds: 5));
+
+                              // Verifica de nuevo antes de navegar
+                              if (!context.mounted) return;
 
                               Navigator.push(
                                 context,
@@ -155,7 +164,7 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
                                 ),
                               );
                             } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
+                              messenger.showSnackBar(
                                 SnackBar(content: Text(state.errorMessage!)),
                               );
                             }
@@ -176,8 +185,17 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
                           vertical: 12.0,
                         ),
                       ),
-                      onPressed: () {
-                        Navigator.pop(context);
+                      onPressed: () => {
+                        if (Navigator.of(context).canPop()) 
+                        {
+                          Navigator.of(context).pop(),
+                        } else {
+                          if (codigoRegistro.contains('F')) {
+                            context.go('/justificar_faltas'),
+                          }else if (codigoRegistro.contains('R')) {
+                            context.go('/justificar_retardos'),
+                          }
+                        }
                       },
                     ),
                   ],

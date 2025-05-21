@@ -104,7 +104,12 @@ class _JustificarListState extends ConsumerState<JustificarListScreen> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
-              context.go('/dashboard');
+              if (Navigator.of(context).canPop()) 
+              {
+                Navigator.of(context).pop();
+              } else {
+                context.go('/dashboard');
+              }
             },
           ),
         ),

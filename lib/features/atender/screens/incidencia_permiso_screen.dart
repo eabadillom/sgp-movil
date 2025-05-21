@@ -19,11 +19,12 @@ class IncidenciaPermisoScreen extends ConsumerStatefulWidget
 
 class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen> 
 {
+  final Map<String, String> estados = {'E': 'Enviado', 'A': 'Aprobado', 'R': 'Rechazado', 'C': 'Cancelado',};
+  final TextEditingController _comentarioController = TextEditingController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late final String titulo;
   late int idIncidencia;
   late String codigoIncidencia;
-  final TextEditingController _comentarioController = TextEditingController();
-  final Map<String, String> estados = {'E': 'Enviado', 'A': 'Aprobado', 'R': 'Rechazado', 'C': 'Cancelado',};
 
   @override
   void initState() {
@@ -31,9 +32,18 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen>
     idIncidencia = widget.id;
     codigoIncidencia = widget.codigo;
 
-    titulo = codigoIncidencia.contains('PE')
+    if(codigoIncidencia.contains('PE'))
+    {
+      titulo = 'Permiso';
+    }
+    if(codigoIncidencia.contains('V'))
+    {
+      titulo = 'Vacaciones';
+    }
+
+    /*titulo = codigoIncidencia.contains('PE')
         ? 'Permiso'
-        : 'Vacaciones';
+        : 'Vacaciones';*/
 
     Future.microtask(() {
       ref.watch(incidenciaPermisoDetalleProvider.notifier).obtenerIncidenciaPermiso(idIncidencia);
@@ -63,24 +73,33 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen>
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           title: Text('Detalle "$titulo"'),
           leading: IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: const Icon(Icons.menu),
             onPressed: () {
-              if (Navigator.of(context).canPop()) 
-              {
-                Navigator.of(context).pop();
-              } else {
-                if (codigoIncidencia.contains('PE')) {
-                  context.go('/permisos');
-                }
-                if (codigoIncidencia.contains('V')) {
-                  context.go('/vacaciones');
-                }
-              }
+              _scaffoldKey.currentState?.openDrawer();
             },
           ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.keyboard_return_sharp),
+              onPressed: () {
+                if (Navigator.of(context).canPop()) 
+                {
+                  Navigator.of(context).pop();
+                } else {
+                  if (codigoIncidencia.contains('PE')) {
+                    context.go('/permisos');
+                  }
+                  if (codigoIncidencia.contains('V')) {
+                    context.go('/vacaciones');
+                  }
+                }
+              }
+            )
+          ]
         ),
         body: SafeArea(
           child: SingleChildScrollView(
