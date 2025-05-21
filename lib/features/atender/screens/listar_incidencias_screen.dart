@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sgp_movil/conf/util/date_pikcer_util.dart';
-import 'package:sgp_movil/conf/util/format_util.dart';
+import 'package:go_router/go_router.dart';
+import 'package:sgp_movil/conf/config.dart';
 import 'package:sgp_movil/features/atender/providers/estatus_provider.dart';
 import 'package:sgp_movil/features/atender/providers/fecha_provider.dart';
 import 'package:sgp_movil/features/atender/providers/listar_provider.dart';
@@ -123,7 +123,15 @@ class _ListarIncidenciasState extends ConsumerState<ListarIncidenciasScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        appBar: AppBar(title: Text(nombrePantalla)),
+        appBar: AppBar(
+          title: Text(nombrePantalla),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              context.go('/dashboard');
+            },
+          ),
+        ),
         body: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -170,7 +178,7 @@ class _ListarIncidenciasState extends ConsumerState<ListarIncidenciasScreen> {
                           incidencia.fechaCaptura,
                         ),
                     getRoute: (incidencia) => 
-                        '/incidenciaPermisoDetalle/${incidencia.idIncidencia}/${incidencia.codigoEstadoIncidencia}',
+                        '/incidenciaPermisoDetalle/${incidencia.idIncidencia}/${incidencia.codigoTipoIncidencia}',
                     // Ruta personalizada
                   ),
                 ),

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sgp_movil/conf/util/format_util.dart';
+import 'package:go_router/go_router.dart';
+import 'package:sgp_movil/conf/config.dart';
 import 'package:sgp_movil/features/justificar/providers/justificar_list_provider.dart';
 import 'package:sgp_movil/features/registro/domain/domain.dart';
-import 'package:sgp_movil/features/shared/widgets/barra_busqueda_nombre.dart';
-import 'package:sgp_movil/features/shared/widgets/lista_tarjeta_generica.dart';
-import 'package:sgp_movil/features/shared/widgets/selector_periodo_fecha.dart';
+import 'package:sgp_movil/features/shared/shared.dart';
 
 class JustificarListScreen extends ConsumerStatefulWidget {
   final String codigo;
@@ -100,7 +99,15 @@ class _JustificarListState extends ConsumerState<JustificarListScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        appBar: AppBar(title: Text(nombrePantalla)),
+        appBar: AppBar(
+          title: Text(nombrePantalla),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              context.go('/dashboard');
+            },
+          ),
+        ),
         body: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(

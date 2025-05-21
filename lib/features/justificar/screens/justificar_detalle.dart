@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sgp_movil/conf/util/format_util.dart';
+import 'package:go_router/go_router.dart';
+import 'package:sgp_movil/conf/config.dart';
 import 'package:sgp_movil/features/justificar/providers/justificar_detalle_provider.dart';
-import 'package:sgp_movil/features/justificar/screens/justificar_list_screen.dart';
-import 'package:sgp_movil/features/justificar/widgets/widgets.dart';
+import 'package:sgp_movil/features/justificar/justificar.dart';
 import 'package:sgp_movil/features/shared/widgets/dialogo_confirmacion.dart';
 import 'package:sgp_movil/features/shared/widgets/side_menu.dart';
 
@@ -60,9 +60,19 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
       appBar: AppBar(
         title: Text('Justificación de "$titulo"'),
         leading: IconButton(
-          icon: const Icon(Icons.menu),
+          icon: Icon(Icons.arrow_back),
           onPressed: () {
-            _scaffoldKey.currentState?.openDrawer();
+            if (Navigator.of(context).canPop()) 
+              {
+                Navigator.of(context).pop();
+              } else {
+                if (codigoRegistro.contains('F')) {
+                  context.go('/justificar_faltas');
+                }
+                if (codigoRegistro.contains('R')) {
+                  context.go('/justificar_retardos');
+                }
+              }
           },
         ),
       ),

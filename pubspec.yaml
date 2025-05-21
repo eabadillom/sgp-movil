@@ -21,6 +21,7 @@ dependencies:
   google_fonts: ^4.0.5
   shared_preferences: ^2.4.9
   logging: ^1.2.0
+  font_awesome_flutter: ^10.8.0
 
 dev_dependencies:
   flutter_test:

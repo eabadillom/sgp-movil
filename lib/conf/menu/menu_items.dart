@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MenuItems {
   final String title;
@@ -40,27 +41,27 @@ const appMenuItem = <MenuItems>[
     title: 'Ausencias',
     subTitle: 'Justificar las ausencias',
     link: '/justificar_faltas',
-    icon: Icons.account_box_rounded,
+    icon: Icons.person_off,
   ),
 
   MenuItems(
     title: 'Retardos',
     subTitle: 'Justificar los retardos',
     link: '/justificar_retardos',
-    icon: Icons.alarm,
+    icon: Icons.hourglass_empty,
   ),
 
   MenuItems(
     title: 'Uniformes',
     subTitle: 'Solicitud de uniformes',
     link: '/uniformes',
-    icon: Icons.dry_cleaning,
+    icon: FontAwesomeIcons.shirt ,
   ),
 
   MenuItems(
     title: 'Articulos',
     subTitle: 'Solicitud de articulos',
     link: '/articulos',
-    icon: Icons.handyman,
+    icon: Icons.cleaning_services_rounded,
   ),
 ];

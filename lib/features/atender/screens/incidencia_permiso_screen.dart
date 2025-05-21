@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sgp_movil/conf/util/format_util.dart';
+import 'package:sgp_movil/conf/config.dart';
 import 'package:sgp_movil/features/atender/providers/incidencia_permiso_detalle_provider.dart';
-import 'package:sgp_movil/features/justificar/widgets/etiqueta_registro_widget.dart';
+import 'package:sgp_movil/features/justificar/justificar.dart';
 import 'package:sgp_movil/features/shared/shared.dart';
 
 class IncidenciaPermisoScreen extends ConsumerStatefulWidget
@@ -22,7 +22,6 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen>
   late final String titulo;
   late int idIncidencia;
   late String codigoIncidencia;
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _comentarioController = TextEditingController();
   final Map<String, String> estados = {'E': 'Enviado', 'A': 'Aprobado', 'R': 'Rechazado', 'C': 'Cancelado',};
 
@@ -36,13 +35,6 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen>
         ? 'Permiso'
         : 'Vacaciones';
 
-    /*if (codigoIncidencia.contains('PE')) {
-      titulo = "Permiso";
-    }
-    if (codigoIncidencia.contains('V')) {
-      titulo = "Vacaciones";
-    }*/
-    
     Future.microtask(() {
       ref.watch(incidenciaPermisoDetalleProvider.notifier).obtenerIncidenciaPermiso(idIncidencia);
     });
@@ -71,7 +63,6 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen>
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        key: _scaffoldKey,
         appBar: AppBar(
           title: Text('Detalle "$titulo"'),
           leading: IconButton(
@@ -81,24 +72,14 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen>
               {
                 Navigator.of(context).pop();
               } else {
-                context.go('/dashboard');
+                if (codigoIncidencia.contains('PE')) {
+                  context.go('/permisos');
+                }
+                if (codigoIncidencia.contains('V')) {
+                  context.go('/vacaciones');
+                }
               }
             },
-          ),
-        ),
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              ListTile(
-                leading: Icon(Icons.arrow_back),
-                title: Text('Regresar'),
-                onTap: () {
-                  Navigator.pop(context); // Cierra el Drawer
-                  Navigator.pop(context); // Regresa a la pantalla anterior
-                },
-              ),
-            ],
           ),
         ),
         body: SafeArea(
