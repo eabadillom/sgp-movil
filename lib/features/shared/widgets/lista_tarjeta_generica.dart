@@ -36,7 +36,7 @@ class ListaTarjetaGenerica<T> extends StatelessWidget {
             leading: const Icon(Icons.person),
             onTap: () {
               final route = getRoute(item); // Obtener la ruta personalizada
-              context.go(route); // Navegar usando GoRouter
+              context.push(route); // Navegar usando GoRouter
             },
           ),
         );

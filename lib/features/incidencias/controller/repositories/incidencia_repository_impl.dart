@@ -10,10 +10,9 @@ class IncidenciaRepositoryImpl extends IncidenciaRepository {
   @override
   Future<List<Incidencia>> getInicidencias(
     String tipo,
-    String estatus,
     DateTime fechaInicial,
     DateTime fechaFinal,
   ) {
-    return datasource.getIncidencias(tipo, estatus, fechaInicial, fechaFinal);
+    return datasource.getIncidencias(tipo, fechaInicial, fechaFinal);
   }
 }

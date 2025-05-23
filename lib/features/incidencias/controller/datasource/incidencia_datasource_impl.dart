@@ -17,7 +17,6 @@ class IncidenciaDatasourceImpl extends IncidenciaDatasource {
   @override
   Future<List<Incidencia>> getIncidencias(
     String tipo,
-    String estatus,
     DateTime fechaInicial,
     DateTime fechaFinal,
   ) async {
@@ -26,7 +25,7 @@ class IncidenciaDatasourceImpl extends IncidenciaDatasource {
     try {
       String fechaI = FormatUtil.stringToISO(fechaInicial);
       String fechaF = FormatUtil.stringToISO(fechaFinal);
-      String url = '/incidencias/$tipo/$estatus/$fechaI/$fechaF';
+      String url = '/incidencias/$tipo/$fechaI/$fechaF';
 
       final response = await httpService.dio.get<List>(url);
 

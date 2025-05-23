@@ -18,7 +18,6 @@ class ListarNotifier extends StateNotifier<ListarState> {
 
   Future<void> cargarInicidencias(
     String tipo,
-    String estatus,
     DateTime fechaInicial,
     DateTime fechaFinal,
   ) async {
@@ -26,7 +25,6 @@ class ListarNotifier extends StateNotifier<ListarState> {
     try {
       final incidencias = await incidenciaRepository.getInicidencias(
         tipo,
-        estatus,
         FormatUtil.dateFormated(fechaInicial),
         FormatUtil.dateFormated(fechaFinal),
       );
@@ -58,7 +56,7 @@ class ListarState {
     required this.busqueda,
   });
 
-  List<Incidencia> get incidenciasFiltradas {
+  List<Incidencia> get incidenciasFiltradasPorNombre {
     if (busqueda.isEmpty) return incidencias;
 
     final query = busqueda.toLowerCase();
@@ -70,6 +68,9 @@ class ListarState {
       return nombreCompleto.contains(query);
     }).toList();
   }
+
+  List<Incidencia> filtradasPor(String estatus) =>
+      incidencias.where((i) => i.codigoEstadoIncidencia == estatus).toList();
 
   factory ListarState.initial() => ListarState(incidencias: [], busqueda: '');
 

@@ -26,99 +26,76 @@ class _ListarIncidenciasState extends ConsumerState<ListarIncidenciasScreen> {
   late String nombrePantalla;
   late String estatus;
 
-  late ProviderSubscription<DateTime> _removeFechaIniListener;
-  late ProviderSubscription<DateTime> _removeFechaFinListener;
-  late ProviderSubscription<String> _removeEstatusListener;
-
   @override
   void initState() {
     super.initState();
+    fechaIni = FormatUtil.dateFormated(
+      DateTime.now().subtract(const Duration(days: 7)),
+    );
+    fechaFin = FormatUtil.dateFormated(DateTime.now());
     tipo = widget.tipo;
 
     if (tipo == 'PE') nombrePantalla = 'Permisos';
     if (tipo == 'V') nombrePantalla = 'Vacaciones';
 
     Future.microtask(() {
-      final estatus = ref.read(estatusSeleccionadoProvider);
-      final fechaIni = ref.read(fechaInicialProvider);
-      final fechaFin = ref.read(fechaFinalProvider);
+      ref.invalidate(estatusSeleccionadoProvider);
+      ref.read(estatusSeleccionadoProvider.notifier).state = 'E';
 
       ref
           .read(listarNotifierProvider.notifier)
-          .cargarInicidencias(tipo, estatus, fechaIni, fechaFin);
-
-      _removeFechaIniListener =
-          ref.listenManual(fechaInicialProvider, (prev, next) {
-                final estatus = ref.read(estatusSeleccionadoProvider);
-                final fechaFin = ref.read(fechaFinalProvider);
-                ref
-                    .read(listarNotifierProvider.notifier)
-                    .cargarInicidencias(tipo, estatus, next, fechaFin);
-              });
-
-      _removeFechaFinListener =
-          ref.listenManual(fechaFinalProvider, (prev, next) {
-                final estatus = ref.read(estatusSeleccionadoProvider);
-                final fechaIni = ref.read(fechaInicialProvider);
-                ref
-                    .read(listarNotifierProvider.notifier)
-                    .cargarInicidencias(tipo, estatus, fechaIni, next);
-              });
-
-      _removeEstatusListener =
-          ref.listenManual(estatusSeleccionadoProvider, (prev, next) {
-                final fechaIni = ref.read(fechaInicialProvider);
-                final fechaFin = ref.read(fechaFinalProvider);
-                ref
-                    .read(listarNotifierProvider.notifier)
-                    .cargarInicidencias(tipo, next, fechaIni, fechaFin);
-              });
+          .cargarInicidencias(tipo, fechaIni, fechaFin);
     });
   }
 
   @override
   void dispose() {
     _fechaController.dispose();
-    _removeFechaIniListener.close();
-    _removeFechaFinListener.close();
-    _removeEstatusListener.close();
     super.dispose();
   }
 
   Future<void> _cambiarFechaInicial() async {
-    final fechaActual = ref.read(fechaInicialProvider);
-    final fechaFin = ref.read(fechaFinalProvider);
-
-    await seleccionarFechaConAccion(
+    final nuevaFecha = await showDatePicker(
       context: context,
-      fechaActual: fechaActual,
-      maxFecha: fechaFin,
-      onFechaSeleccionada: (nuevaFecha) async {
-        ref.read(fechaInicialProvider.notifier).state = nuevaFecha;
-      },
+      initialDate: fechaIni,
+      firstDate: DateTime(2000), //Cambiar fecha de inicio de calendario
+      lastDate: DateTime(2100), //Cambiar fecha de fin de calendario
     );
+
+    if (nuevaFecha != null) {
+      setState(() {
+        fechaIni = FormatUtil.dateFormated(nuevaFecha);
+      });
+
+      ref
+          .read(listarNotifierProvider.notifier)
+          .cargarInicidencias(tipo, nuevaFecha, fechaFin);
+    }
   }
 
   Future<void> _cambiarFechaFinal() async {
-    final fechaActual = ref.read(fechaFinalProvider);
-    final fechaIni = ref.read(fechaInicialProvider);
-
-    await seleccionarFechaConAccion(
+    final nuevaFecha = await showDatePicker(
       context: context,
-      fechaActual: fechaActual,
-      minFecha: fechaIni,
-      onFechaSeleccionada: (nuevaFecha) async {
-        ref.read(fechaFinalProvider.notifier).state = nuevaFecha;
-      },
+      initialDate: fechaFin,
+      firstDate: DateTime(2000), //Cambiar fecha de inicio de calendario
+      lastDate: DateTime(2100), //Cambiar fecha de fin de calendario
     );
+
+    if (nuevaFecha != null) {
+      setState(() {
+        fechaFin = FormatUtil.dateFormated(nuevaFecha);
+      });
+
+      ref
+          .read(listarNotifierProvider.notifier)
+          .cargarInicidencias(tipo, fechaIni, nuevaFecha);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final incidenciasState = ref.watch(listarNotifierProvider);
     estatus = ref.watch(estatusSeleccionadoProvider);
-    fechaIni = ref.watch(fechaInicialProvider);
-    fechaFin = ref.watch(fechaFinalProvider);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -128,6 +105,10 @@ class _ListarIncidenciasState extends ConsumerState<ListarIncidenciasScreen> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
+              ref.invalidate(listarNotifierProvider);
+              ref.invalidate(estatusSeleccionadoProvider);
+              ref.invalidate(fechaInicialProvider);
+              ref.invalidate(fechaFinalProvider);
               context.go('/dashboard');
             },
           ),
@@ -137,19 +118,19 @@ class _ListarIncidenciasState extends ConsumerState<ListarIncidenciasScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              BotonesFiltradoEstado(
-                estadoSeleccionado: estatus,
-                onEstadoSeleccionado: (nuevoStatus) {
-                  ref.read(estatusSeleccionadoProvider.notifier).state =
-                      nuevoStatus;
-                },
-              ),
               const SizedBox(height: 16),
               SelectorPeriodoFecha(
                 fechaIni: fechaIni,
                 fechaFin: fechaFin,
                 onCambiarFechaIni: _cambiarFechaInicial,
                 onCambiarFechaFin: _cambiarFechaFinal,
+              ),
+              BotonesFiltradoEstado(
+                estadoSeleccionado: estatus,
+                onEstadoSeleccionado: (nuevoStatus) {
+                  ref.read(estatusSeleccionadoProvider.notifier).state =
+                      nuevoStatus;
+                },
               ),
               BarraBusquedaNombre(
                 onChanged:
@@ -158,30 +139,34 @@ class _ListarIncidenciasState extends ConsumerState<ListarIncidenciasScreen> {
                         .setBusqueda(value),
               ),
               const SizedBox(height: 16),
-              if (incidenciasState.isLoading)
-                const Expanded(
-                  child: Center(child: CircularProgressIndicator()),
-                )
-              else if (incidenciasState.incidencias.isEmpty)
-                const Expanded(
-                  child: Center(child: Text('No hay incidencias disponibles.')),
-                )
-              else
-                Expanded(
-                  child: ListaTarjetaGenerica<Incidencia>(
-                    items: incidenciasState.incidenciasFiltradas,
-                    getTitle:
-                        (incidencia) =>
-                            '${incidencia.nombreSolicitante} ${incidencia.primerApSolicitante} ${incidencia.segundoApSolicitante}',
-                    getSubtitle:
-                        (incidencia) => FormatUtil.stringToStandard(
-                          incidencia.fechaCaptura,
-                        ),
-                    getRoute: (incidencia) => 
-                        '/incidenciaPermisoDetalle/${incidencia.idIncidencia}/${incidencia.codigoTipoIncidencia}',
-                    // Ruta personalizada
-                  ),
+              Expanded(
+                child: Builder(
+                  builder: (context) {
+                    if (incidenciasState.isLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else {
+                      final filtradas = incidenciasState.filtradasPor(estatus);
+                      return filtradas.isEmpty
+                          ? const Center(
+                            child: Text('No hay incidencias con este estado.'),
+                          )
+                          : ListaTarjetaGenerica<Incidencia>(
+                            items: filtradas,
+                            getTitle:
+                                (incidencia) =>
+                                    '${incidencia.nombreSolicitante} ${incidencia.primerApSolicitante} ${incidencia.segundoApSolicitante}',
+                            getSubtitle:
+                                (incidencia) => FormatUtil.stringToStandard(
+                                  incidencia.fechaCaptura,
+                                ),
+                            getRoute:
+                                (incidencia) =>
+                                    '/incidenciaPermisoDetalle/${incidencia.idIncidencia}/${incidencia.codigoTipoIncidencia}',
+                          );
+                    }
+                  },
                 ),
+              ),
             ],
           ),
         ),
