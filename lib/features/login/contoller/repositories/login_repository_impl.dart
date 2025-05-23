@@ -16,9 +16,9 @@ class LoginRepositoryImpl extends LoginRepository
   }
 
   @override
-  Future<Token> login(String email, String password) 
+  Future<LoginUsuario> login(String numeroEmpleado, String nombre, String password) 
   {
-    return dataSource.login(email, password);
+    return dataSource.login(numeroEmpleado, nombre, password);
   }
 
 }

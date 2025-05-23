@@ -1,4 +1,4 @@
-package com.ferbo.sgp.sgp_movil
+package mx.com.ferbo.sgp_movil
 
 import io.flutter.embedding.android.FlutterActivity
 

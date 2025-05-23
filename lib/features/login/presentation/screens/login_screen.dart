@@ -24,7 +24,7 @@ class LoginScreen extends StatelessWidget
               crossAxisAlignment: CrossAxisAlignment.center,
               children: 
               [
-                const SizedBox(height: 120),
+                const SizedBox(height: 90),
                 // Icon Banner
                 Image.asset(
                   'assets/images/login.png',
@@ -33,7 +33,7 @@ class LoginScreen extends StatelessWidget
                   colorBlendMode: BlendMode.darken,
                 ),
 
-                const SizedBox(height: 80),
+                const SizedBox(height: 50),
     
                 Container(
                   height: size.height - 260, // 80 los dos sizebox y 100 el ícono
@@ -79,12 +79,20 @@ class _LoginForm extends ConsumerWidget
     final textStyles = Theme.of(context).textTheme;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 50),
+      padding: const EdgeInsets.symmetric(horizontal: 40),
       child: Column(
         children: [
-          const SizedBox(height: 50),
+          const SizedBox(height: 20),
           Text('Inicia Sesión', style: textStyles.titleLarge ),
-          const SizedBox(height: 50),
+          const SizedBox(height: 20),
+
+          CustomTextFormField(
+            label: 'Num. Empleado',
+            keyboardType: TextInputType.name,
+            onChanged: ref.read(loginFormProvider.notifier).onNumeroEmpleadoChange,
+            errorMessage: loginForm.isFormPosted ? loginForm.numeroEmpleado.errorMessage : null,
+          ),
+          const SizedBox(height: 20),
 
           CustomTextFormField(
             label: 'Nombre',
@@ -92,7 +100,7 @@ class _LoginForm extends ConsumerWidget
             onChanged: ref.read(loginFormProvider.notifier).onNameChange,
             errorMessage: loginForm.isFormPosted ? loginForm.nombre.errorMessage : null,
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 20),
 
           CustomTextFormField(
             label: 'Contraseña',
@@ -102,7 +110,7 @@ class _LoginForm extends ConsumerWidget
             loginForm.contrasenia.errorMessage : null,
           ),
     
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
 
           SizedBox(
             width: double.infinity,

@@ -1,4 +1,4 @@
-class Token 
+class Token
 {
   final String accessToken;
   final String refreshToken;

@@ -59,12 +59,6 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
       key: _scaffoldKey,
       appBar: AppBar(
         title: Text('Justificación de "$titulo"'),
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {
-            _scaffoldKey.currentState?.openDrawer();
-          },
-        ),
         actions: [
           IconButton(
             icon: Icon(Icons.keyboard_return_sharp),

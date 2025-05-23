@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sgp_movil/conf/config.dart';
 import 'package:sgp_movil/features/atender/providers/incidencia_permiso_detalle_provider.dart';
+import 'package:sgp_movil/features/dashboard/presentation/providers/usuario_detalle_provider.dart';
 import 'package:sgp_movil/features/justificar/justificar.dart';
 import 'package:sgp_movil/features/shared/shared.dart';
 
@@ -61,6 +62,8 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen>
   {
     final incidenciaPermisoState = ref.watch(incidenciaPermisoDetalleProvider);
     final detalleIncidencia = incidenciaPermisoState.incidenciaPermisoDetalle;
+    final usuario = ref.watch(usuarioDetalleProvider).usuarioDetalle;
+    final scaffoldKey = GlobalKey<ScaffoldState>();
 
     if(incidenciaPermisoState.isLoading){
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -76,12 +79,6 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen>
         key: _scaffoldKey,
         appBar: AppBar(
           title: Text('Detalle "$titulo"'),
-          leading: IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () {
-              _scaffoldKey.currentState?.openDrawer();
-            },
-          ),
           actions: [
             IconButton(
               icon: Icon(Icons.keyboard_return_sharp),
@@ -101,6 +98,9 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen>
             )
           ]
         ),
+        drawer: SideMenu(
+          scaffoldKey: scaffoldKey,
+        ), 
         body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
@@ -157,7 +157,10 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen>
                                   {
                                     await ref
                                       .read(incidenciaPermisoDetalleProvider.notifier)
-                                      .actualizarIncidenciaPermiso(idIncidencia, {'codigoEstado': 'A',});
+                                      .actualizarIncidenciaPermiso(idIncidencia, {
+                                        'codigoEstado': 'A',
+                                        'empleadoRev': usuario?.numeroUsuario,
+                                      });
                                     
                                     if (!context.mounted) return;
 
@@ -195,7 +198,10 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen>
                                   onConfirmar: (comentario) async
                                   {
                                     await ref.read(incidenciaPermisoDetalleProvider.notifier)
-                                    .actualizarIncidenciaPermiso(idIncidencia, {'codigoEstado':'R','descripcionRechazo':comentario});
+                                    .actualizarIncidenciaPermiso(idIncidencia, {
+                                      'codigoEstado':'R','descripcionRechazo':comentario,
+                                      'empleadoRev': usuario?.numeroUsuario,
+                                    });
 
                                     if (!context.mounted) return;
 
