@@ -39,8 +39,8 @@ const appMenuItem = <MenuItems>
   ),
 
   MenuItems(
-    title: 'Faltas',
-    subTitle: 'Justificar las faltas',
+    title: 'Ausencias',
+    subTitle: 'Justificar las ausencias',
     link: '/justificar_faltas',
     icon: Icons.account_box_rounded,
   ),

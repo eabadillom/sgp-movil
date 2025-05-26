@@ -1,7 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sgp_movil/conf/loggers/logger_singleton.dart';
+import 'package:sgp_movil/conf/config.dart';
 import 'package:sgp_movil/features/dashboard/presentation/screens/dashbord_screen.dart';
+import 'package:sgp_movil/features/justificar/screens/justificar_list_screen.dart';
 import 'package:sgp_movil/features/login/login.dart';
 import 'package:sgp_movil/features/login/presentation/providers/login_provider.dart';
 
@@ -10,11 +11,11 @@ import 'app_router_notifier.dart';
 final goRouterProvider = Provider((ref) 
 {
   final goRouterNotifier = ref.read(goRouterNotifierProvider);
-  final LoggerSingleton log = LoggerSingleton.getInstance('LoginProvider'); 
+  final LoggerSingleton log = LoggerSingleton.getInstance('GoRouterProvider'); 
   log.setupLoggin();
 
   return GoRouter(
-    initialLocation: '/splash',
+    initialLocation: '/dashboard',
     refreshListenable: goRouterNotifier,
     routes: [
       ///* Primera pantalla de validación de datos
@@ -34,7 +35,26 @@ final goRouterProvider = Provider((ref)
         path: '/dashboard',
         builder: (context, state) => const DashbordScreen(),
       ),
-      
+
+      ///* Justificar Faltas
+      GoRoute(
+        path: '/justificar_faltas',
+        builder: (context, state)
+        {
+          String codigo = "F";
+          return JustificarListScreen(codigo: codigo);
+        }
+      ),
+
+      ///* Justificar Retardos
+      GoRoute(
+        path: '/justificar_retardos',
+        builder: (context, state) 
+        {
+          String codigo = "R";
+          return JustificarListScreen(codigo: codigo);
+        },
+      ),
     ],
 
     redirect: (context, state) 
@@ -54,7 +74,6 @@ final goRouterProvider = Provider((ref)
         {
           return '/login';
         }
-        return null;
       }
 
       //Pantalla de login y cuando el usuario no esta autenticado
