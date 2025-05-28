@@ -63,16 +63,7 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
           IconButton(
             icon: Icon(Icons.keyboard_return_sharp),
             onPressed: () {
-              if (Navigator.of(context).canPop()) {
-                Navigator.of(context).pop();
-              } else {
-                if (codigoRegistro.contains('F')) {
-                  context.go('/justificar_faltas');
-                }
-                if (codigoRegistro.contains('R')) {
-                  context.go('/justificar_retardos');
-                }
-              }
+              context.pop();
             },
           ),
         ],
@@ -180,16 +171,7 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
                         ),
                       ),
                       onPressed: () => {
-                        if (Navigator.of(context).canPop()) 
-                        {
-                          Navigator.of(context).pop(),
-                        } else {
-                          if (codigoRegistro.contains('F')) {
-                            context.go('/justificar_faltas'),
-                          }else if (codigoRegistro.contains('R')) {
-                            context.go('/justificar_retardos'),
-                          }
-                        }
+                        context.pop(),
                       },
                     ),
                   ],

@@ -4,6 +4,8 @@ import 'package:sgp_movil/conf/config.dart';
 import 'package:sgp_movil/features/atender/screens/incidencia_permiso_screen.dart';
 import 'package:sgp_movil/features/atender/screens/listar_incidencias_screen.dart';
 import 'package:sgp_movil/features/dashboard/presentation/screens/dashbord_screen.dart';
+import 'package:sgp_movil/features/incapacidades/presentacion/screens/incapacidad_detalle.dart';
+import 'package:sgp_movil/features/incapacidades/presentacion/screens/incapacidad_list_screen.dart';
 import 'package:sgp_movil/features/justificar/screens/justificar_list_screen.dart';
 import 'package:sgp_movil/features/justificar/screens/justificar_detalle.dart';
 import 'package:sgp_movil/features/login/login.dart';
@@ -72,6 +74,13 @@ final goRouterProvider = Provider((ref) {
       ),
 
       GoRoute(
+        path: '/incapacidades',
+        builder: (context, state){
+          return IncapacidadListScreen();
+        },
+      ),
+
+      GoRoute(
         path: '/detalle/:idParametro/:codigo',
         builder: (context, state) {
           final idParametro = state.pathParameters['idParametro']!;
@@ -87,6 +96,14 @@ final goRouterProvider = Provider((ref) {
           int id = int.tryParse(state.pathParameters['idParametro']!) ?? 0;
           String codigo = state.pathParameters['codigo']!;
           return IncidenciaPermisoScreen(id: id, codigo: codigo);
+        },
+      ),
+
+      GoRoute(
+        path: '/incapacidadDetalle/:idParametro',
+        builder: (context, state) {
+          int id = int.tryParse(state.pathParameters['idParametro']!) ?? 0;
+          return IncapacidadDetalle(id: id);
         },
       ),
 

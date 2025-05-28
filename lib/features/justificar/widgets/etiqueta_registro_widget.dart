@@ -30,7 +30,8 @@ class EtiquetaRegistroWidget extends StatelessWidget {
               style: Theme.of(
                 context,
               ).textTheme.bodyMedium?.copyWith(fontSize: 18.0),
-              overflow: TextOverflow.ellipsis,
+              softWrap: true,
+              overflow: TextOverflow.visible,
             ),
           ),
         ],

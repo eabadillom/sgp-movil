@@ -44,7 +44,7 @@ class AppTheme
     ),
 
     ///* Scaffold Background Color
-    scaffoldBackgroundColor: scaffoldBackgroundColor,
+    scaffoldBackgroundColor: isDarkmode ? const Color(0xFF121212) : scaffoldBackgroundColor,
     
     ///* Buttons
     filledButtonTheme: FilledButtonThemeData(
@@ -58,9 +58,12 @@ class AppTheme
 
     ///* AppBar
     appBarTheme: AppBarTheme(
-      color: scaffoldBackgroundColor,
+      color: isDarkmode ? const Color(0xFF1F1F1F) : scaffoldBackgroundColor,
       titleTextStyle: GoogleFonts.montserratAlternates()
-        .copyWith(fontSize: 25, fontWeight: FontWeight.bold, color: Colors.black),
+        .copyWith(fontSize: 25, fontWeight: FontWeight.bold, color: isDarkmode ? Colors.white : Colors.black),
+      iconTheme: IconThemeData(
+        color: isDarkmode ? Colors.white : Colors.black,
+      ),
     )
   );
 

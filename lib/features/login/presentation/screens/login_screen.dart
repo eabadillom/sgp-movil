@@ -95,7 +95,7 @@ class _LoginForm extends ConsumerWidget
           const SizedBox(height: 20),
 
           CustomTextFormField(
-            label: 'Nombre',
+            label: 'Usuario',
             keyboardType: TextInputType.name,
             onChanged: ref.read(loginFormProvider.notifier).onNameChange,
             errorMessage: loginForm.isFormPosted ? loginForm.nombre.errorMessage : null,

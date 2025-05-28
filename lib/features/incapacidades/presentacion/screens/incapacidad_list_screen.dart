@@ -2,54 +2,49 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sgp_movil/conf/config.dart';
-import 'package:sgp_movil/features/justificar/providers/justificar_list_provider.dart';
-import 'package:sgp_movil/features/registro/domain/domain.dart';
+import 'package:sgp_movil/features/incapacidades/domain/entities/incapacidad.dart';
+import 'package:sgp_movil/features/incapacidades/presentacion/providers/incapacidad_list_provider.dart';
 import 'package:sgp_movil/features/shared/shared.dart';
 
-class JustificarListScreen extends ConsumerStatefulWidget {
-  final String codigo;
-
-  const JustificarListScreen({super.key, required this.codigo});
+class IncapacidadListScreen extends ConsumerStatefulWidget
+{
+  const IncapacidadListScreen({super.key});
 
   @override
-  ConsumerState<JustificarListScreen> createState() => _JustificarListState();
+  ConsumerState<IncapacidadListScreen> createState() => _IncapacidadListState();
 }
 
-class _JustificarListState extends ConsumerState<JustificarListScreen> {
+class _IncapacidadListState extends ConsumerState<IncapacidadListScreen> 
+{
   final TextEditingController _fechaController = TextEditingController();
   late DateTime fechaIni;
   late DateTime fechaFin;
-  late String codigo;
   late String nombrePantalla;
 
   @override
-  void initState() {
+  void initState() 
+  {
     super.initState();
+
     fechaIni = FormatUtil.dateFormated(
       DateTime.now().subtract(const Duration(days: 7)),
     );
+
     fechaFin = FormatUtil.dateFormated(DateTime.now());
-    codigo = widget.codigo;
 
-    if (codigo == 'F') {
-      nombrePantalla = 'Ausencias';
-    }
-
-    if (codigo == 'R') {
-      nombrePantalla = 'Retardos';
-    }
-
+    nombrePantalla = 'Incapacidades';
+    
     Future.microtask(() {
-      ref
-          .read(justificarNotifierProvider.notifier)
-          .cargarRegistros(fechaIni, fechaFin, codigo);
+      ref.read(incapacidadNotifierProvider.notifier).obtenerRegistros(fechaIni, fechaFin);
     });
   }
 
   @override
-  void dispose() {
-    _fechaController.dispose();
+  void dispose() 
+  {
     super.dispose();
+
+    _fechaController.dispose();
   }
 
   Future<void> _cambiarFechaInicial() async {
@@ -66,9 +61,7 @@ class _JustificarListState extends ConsumerState<JustificarListScreen> {
       });
 
       // Llamar manualmente al notifier
-      ref
-          .read(justificarNotifierProvider.notifier)
-          .cargarRegistros(nuevaFecha, fechaFin, codigo);
+      ref.read(incapacidadNotifierProvider.notifier).obtenerRegistros(nuevaFecha, fechaFin);
     }
   }
 
@@ -86,16 +79,14 @@ class _JustificarListState extends ConsumerState<JustificarListScreen> {
       });
 
       // Llamar manualmente al notifier
-      ref
-          .read(justificarNotifierProvider.notifier)
-          .cargarRegistros(fechaIni, nuevaFecha, codigo);
+      ref.read(incapacidadNotifierProvider.notifier).obtenerRegistros(fechaIni, nuevaFecha);
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    final registroState = ref.watch(justificarNotifierProvider);
-
+  Widget build(BuildContext context) 
+  {
+    final incapacidadState = ref.watch(incapacidadNotifierProvider);
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -115,9 +106,7 @@ class _JustificarListState extends ConsumerState<JustificarListScreen> {
             children: [
               BarraBusquedaNombre(
                 onChanged:
-                    (value) => ref
-                        .read(justificarNotifierProvider.notifier)
-                        .setBusqueda(value),
+                  (value) => ref.read(incapacidadNotifierProvider.notifier).setBusqueda(value),
               ),
               const SizedBox(height: 16),
               SelectorPeriodoFecha(
@@ -127,27 +116,27 @@ class _JustificarListState extends ConsumerState<JustificarListScreen> {
                 onCambiarFechaFin: _cambiarFechaFinal,
               ),
               const SizedBox(height: 16),
-              if (registroState.isLoading)
+              if(incapacidadState.isLoading)
                 const Expanded(
                   child: Center(child: CircularProgressIndicator()),
                 )
-              else if (registroState.registros.isEmpty)
+              else if (incapacidadState.incapacidades.isEmpty)
                 const Expanded(
                   child: Center(child: Text('No hay registros disponibles.')),
                 )
               else
                 Expanded(
-                  child: ListaTarjetaGenerica<Registro>(
-                    items: registroState.registrosFiltrados,
+                  child: ListaTarjetaGenerica<Incapacidad>(
+                    items: incapacidadState.registrosFiltrados,
                     getTitle:
-                        (registro) =>
-                            '${registro.nombreEmpleado} ${registro.primerApEmpleado} ${registro.segundoApEmpleado}',
+                        (incapacidad) =>
+                            '${incapacidad.nombreInc} ${incapacidad.primerApInc} ${incapacidad.segundoApInc}',
                     getSubtitle:
-                        (registro) =>
-                            FormatUtil.stringToStandard(registro.fechaEntrada),
+                        (incapacidad) =>
+                            FormatUtil.stringToStandard(incapacidad.fechaCaptura),
                     getRoute:
-                        (registro) =>
-                            '/detalle/${registro.id}/${registro.codigoRegistro}', // Ruta personalizada
+                        (incapacidad) =>
+                            '/incapacidadDetalle/${incapacidad.idIncapacidad}', // Ruta personalizada
                   ),
                 ),
             ],
@@ -156,4 +145,5 @@ class _JustificarListState extends ConsumerState<JustificarListScreen> {
       ),
     );
   }
+
 }
