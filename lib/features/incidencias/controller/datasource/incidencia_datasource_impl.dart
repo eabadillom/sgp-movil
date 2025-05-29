@@ -9,7 +9,7 @@ class IncidenciaDatasourceImpl extends IncidenciaDatasource {
   final LoggerSingleton log = LoggerSingleton.getInstance(
     'IncidenciaDatasourceImpl',
   );
-  final DioClient httpService = DioClient();
+  final DioClient httpService = DioClient(nameContext: 'Movil');
   final String accessToken;
 
   IncidenciaDatasourceImpl({required this.accessToken});

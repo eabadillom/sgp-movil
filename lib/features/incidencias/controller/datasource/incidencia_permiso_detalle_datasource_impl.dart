@@ -5,8 +5,8 @@ import 'package:sgp_movil/features/incidencias/controller/controller.dart';
 
 class IncidenciaPermisoDetalleDatasourceImpl extends IncidenciaPermisoDetalleDatasource
 {
-  final DioClient httpService = DioClient();
-  final LoggerSingleton log = LoggerSingleton.getInstance('RegistroDetalleDatasourceImpl');
+  final DioClient httpService = DioClient(nameContext: 'Movil');
+  final LoggerSingleton log = LoggerSingleton.getInstance('IncidenciaPermisoDetalleDatasourceImpl');
   final String accessToken;
 
   IncidenciaPermisoDetalleDatasourceImpl({required this.accessToken});

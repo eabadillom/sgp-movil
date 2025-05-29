@@ -22,7 +22,7 @@ class _IncapacidadDetalleState extends ConsumerState<IncapacidadDetalle>
   late final String titulo;
   late int idIncapacidad;
 
-   @override
+  @override
   void initState() {
     super.initState();
     idIncapacidad = widget.id;
@@ -56,7 +56,6 @@ class _IncapacidadDetalleState extends ConsumerState<IncapacidadDetalle>
               context.pop();
             },
           ),
-          
         ],
       ),
       drawer: SideMenu(scaffoldKey: _scaffoldKey),

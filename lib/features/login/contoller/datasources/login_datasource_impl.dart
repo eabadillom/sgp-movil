@@ -9,8 +9,8 @@ import 'package:sgp_movil/features/login/domain/domain.dart';
 
 class LoginDatasourceImpl extends LoginDatasource
 {
-  final DioClient httpService = DioClient();
-  final LoggerSingleton log = LoggerSingleton.getInstance('UserInstance');
+  final DioClient httpService = DioClient(nameContext: 'Movil');
+  final LoggerSingleton log = LoggerSingleton.getInstance('LoginDatasourceImpl');
   
   @override
   Future<int> checkTokenStatus(String token) async

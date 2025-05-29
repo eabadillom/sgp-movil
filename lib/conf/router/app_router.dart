@@ -5,6 +5,7 @@ import 'package:sgp_movil/features/atender/screens/incidencia_permiso_screen.dar
 import 'package:sgp_movil/features/atender/screens/listar_incidencias_screen.dart';
 import 'package:sgp_movil/features/dashboard/presentation/screens/dashbord_screen.dart';
 import 'package:sgp_movil/features/incapacidades/presentacion/screens/incapacidad_detalle.dart';
+import 'package:sgp_movil/features/incapacidades/presentacion/screens/incapacidad_detalle_guardar.dart';
 import 'package:sgp_movil/features/incapacidades/presentacion/screens/incapacidad_list_screen.dart';
 import 'package:sgp_movil/features/justificar/screens/justificar_list_screen.dart';
 import 'package:sgp_movil/features/justificar/screens/justificar_detalle.dart';
@@ -104,6 +105,13 @@ final goRouterProvider = Provider((ref) {
         builder: (context, state) {
           int id = int.tryParse(state.pathParameters['idParametro']!) ?? 0;
           return IncapacidadDetalle(id: id);
+        },
+      ),
+
+      GoRoute(
+        path: '/agregarIncapacidad',
+        builder: (context, state){
+          return IncapacidadDetalleGuardar();
         },
       ),
 

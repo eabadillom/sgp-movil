@@ -7,7 +7,7 @@ import 'package:sgp_movil/features/incapacidades/domain/domain.dart';
 class IncapacidadDatasourceImpl extends IncapacidadDatasource
 {
   final LoggerSingleton log = LoggerSingleton.getInstance('IncapacidadDatasourceImpl');
-  final DioClient httpService = DioClient();
+  final DioClient httpService = DioClient(nameContext: 'Movil');
   final String accessToken;
 
   IncapacidadDatasourceImpl({required this.accessToken});

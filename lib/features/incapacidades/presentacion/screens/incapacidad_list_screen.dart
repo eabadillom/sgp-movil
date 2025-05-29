@@ -142,6 +142,13 @@ class _IncapacidadListState extends ConsumerState<IncapacidadListScreen>
             ],
           ),
         ),
+        floatingActionButton: FloatingActionButton.extended(
+          label: const Text('Agregar Incapacidad'),
+          icon: const Icon(Icons.add),
+          onPressed: () {
+            context.push('/agregarIncapacidad');
+          },
+        ),
       ),
     );
   }

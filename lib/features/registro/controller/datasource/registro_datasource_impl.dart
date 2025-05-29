@@ -5,7 +5,7 @@ import 'package:sgp_movil/features/registro/controller/controller.dart';
 class RegistroDatasourceImpl extends RegistroDatasource 
 {
   final LoggerSingleton log = LoggerSingleton.getInstance('RegistroDatasourceImpl'); 
-  final DioClient httpService = DioClient();
+  final DioClient httpService = DioClient(nameContext: 'Movil');
   final String accessToken;
 
   RegistroDatasourceImpl({

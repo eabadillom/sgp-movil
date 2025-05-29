@@ -3,11 +3,10 @@ import 'package:sgp_movil/conf/config.dart';
 import 'package:sgp_movil/features/registro/domain/domain.dart';
 import 'package:sgp_movil/features/registro/controller/controller.dart';
 
-class RegistroDetalleDatasourceImpl extends RegistroDetalleDatasource {
-  final DioClient httpService = DioClient();
-  final LoggerSingleton log = LoggerSingleton.getInstance(
-    'RegistroDetalleDatasourceImpl',
-  );
+class RegistroDetalleDatasourceImpl extends RegistroDetalleDatasource 
+{
+  final DioClient httpService = DioClient(nameContext: 'Movil');
+  final LoggerSingleton log = LoggerSingleton.getInstance('RegistroDetalleDatasourceImpl',);
   final String accessToken;
 
   RegistroDetalleDatasourceImpl({required this.accessToken});

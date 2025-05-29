@@ -12,7 +12,7 @@ final incapacidadDetalleProvider = StateNotifierProvider<IncapacidadDetalleNotif
 class IncapacidadDetalleNotifier extends StateNotifier<IncapacidadDetalleState>
 {
   final IncapacidadDetalleRepository incapacidadDetalleRepository;
-  final LoggerSingleton log = LoggerSingleton.getInstance('IncidenciaPermisoDetalleNotifier');
+  final LoggerSingleton log = LoggerSingleton.getInstance('IncapacidadDetalleNotifier');
   
   IncapacidadDetalleNotifier(this.incapacidadDetalleRepository) : super(IncapacidadDetalleState.initial());
   
@@ -37,6 +37,7 @@ class IncapacidadDetalleNotifier extends StateNotifier<IncapacidadDetalleState>
       );
     }
   }
+
 }
 
 class IncapacidadDetalleState
