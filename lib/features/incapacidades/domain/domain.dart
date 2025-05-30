@@ -5,5 +5,8 @@ export 'entities/incapacidad_detalle.dart';
 export 'entities/incapacidad_guardar_detalle.dart';
 export 'entities/empleado_incapacidad.dart';
 export 'entities/tipo_incapacidad.dart';
+export 'entities/control_incapacidad.dart';
+export 'entities/riesgo_trabajo.dart';
+export 'entities/tipo_riesgo.dart';
 export 'repositories/incapacidad_repository.dart';
 export 'repositories/incapacidad_detalle_repository.dart';

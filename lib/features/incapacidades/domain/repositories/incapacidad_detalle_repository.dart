@@ -5,5 +5,8 @@ abstract class IncapacidadDetalleRepository
   Future<IncapacidadDetalle> getIncapacidad(int idIncapacidad);
   Future<List<EmpleadoIncapacidad>> getEmpleados();
   Future<List<TipoIncapacidad>> getTipoIncapacidad();
+  Future<List<ControlIncapacidad>> getControlIncapacidad();
+  Future<List<RiesgoTrabajo>> getRiesgoTrabajo();
+  Future<List<TipoRiesgo>> getTipoRiesgo();
   Future<IncapacidadGuardarDetalle> guardarIncapacidad(Map<String, dynamic> incapacidad);
 }

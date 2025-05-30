@@ -11,7 +11,7 @@ class IncapacidadGuardarDetalle
   final int diasAutorizados;
   final DateTime fechaInicio;
   final String descripcion;
-  final int estatusIncapacidad;
+  final String estatusIncapacidad;
 
   IncapacidadGuardarDetalle({
     required this.idIncapacidad,

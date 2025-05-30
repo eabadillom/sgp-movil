@@ -25,6 +25,21 @@ class IncapacidadDetalleRepositoryImpl extends IncapacidadDetalleRepository
   }
   
   @override
+  Future<List<ControlIncapacidad>> getControlIncapacidad() {
+    return datasource.getControlIncapacidad();
+  }
+  
+  @override
+  Future<List<RiesgoTrabajo>> getRiesgoTrabajo() {
+    return datasource.getRiesgoTrabajo();
+  }
+  
+  @override
+  Future<List<TipoRiesgo>> getTipoRiesgo() {
+    return datasource.getTipoRiesgo();
+  }
+
+  @override
   Future<IncapacidadGuardarDetalle> guardarIncapacidad(Map<String, dynamic> incapacidad) {
     return datasource.guardarIncapacidad(incapacidad);
   }

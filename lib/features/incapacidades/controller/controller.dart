@@ -6,5 +6,8 @@ export 'mappers/incapacidad_detalle_mapper.dart';
 export 'mappers/incapacidad_guardar_detalle_mapper.dart';
 export 'mappers/empleado_mapper.dart';
 export 'mappers/tipo_incapacidad_mapper.dart';
+export 'mappers/control_incapacidad_mapper.dart';
+export 'mappers/riesgo_trabajo_mapper.dart';
+export 'mappers/tipo_riesgo_mapper.dart';
 export 'repositories/incapacidad_repository_impl.dart';
 export 'repositories/incapacidad_detalle_repository_impl.dart';

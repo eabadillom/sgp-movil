@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sgp_movil/features/incapacidades/domain/domain.dart';
-import 'package:sgp_movil/features/incapacidades/presentacion/providers/empleado_detalle_provider.dart';
-import 'package:sgp_movil/features/incapacidades/presentacion/providers/tipo_incapacidad_detalle_provider.dart';
+import 'package:sgp_movil/features/incapacidades/presentacion/providers/providers.dart'; 
+import 'package:sgp_movil/features/shared/widgets/custom_dropdown.dart';
 
 class IncapacidadDetalleGuardar extends ConsumerStatefulWidget
 {
@@ -15,27 +15,57 @@ class IncapacidadDetalleGuardar extends ConsumerStatefulWidget
 class _IncapacidadDetalleState extends ConsumerState<IncapacidadDetalleGuardar>
 {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final _formKey = GlobalKey<FormState>();
-  late final String titulo;
+  
+  @override
+  Widget build(BuildContext context) 
+  {
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          title: const Text('Guardar Incapacidad'),
+        ),
+        body: const Padding(
+          padding: EdgeInsets.all(16.0),
+          child: IncapacidadDetalleForm(),
+        ),
+      ),
+    );
+  }
+}
 
-  // Controladores de texto
+class IncapacidadDetalleForm extends ConsumerStatefulWidget 
+{
+  const IncapacidadDetalleForm({super.key});
+
+  @override
+  ConsumerState<IncapacidadDetalleForm> createState() => _IncapacidadDetalleFormState();
+}
+
+class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm> 
+{
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController folioController = TextEditingController();
   final TextEditingController diasAutorizadosController = TextEditingController();
 
-  // Variables de dropdown
   EmpleadoIncapacidad? empleado;
   TipoIncapacidad? tpIncapacidad;
+  ControlIncapacidad? ctrIncapacidad;
+  RiesgoTrabajo? rsgTrabajo;
+  TipoRiesgo? tpRiesgo;
 
   @override
   void initState() 
   {
     super.initState();
-    titulo = 'Guardar Incapacidad';
-
     Future.microtask(() 
     {
       ref.read(empleadoDetalleProvider.notifier).obtenerEmpleados();
       ref.read(tipoIncapacidadDetalleProvider.notifier).obtenerTipoIncapacidades();
+      ref.read(controlIncapacidadProvider.notifier).obtenerControlIncapacidad();
+      ref.read(riesgoTrabajoProvider.notifier).obtenerRiesgoTrabajo();
+      ref.read(tipoRiesgoProvider.notifier).obtenerTipoRiesgo();
     });
   }
 
@@ -43,13 +73,16 @@ class _IncapacidadDetalleState extends ConsumerState<IncapacidadDetalleGuardar>
   {
     if (_formKey.currentState!.validate()) 
     {
+      print('IdEmpleado.: ${empleado?.idEmpleadoInc}');
+      print('IdTipoIncapacidad: ${tpIncapacidad?.idTpIncapacidad}');
+      print('IdControlIncapacidad ${ctrIncapacidad?.idControlIncapacidad}');
+      print('IdRiesgoTrabajo ${rsgTrabajo?.idRiesgoTrabajo}');
+      print('IdTipoRiesgo ${tpRiesgo?.idTipoRiesgo}');
       print('Folio: ${folioController.text}');
       print('Dias Autorizados: ${diasAutorizadosController.text}');
-      print('Empleado Inc.: ${empleado?.nombreEmpleado}');
-      print('Tipo Incapacidad: ${tpIncapacidad?.descripcion}');
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Datos guardados correctamente')),
+        const SnackBar(content: Text('Datos guardados correctamente')),
       );
     }
   }
@@ -59,135 +92,113 @@ class _IncapacidadDetalleState extends ConsumerState<IncapacidadDetalleGuardar>
   {
     final empleadoState = ref.watch(empleadoDetalleProvider);
     final tipoIncapacidadState = ref.watch(tipoIncapacidadDetalleProvider);
+    final controlIncapacidadState = ref.watch(controlIncapacidadProvider);
+    final riesgoTrabajoState = ref.watch(riesgoTrabajoProvider);
+    final tipoRiesgoState = ref.watch(tipoRiesgoProvider);
 
-    final empleados = empleadoState.empleadoIncapacidad;
-    final tipoIncapacidad = tipoIncapacidadState.tipoIncapacidad;
+    final listEmpleados = empleadoState.empleadoIncapacidad;
+    final listTipoIncapacidad = tipoIncapacidadState.tipoIncapacidad;
+    final listControlIncapacidad = controlIncapacidadState.controlIncapacidad;
+    final listRiesgoTrabajo = riesgoTrabajoState.riesgoTrabajo;
+    final listTipoRiesgo = tipoRiesgoState.tipoRiesgo;
 
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        key: _scaffoldKey,
-        appBar: AppBar(
-          title: Text(titulo),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+    return Form
+    (
+      key: _formKey,
+      child: SingleChildScrollView
+      (
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CustomDropdown<EmpleadoIncapacidad>(
+              items: listEmpleados,
+              value: empleado,
+              label: 'Empleado',
+              itemLabelBuilder: (emp) => '${emp.nombreEmpleado} ${emp.primerApEmpleado} ${emp.segundoApEmpleado}',
+              iconBuilder: (emp) => CircleAvatar(
+                radius: 16,
+                backgroundColor: Colors.blue,
+                child: Text(
+                  emp.nombreEmpleado.isNotEmpty ? emp.nombreEmpleado[0] : '?',
+                  style: const TextStyle(fontSize: 12, color: Colors.white),
+                ),
+              ),
+              onChanged: (nuevo) => setState(() => empleado = nuevo),
+              validator: (v) => v == null ? 'Por favor selecciona un tipo de incapacidad' : null,
+            ),
 
-                  TextFormField(
-                    controller: folioController,
-                    decoration: InputDecoration(labelText: 'Folio'),
-                    validator: (value) => value == null || value.isEmpty ? 'Ingresa el folio' : null,
-                  ),
+            const SizedBox(height: 16),
 
-                  TextFormField(
-                    controller: diasAutorizadosController,
-                    decoration: InputDecoration(labelText: 'Días Autorizados'),
-                    keyboardType: TextInputType.number,
-                    validator: (value) => value == null || value.isEmpty ? 'Ingresa los días' : null,
-                  ),
+            CustomDropdown<TipoIncapacidad>(
+              items: listTipoIncapacidad,
+              value: tpIncapacidad,
+              label: 'Tipo de Incapacidad',
+              iconDataBuilder: (_) => Icons.healing,
+              itemLabelBuilder: (tipo) => '${tipo.clave} - ${tipo.descripcion}',
+              onChanged: (nuevo) => setState(() => tpIncapacidad = nuevo),
+              validator: (v) => v == null ? 'Por favor selecciona un tipo de incapacidad' : null,
+            ),
 
-                  SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-                  DropdownButtonFormField<EmpleadoIncapacidad>(
-                    decoration: InputDecoration(
-                      labelText: 'Empleado',
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                    ),
-                    value: empleado,
-                    isExpanded: true,
-                    items: empleados.map((emp) 
-                    {
-                      return DropdownMenuItem<EmpleadoIncapacidad>(
-                        value: emp,
-                        child: Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 16,
-                              child: Text(
-                                emp.nombreEmpleado.isNotEmpty ? emp.nombreEmpleado[0] : '?',
-                                style: const TextStyle(fontSize: 12, color: Colors.white),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '${emp.nombreEmpleado} ${emp.primerApEmpleado} ${emp.segundoApEmpleado}',
-                                    style: const TextStyle(fontSize: 12),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (nuevoEmpleado) 
-                    {
-                      setState(() {
-                        empleado = nuevoEmpleado;
-                      });
-                    },
-                    validator: (value) => value == null ? 'Por favor selecciona un empleado' : null,
-                  ),
+            CustomDropdown<ControlIncapacidad>(
+              items: listControlIncapacidad,
+              value: ctrIncapacidad,
+              label: 'Control Incapacidad',
+              iconDataBuilder: (_) => Icons.assignment,
+              itemLabelBuilder: (control) => '${control.clave} - ${control.descripcion}',
+              onChanged: (nuevo) => setState(() => ctrIncapacidad = nuevo),
+              validator: (v) => v == null ? 'Por favor selecciona un control de incapacidad' : null,
+            ),
 
-                  SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-                  DropdownButtonFormField<TipoIncapacidad>(
-                    decoration: InputDecoration(
-                      labelText: 'Tipo de Incapacidad',
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                    ),
-                    value: tpIncapacidad,
-                    isExpanded: true,
-                    items: tipoIncapacidad.map((tipo) 
-                    {
-                      return DropdownMenuItem<TipoIncapacidad>(
-                        value: tipo,
-                        child: Row(
-                          children: [
-                            const Icon(Icons.healing, size: 12, color: Colors.blue),
-                            Expanded(
-                              child: Text(
-                                tipo.descripcion,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                                style: TextStyle(fontSize: 12),
-                              ),
-                            ),
-                          ]
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (nuevoTipo) 
-                    {
-                      setState(() {
-                        tpIncapacidad = nuevoTipo;
-                      });
-                    },
-                    validator: (value) => value == null ? 'Por favor selecciona un tipo de incapacidad' : null,
-                  ),
-                  SizedBox(height: 24),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: _guardarFormulario,
-                      child: Text('Guardar'),
-                    ),
-                  ),
-                ],
+            CustomDropdown<RiesgoTrabajo>(
+              items: listRiesgoTrabajo,
+              value: rsgTrabajo,
+              label: 'Riesgo de Trabajo',
+              iconDataBuilder: (_) => Icons.warning,
+              itemLabelBuilder: (riesgo) => '${riesgo.clave} - ${riesgo.descripcion}',
+              onChanged: (nuevo) => setState(() => rsgTrabajo = nuevo),
+              validator: (v) => v == null ? 'Por favor selecciona un riesgo de trabajo' : null,
+            ),
+
+            const SizedBox(height: 16),
+
+            CustomDropdown<TipoRiesgo>(
+              items: listTipoRiesgo,
+              value: tpRiesgo,
+              label: 'Tipo de Riesgo',
+              iconDataBuilder: (_) => Icons.security,
+              itemLabelBuilder: (riesgo) => '${riesgo.clave} - ${riesgo.descripcion}',
+              onChanged: (nuevo) => setState(() => tpRiesgo = nuevo),
+              validator: (v) => v == null ? 'Por favor selecciona un tipo de riesgo' : null,
+            ),
+
+            const SizedBox(height: 16),
+
+            TextFormField(
+              controller: folioController,
+              decoration: const InputDecoration(labelText: 'Folio'),
+              validator: (value) => value == null || value.isEmpty ? 'Ingresa el folio' : null,
+            ),
+
+            TextFormField(
+              controller: diasAutorizadosController,
+              decoration: const InputDecoration(labelText: 'Días Autorizados'),
+              keyboardType: TextInputType.number,
+              validator: (value) => value == null || value.isEmpty ? 'Ingresa los días' : null,
+            ),
+
+            const SizedBox(height: 24),
+
+            Center(
+              child: ElevatedButton(
+                onPressed: _guardarFormulario,
+                child: const Text('Guardar'),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
