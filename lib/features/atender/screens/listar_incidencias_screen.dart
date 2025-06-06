@@ -10,8 +10,13 @@ import 'package:sgp_movil/features/shared/shared.dart';
 
 class ListarIncidenciasScreen extends ConsumerStatefulWidget {
   final String tipo;
+  final String rutaDetalle;
 
-  const ListarIncidenciasScreen({super.key, required this.tipo});
+  const ListarIncidenciasScreen({
+    super.key,
+    required this.tipo,
+    required this.rutaDetalle,
+  });
 
   @override
   ConsumerState<ListarIncidenciasScreen> createState() =>
@@ -25,6 +30,7 @@ class _ListarIncidenciasState extends ConsumerState<ListarIncidenciasScreen> {
   late String tipo;
   late String nombrePantalla;
   late String estatus;
+  late String rutaDetalle;
 
   @override
   void initState() {
@@ -34,9 +40,12 @@ class _ListarIncidenciasState extends ConsumerState<ListarIncidenciasScreen> {
     );
     fechaFin = FormatUtil.dateFormated(DateTime.now());
     tipo = widget.tipo;
+    rutaDetalle = widget.rutaDetalle;
 
-    if (tipo == 'PE') nombrePantalla = 'Permisos';
     if (tipo == 'V') nombrePantalla = 'Vacaciones';
+    if (tipo == 'PE') nombrePantalla = 'Permisos';
+    if (tipo == 'PR') nombrePantalla = 'Uniformes';
+    if (tipo == 'A') nombrePantalla = 'Articulos';
 
     Future.microtask(() {
       ref.invalidate(estatusSeleccionadoProvider);
@@ -161,7 +170,7 @@ class _ListarIncidenciasState extends ConsumerState<ListarIncidenciasScreen> {
                                 ),
                             getRoute:
                                 (incidencia) =>
-                                    '/incidenciaPermisoDetalle/${incidencia.idIncidencia}/${incidencia.codigoTipoIncidencia}',
+                                    '/$rutaDetalle/${incidencia.idIncidencia}/${incidencia.codigoTipoIncidencia}',
                           );
                     }
                   },
