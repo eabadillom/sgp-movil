@@ -17,6 +17,13 @@ class FormatUtil {
     return parsed;
   }
 
+  static DateTime stringToDateTime(String fecha)
+  {
+    DateFormat formatter = DateFormat('dd-MM-yyyy');
+    DateTime fechaFormateada = formatter.parse(fecha);
+    return fechaFormateada;
+  }
+
   static String stringToISO(DateTime fecha) {
     String formatter = DateFormat('yyyy-MM-dd').format(fecha);
     return formatter;

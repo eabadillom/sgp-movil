@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:sgp_movil/conf/util/format_util.dart';
+import 'package:sgp_movil/features/dashboard/presentation/providers/usuario_detalle_provider.dart';
 import 'package:sgp_movil/features/incapacidades/domain/domain.dart';
-import 'package:sgp_movil/features/incapacidades/presentacion/providers/providers.dart'; 
+import 'package:sgp_movil/features/incapacidades/presentacion/providers/providers.dart';
+import 'package:sgp_movil/features/incidencias/controller/errors/registro_errors.dart';
 import 'package:sgp_movil/features/shared/widgets/custom_dropdown.dart';
+import 'package:sgp_movil/features/shared/widgets/date_picker_field.dart';
 
 class IncapacidadDetalleGuardar extends ConsumerStatefulWidget
 {
@@ -48,6 +53,8 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
   final _formKey = GlobalKey<FormState>();
   final TextEditingController folioController = TextEditingController();
   final TextEditingController diasAutorizadosController = TextEditingController();
+  final TextEditingController fechaInicioController = TextEditingController();
+  final TextEditingController descripcionController = TextEditingController();
 
   EmpleadoIncapacidad? empleado;
   TipoIncapacidad? tpIncapacidad;
@@ -69,23 +76,91 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
     });
   }
 
-  void _guardarFormulario() 
+  Future<void> _guardarFormulario() async 
   {
-    if (_formKey.currentState!.validate()) 
+    final usuarioDetalleState = ref.watch(usuarioDetalleProvider).usuarioDetalle;
+    if(_formKey.currentState!.validate()) 
     {
-      print('IdEmpleado.: ${empleado?.idEmpleadoInc}');
-      print('IdTipoIncapacidad: ${tpIncapacidad?.idTpIncapacidad}');
-      print('IdControlIncapacidad ${ctrIncapacidad?.idControlIncapacidad}');
-      print('IdRiesgoTrabajo ${rsgTrabajo?.idRiesgoTrabajo}');
-      print('IdTipoRiesgo ${tpRiesgo?.idTipoRiesgo}');
-      print('Folio: ${folioController.text}');
-      print('Dias Autorizados: ${diasAutorizadosController.text}');
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Datos guardados correctamente')),
+      final incapacidad = IncapacidadGuardarDetalle(
+        idEmpleadoInc: empleado!.idEmpleadoInc,
+        idEmpleadoRev: usuarioDetalleState!.numeroUsuario,
+        tipoIncapacidad: tpIncapacidad!.idTpIncapacidad,
+        controlIncapacidad: ctrIncapacidad!.idControlIncapacidad,
+        riesgoTrabajo: rsgTrabajo?.idRiesgoTrabajo,
+        tipoRiesgo: tpRiesgo?.idTipoRiesgo,
+        folio: folioController.text,
+        diasAutorizados: int.tryParse(diasAutorizadosController.text) ?? 0,
+        fechaInicio: FormatUtil.stringToDateTime(fechaInicioController.text),
+        descripcion: descripcionController.text,
       );
+
+      final guardarIncapacidadState = ref.read(incapacidadDetalleGuardarProvider.notifier);
+      final incapacidadState = ref.read(incapacidadDetalleGuardarProvider);
+      try {
+        /*await ref
+            .read(incapacidadDetalleGuardarProvider.notifier)
+            .guardarIncapacidad(incapacidad.toJson());*/
+        
+        await guardarIncapacidadState.guardarIncapacidad(incapacidad.toJson());
+
+        if(!mounted) 
+        {
+          return;
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Datos guardados correctamente')),
+        );
+        context.pop();
+      } catch (e) 
+      {
+        if (!mounted) return;
+
+        final errorMsg = e is RegistroNotFound ? e.message : 'Ocurrió un error inesperado';
+
+        print(incapacidadState.errorMessage);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMsg)),
+        );
+      }
     }
   }
+
+  Future<void> _mostrarDialogoConfirmacion() async 
+  {
+    final confirmar = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirmación'),
+        content: const Text('¿Estás seguro de que deseas guardar la incapacidad?'),
+        actions: [
+          TextButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Sí'),
+          ),
+
+          TextButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.grey,
+              foregroundColor: Colors.black,
+            ),
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('No'),
+          ),
+        ],
+      ),
+    );
+
+  if(confirmar == true) 
+  {
+    _guardarFormulario();
+  }
+}
 
   @override
   Widget build(BuildContext context) 
@@ -101,6 +176,9 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
     final listControlIncapacidad = controlIncapacidadState.controlIncapacidad;
     final listRiesgoTrabajo = riesgoTrabajoState.riesgoTrabajo;
     final listTipoRiesgo = tipoRiesgoState.tipoRiesgo;
+
+    final enableEmpleado = empleado?.idEmpleadoInc != null ? true : false; 
+    final enableTpIncapacidad = tpIncapacidad?.clave.contains('ENFG') == true;
 
     return Form
     (
@@ -133,10 +211,16 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
               items: listTipoIncapacidad,
               value: tpIncapacidad,
               label: 'Tipo de Incapacidad',
+              enabled: enableEmpleado,
               iconDataBuilder: (_) => Icons.healing,
               itemLabelBuilder: (tipo) => '${tipo.clave} - ${tipo.descripcion}',
-              onChanged: (nuevo) => setState(() => tpIncapacidad = nuevo),
-              validator: (v) => v == null ? 'Por favor selecciona un tipo de incapacidad' : null,
+              onChanged: enableEmpleado ? 
+                (nuevo) => setState(() => tpIncapacidad = nuevo) 
+                : null,
+              validator: (v) {
+                if(!enableEmpleado) return null;
+                return v == null ? 'Por favor selecciona un tipo de incapacidad' : null;
+              },
             ),
 
             const SizedBox(height: 16),
@@ -145,10 +229,16 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
               items: listControlIncapacidad,
               value: ctrIncapacidad,
               label: 'Control Incapacidad',
+              enabled: enableEmpleado,
               iconDataBuilder: (_) => Icons.assignment,
               itemLabelBuilder: (control) => '${control.clave} - ${control.descripcion}',
-              onChanged: (nuevo) => setState(() => ctrIncapacidad = nuevo),
-              validator: (v) => v == null ? 'Por favor selecciona un control de incapacidad' : null,
+              onChanged:  enableEmpleado ? 
+                (nuevo) => setState(() => ctrIncapacidad = nuevo) 
+                : null,
+              validator: (v) { 
+                if(!enableEmpleado) return null; 
+                return v == null ? 'Por favor selecciona un control de incapacidad' : null;
+              },
             ),
 
             const SizedBox(height: 16),
@@ -157,10 +247,16 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
               items: listRiesgoTrabajo,
               value: rsgTrabajo,
               label: 'Riesgo de Trabajo',
+              enabled: enableTpIncapacidad && enableEmpleado,
               iconDataBuilder: (_) => Icons.warning,
               itemLabelBuilder: (riesgo) => '${riesgo.clave} - ${riesgo.descripcion}',
-              onChanged: (nuevo) => setState(() => rsgTrabajo = nuevo),
-              validator: (v) => v == null ? 'Por favor selecciona un riesgo de trabajo' : null,
+              onChanged: (enableTpIncapacidad && enableEmpleado)
+                ? (nuevo) => setState(() => rsgTrabajo = nuevo)
+                : null,
+              validator: (v) {
+                if ((!enableTpIncapacidad && !enableEmpleado) && v == null) return 'Por favor selecciona un riesgo de trabajo';
+                return null;
+              },
             ),
 
             const SizedBox(height: 16),
@@ -169,10 +265,16 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
               items: listTipoRiesgo,
               value: tpRiesgo,
               label: 'Tipo de Riesgo',
+              enabled: enableTpIncapacidad && enableEmpleado,
               iconDataBuilder: (_) => Icons.security,
               itemLabelBuilder: (riesgo) => '${riesgo.clave} - ${riesgo.descripcion}',
-              onChanged: (nuevo) => setState(() => tpRiesgo = nuevo),
-              validator: (v) => v == null ? 'Por favor selecciona un tipo de riesgo' : null,
+              onChanged: (enableTpIncapacidad && enableEmpleado) 
+                ? (nuevo) => setState(() => tpRiesgo = nuevo)
+                : null,
+              validator: (v) {
+                if ((!enableTpIncapacidad && !enableEmpleado) && v == null) return 'Por favor selecciona un riesgo de trabajo';
+                return null;
+              },
             ),
 
             const SizedBox(height: 16),
@@ -180,21 +282,42 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
             TextFormField(
               controller: folioController,
               decoration: const InputDecoration(labelText: 'Folio'),
-              validator: (value) => value == null || value.isEmpty ? 'Ingresa el folio' : null,
+              validator: (value) => value == null || value.isEmpty ? 'Por favor ingresa el folio' : null,
             ),
 
             TextFormField(
               controller: diasAutorizadosController,
               decoration: const InputDecoration(labelText: 'Días Autorizados'),
               keyboardType: TextInputType.number,
-              validator: (value) => value == null || value.isEmpty ? 'Ingresa los días' : null,
+              validator: (value) => value == null || value.isEmpty ? 'Por favor ingresa los días' : null,
+            ),
+
+            DatePickerField(
+              controller: fechaInicioController,
+              validator: (value) 
+              {
+                if (value == null || value.isEmpty) {
+                  return 'Por favor selecciona una fecha';
+                }
+                return null;
+              },
+            ),
+
+            TextFormField(
+              controller: descripcionController,
+              decoration: const InputDecoration(labelText: 'Descripción'),
+              validator: (value) => value == null || value.isEmpty ? 'Por favor ingresa la descripción' : null,
             ),
 
             const SizedBox(height: 24),
 
             Center(
               child: ElevatedButton(
-                onPressed: _guardarFormulario,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: _mostrarDialogoConfirmacion,
                 child: const Text('Guardar'),
               ),
             ),

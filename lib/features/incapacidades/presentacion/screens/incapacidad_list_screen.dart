@@ -17,9 +17,14 @@ class IncapacidadListScreen extends ConsumerStatefulWidget
 class _IncapacidadListState extends ConsumerState<IncapacidadListScreen> 
 {
   final TextEditingController _fechaController = TextEditingController();
+  final Map<String, Color> estados = {'A': Colors.greenAccent.shade100, 'C': Colors.redAccent.shade100};
   late DateTime fechaIni;
   late DateTime fechaFin;
   late String nombrePantalla;
+
+  int paginaActual = 0;
+  final int elementosPorPagina = 5;
+  int totalPaginas = 0;
 
   @override
   void initState() 
@@ -87,6 +92,8 @@ class _IncapacidadListState extends ConsumerState<IncapacidadListScreen>
   Widget build(BuildContext context) 
   {
     final incapacidadState = ref.watch(incapacidadNotifierProvider);
+    totalPaginas = (incapacidadState.registrosFiltrados.length / elementosPorPagina).ceil();
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -99,55 +106,83 @@ class _IncapacidadListState extends ConsumerState<IncapacidadListScreen>
             },
           ),
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              BarraBusquedaNombre(
-                onChanged:
-                  (value) => ref.read(incapacidadNotifierProvider.notifier).setBusqueda(value),
-              ),
-              const SizedBox(height: 16),
-              SelectorPeriodoFecha(
-                fechaIni: fechaIni,
-                fechaFin: fechaFin,
-                onCambiarFechaIni: _cambiarFechaInicial,
-                onCambiarFechaFin: _cambiarFechaFinal,
-              ),
-              const SizedBox(height: 16),
-              if(incapacidadState.isLoading)
-                const Expanded(
-                  child: Center(child: CircularProgressIndicator()),
-                )
-              else if (incapacidadState.incapacidades.isEmpty)
-                const Expanded(
-                  child: Center(child: Text('No hay registros disponibles.')),
-                )
-              else
-                Expanded(
-                  child: ListaTarjetaGenerica<Incapacidad>(
-                    items: incapacidadState.registrosFiltrados,
-                    getTitle:
-                        (incapacidad) =>
-                            '${incapacidad.nombreInc} ${incapacidad.primerApInc} ${incapacidad.segundoApInc}',
-                    getSubtitle:
-                        (incapacidad) =>
-                            FormatUtil.stringToStandard(incapacidad.fechaCaptura),
-                    getRoute:
-                        (incapacidad) =>
-                            '/incapacidadDetalle/${incapacidad.idIncapacidad}', // Ruta personalizada
-                  ),
+        body: Stack(
+          children: [ 
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    BarraBusquedaNombre(
+                      onChanged:
+                        (value) => ref.read(incapacidadNotifierProvider.notifier).setBusqueda(value),
+                    ),
+                    const SizedBox(height: 16),
+                    SelectorPeriodoFecha(
+                      fechaIni: fechaIni,
+                      fechaFin: fechaFin,
+                      onCambiarFechaIni: _cambiarFechaInicial,
+                      onCambiarFechaFin: _cambiarFechaFinal,
+                    ),
+                    const SizedBox(height: 16),
+                    if(incapacidadState.isLoading)
+                      const Expanded(
+                        child: Center(child: CircularProgressIndicator()),
+                      )
+                    else if (incapacidadState.incapacidades.isEmpty)
+                      const Expanded(
+                        child: Center(child: Text('No hay registros disponibles.')),
+                      )
+                    else
+                      Expanded(
+                        child: ListaTarjetaGenerica<Incapacidad>(
+                          items: incapacidadState.registrosFiltrados
+                            .skip(paginaActual * elementosPorPagina)
+                            .take(elementosPorPagina)
+                            .toList(),
+                          getTitle:
+                              (incapacidad) =>
+                                  '${incapacidad.nombreInc} ${incapacidad.primerApInc} ${incapacidad.segundoApInc}',
+                          getSubtitle:
+                              (incapacidad) =>
+                                  FormatUtil.stringToStandard(incapacidad.fechaCaptura),
+                          getRoute:
+                              (incapacidad) =>
+                                  '/incapacidadDetalle/${incapacidad.idIncapacidad}', // Ruta personalizada
+                          getBackgroundColor: 
+                              (incapacidad) => estados[incapacidad.clave],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ElevatedButton(
+                            onPressed: paginaActual > 0 ? () { setState(() { paginaActual--; }); } : null,
+                            child: const Text('Anterior'),
+                          ),
+                          Text('Página ${paginaActual + 1} de $totalPaginas'),
+                          ElevatedButton(
+                            onPressed: paginaActual + 1 < totalPaginas
+                                ? () { setState(() { paginaActual++; }); } : null,
+                            child: const Text('Siguiente'),
+                          ),
+                        ],
+                      ),
+                  ],
                 ),
-            ],
-          ),
-        ),
-        floatingActionButton: FloatingActionButton.extended(
-          label: const Text('Agregar Incapacidad'),
-          icon: const Icon(Icons.add),
-          onPressed: () {
-            context.push('/agregarIncapacidad');
-          },
+            ),
+            Positioned(
+              bottom: 16 + 56,
+              right: 16,
+              child: FloatingActionButton(
+                onPressed: () {
+                  context.push('/agregarIncapacidad');
+                },
+                child: const Icon(Icons.add),
+              ),
+            ),
+          ],
         ),
       ),
     );

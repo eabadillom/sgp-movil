@@ -13,6 +13,12 @@ class IncapacidadDetalleRepositoryImpl extends IncapacidadDetalleRepository
   }
 
   @override
+  Future<IncapacidadDetalle> cancelarIncapacidad(String numeroUsuario, Map<String, dynamic> incapacidad) 
+  {
+    return datasource.cancelarIncapacidad(numeroUsuario, incapacidad);
+  }
+
+  @override
   Future<List<EmpleadoIncapacidad>> getEmpleados() 
   {
     return datasource.getEmpleados();

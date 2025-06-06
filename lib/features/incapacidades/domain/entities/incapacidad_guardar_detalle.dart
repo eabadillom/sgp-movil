@@ -1,8 +1,7 @@
 class IncapacidadGuardarDetalle 
 {
-  final int idIncapacidad;
   final int idEmpleadoInc;
-  final int idEmpleadoRev;
+  final String idEmpleadoRev;
   final int tipoIncapacidad;
   final int controlIncapacidad;
   final int? riesgoTrabajo;
@@ -11,10 +10,9 @@ class IncapacidadGuardarDetalle
   final int diasAutorizados;
   final DateTime fechaInicio;
   final String descripcion;
-  final String estatusIncapacidad;
+  final String? estatusIncapacidad;
 
   IncapacidadGuardarDetalle({
-    required this.idIncapacidad,
     required this.idEmpleadoInc,
     required this.idEmpleadoRev,
     required this.tipoIncapacidad,
@@ -25,6 +23,20 @@ class IncapacidadGuardarDetalle
     required this.diasAutorizados,
     required this.fechaInicio,
     required this.descripcion,
-    required this.estatusIncapacidad,
+    this.estatusIncapacidad,
   });
+
+  Map<String, dynamic> toJson() => {
+    'idEmpleadoInc': idEmpleadoInc,
+    'idEmpleadoRev': idEmpleadoRev,
+    'tipoIncapacidad': tipoIncapacidad,
+    'controlIncapacidad': controlIncapacidad,
+    'riesgoTrabajo': riesgoTrabajo,
+    'tipoRiesgo': tipoRiesgo,
+    'folio': folio,
+    'diasAutorizados': diasAutorizados,
+    'fechaInicio': fechaInicio.toIso8601String(),
+    'descripcion': descripcion,
+  };
+
 }

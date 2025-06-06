@@ -1,3 +1,5 @@
+class NotFound implements Exception {}
+
 class RegistroNotFound implements Exception 
 {
   final String message;
@@ -5,5 +7,3 @@ class RegistroNotFound implements Exception
   // final int errorCode;
   RegistroNotFound(this.message);
 }
-
-class NotFound implements Exception {}

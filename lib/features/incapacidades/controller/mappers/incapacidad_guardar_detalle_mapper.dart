@@ -3,7 +3,6 @@ import 'package:sgp_movil/features/incapacidades/domain/entities/incapacidad_gua
 class IncapacidadGuardarDetalleMapper 
 {
   static jsonToEntity(Map<String, dynamic> json) => IncapacidadGuardarDetalle(
-    idIncapacidad: json['idIncapacidad'], 
     idEmpleadoInc: json['idEmpleadoInc'], 
     idEmpleadoRev: json['idEmpleadoRev'], 
     tipoIncapacidad: json['tipoIncapacidad'], 

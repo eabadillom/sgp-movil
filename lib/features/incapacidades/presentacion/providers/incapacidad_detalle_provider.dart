@@ -1,7 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sgp_movil/conf/config.dart';
 import 'package:sgp_movil/features/incapacidades/domain/domain.dart';
 import 'package:sgp_movil/features/incapacidades/presentacion/providers/incapacidad_repository_provider.dart';
+import 'package:sgp_movil/features/incidencias/controller/errors/registro_errors.dart';
 
 final incapacidadDetalleProvider = StateNotifierProvider<IncapacidadDetalleNotifier, IncapacidadDetalleState> ((ref)
 { 
@@ -35,6 +37,32 @@ class IncapacidadDetalleNotifier extends StateNotifier<IncapacidadDetalleState>
         isLoading: false,
         errorMessage: 'No se pudo cargar el registro',
       );
+    }
+  }
+
+  Future<void> cancelarIncapacidad(String numeroUsuario, Map<String, dynamic> incapacidad) async
+  {
+    state = state.copyWith(isLoading: true, errorMessage: null);
+
+    try {
+      final incapacidadDetalle = await incapacidadDetalleRepository.cancelarIncapacidad(numeroUsuario, incapacidad);
+
+      state = state.copyWith(
+        isLoading: false,
+        incapacidadDetalle: incapacidadDetalle,
+      );
+
+    }on DioException catch (e) 
+    {
+      final errorMsg = e.toString();
+
+      log.logger.severe('Error al guardar: $errorMsg');
+      
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: errorMsg,
+      );
+      throw RegistroNotFound(errorMsg);
     }
   }
 

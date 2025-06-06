@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:sgp_movil/conf/loggers/logger_singleton.dart';
 import 'package:sgp_movil/conf/security/dio_client.dart';
 import 'package:sgp_movil/features/incapacidades/controller/controller.dart';
@@ -27,6 +28,33 @@ class IncapacidadDetalleDatasourceImpl extends IncapacidadDetalleDatasource
     }catch (e) {
       log.logger.warning(e.toString());
       throw Exception("Hubo algun problema al obtener la informacion");
+    }
+  }
+
+  @override
+  Future<IncapacidadDetalle> cancelarIncapacidad(String numeroUsuario, Map<String, dynamic> incapacidad) async
+  {
+    httpService.setAccessToken(accessToken);
+
+    try {
+      final String method = 'PATCH';
+      String url = '/incapacidad/$numeroUsuario/cancelar';
+
+      final response = await httpService.dio.request(url, data: incapacidad, options: Options(method: method));
+      
+      final inc = IncapacidadDetalleMapper.jsonToEntity(response.data);
+
+      return inc;
+    } on DioException catch (e) {
+      if (e.response != null) {
+        log.logger.warning('Código de estado: ${e.response?.statusCode}');
+        log.logger.warning('Mensaje del backend: ${e.response?.data}');
+
+        final mensaje = e.response?.data ?? 'Ocurrió un error inesperado, favor de contatar al administrador de sistemas';
+        throw mensaje;
+      } else{
+        throw 'Error de conexión. Verifica tu internet.';
+      }
     }
   }
   
@@ -147,9 +175,31 @@ class IncapacidadDetalleDatasourceImpl extends IncapacidadDetalleDatasource
   }
 
   @override
-  Future<IncapacidadGuardarDetalle> guardarIncapacidad(Map<String, dynamic> incapacidad) 
+  Future<IncapacidadGuardarDetalle> guardarIncapacidad(Map<String, dynamic> incapacidad) async
   {
-    throw UnimplementedError();
+    httpService.setAccessToken(accessToken);
+    try {
+      final String method = 'PATCH';
+      final String url = '/incapacidad/guardar';
+
+      final response = await httpService.dio.request(url, data: incapacidad, options: Options(method: method));
+
+      final inc = IncapacidadGuardarDetalleMapper.jsonToEntity(response.data);
+
+      return inc;
+    } on DioException catch (e) {
+      if (e.response != null) {
+        log.logger.warning('Entre a incapacidad detalle datasource impl');
+
+        final mensaje = e.response?.data ?? 'Ocurrió un error inesperado, favor de contactar al administrador de sistemas';
+        throw RegistroNotFound(mensaje);
+      } else{
+        throw RegistroNotFound('Revisar conexión a internet');
+      }
+    } catch (e) 
+    {
+      throw Exception();
+    }
   }
 
 }

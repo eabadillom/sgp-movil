@@ -10,6 +10,7 @@ class CustomDropdown<T> extends StatelessWidget
   final IconData Function(T)? iconDataBuilder;
   final void Function(T?)? onChanged;
   final String? Function(T?)? validator;
+  final bool enabled;
 
   const CustomDropdown({
     super.key,
@@ -21,6 +22,7 @@ class CustomDropdown<T> extends StatelessWidget
     this.iconDataBuilder,
     this.onChanged,
     this.validator,
+    this.enabled = true,
   });
 
   @override
@@ -62,8 +64,25 @@ class CustomDropdown<T> extends StatelessWidget
           ),
         );
       }).toList(),
-      onChanged: onChanged,
+      onChanged: enabled ? onChanged : null,
       validator: validator,
+      disabledHint: value != null
+        ? Row(
+            children: [
+              if (iconBuilder != null)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: iconBuilder!(value as T),
+                )
+              else if (iconDataBuilder != null)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Icon(iconDataBuilder!(value as T)),
+                ),
+              Text(itemLabelBuilder(value as T)),
+            ],
+          )
+        : const Text("No disponible", style: TextStyle(fontSize: 14),),
     );
   }
 }

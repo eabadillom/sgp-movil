@@ -8,6 +8,7 @@ class ListaTarjetaGenerica<T> extends StatelessWidget {
   getSubtitle; // Función para obtener el subtítulo
   final String Function(T item)
   getRoute; // Función para obtener la ruta de navegación
+  final Color? Function(T)? getBackgroundColor; // Funcion para obtener el color de la tarjeta (opcional)
 
   const ListaTarjetaGenerica({
     super.key,
@@ -15,6 +16,7 @@ class ListaTarjetaGenerica<T> extends StatelessWidget {
     required this.getTitle,
     required this.getSubtitle,
     required this.getRoute,
+    this.getBackgroundColor,
   });
 
   @override
@@ -23,8 +25,10 @@ class ListaTarjetaGenerica<T> extends StatelessWidget {
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
-
+        final bgColor = getBackgroundColor?.call(item);
+    
         return Card(
+          color: bgColor,
           margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           elevation: 4,
           shape: RoundedRectangleBorder(
