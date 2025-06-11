@@ -5,7 +5,6 @@ import 'package:sgp_movil/conf/util/format_util.dart';
 import 'package:sgp_movil/features/dashboard/presentation/providers/usuario_detalle_provider.dart';
 import 'package:sgp_movil/features/incapacidades/domain/domain.dart';
 import 'package:sgp_movil/features/incapacidades/presentacion/providers/providers.dart';
-import 'package:sgp_movil/features/incidencias/controller/errors/registro_errors.dart';
 import 'package:sgp_movil/features/shared/widgets/custom_dropdown.dart';
 import 'package:sgp_movil/features/shared/widgets/date_picker_field.dart';
 
@@ -30,6 +29,12 @@ class _IncapacidadDetalleState extends ConsumerState<IncapacidadDetalleGuardar>
         key: _scaffoldKey,
         appBar: AppBar(
           title: const Text('Guardar Incapacidad'),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              context.pop(false);
+            },
+          ),
         ),
         body: const Padding(
           padding: EdgeInsets.all(16.0),
@@ -66,6 +71,7 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
   void initState() 
   {
     super.initState();
+
     Future.microtask(() 
     {
       ref.read(empleadoDetalleProvider.notifier).obtenerEmpleados();
@@ -73,58 +79,55 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
       ref.read(controlIncapacidadProvider.notifier).obtenerControlIncapacidad();
       ref.read(riesgoTrabajoProvider.notifier).obtenerRiesgoTrabajo();
       ref.read(tipoRiesgoProvider.notifier).obtenerTipoRiesgo();
+
+      ref.listenManual<IncapacidadDetalleGuardarState>(
+        incapacidadDetalleGuardarProvider,
+        (prev, next) {
+          if (next.errorMessage != null && prev?.errorMessage != next.errorMessage) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(next.errorMessage!)));
+          } else if (prev?.isLoading == true && next.isLoading == false && next.errorMessage == null) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Datos guardados correctamente')));
+            if (mounted) context.pop(true);
+          }
+        },
+      );
     });
+  }
+
+  @override
+  void dispose() 
+  {
+    super.dispose();
+    folioController.dispose();
+    diasAutorizadosController.dispose();
+    fechaInicioController.dispose();
+    descripcionController.dispose();
   }
 
   Future<void> _guardarFormulario() async 
   {
-    final usuarioDetalleState = ref.watch(usuarioDetalleProvider).usuarioDetalle;
-    if(_formKey.currentState!.validate()) 
-    {
-      final incapacidad = IncapacidadGuardarDetalle(
-        idEmpleadoInc: empleado!.idEmpleadoInc,
-        idEmpleadoRev: usuarioDetalleState!.numeroUsuario,
-        tipoIncapacidad: tpIncapacidad!.idTpIncapacidad,
-        controlIncapacidad: ctrIncapacidad!.idControlIncapacidad,
-        riesgoTrabajo: rsgTrabajo?.idRiesgoTrabajo,
-        tipoRiesgo: tpRiesgo?.idTipoRiesgo,
-        folio: folioController.text,
-        diasAutorizados: int.tryParse(diasAutorizadosController.text) ?? 0,
-        fechaInicio: FormatUtil.stringToDateTime(fechaInicioController.text),
-        descripcion: descripcionController.text,
-      );
+    if (!_formKey.currentState!.validate()) return;
 
-      final guardarIncapacidadState = ref.read(incapacidadDetalleGuardarProvider.notifier);
-      final incapacidadState = ref.read(incapacidadDetalleGuardarProvider);
-      try {
-        /*await ref
-            .read(incapacidadDetalleGuardarProvider.notifier)
-            .guardarIncapacidad(incapacidad.toJson());*/
-        
-        await guardarIncapacidadState.guardarIncapacidad(incapacidad.toJson());
-
-        if(!mounted) 
-        {
-          return;
-        }
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Datos guardados correctamente')),
-        );
-        context.pop();
-      } catch (e) 
-      {
-        if (!mounted) return;
-
-        final errorMsg = e is RegistroNotFound ? e.message : 'Ocurrió un error inesperado';
-
-        print(incapacidadState.errorMessage);
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMsg)),
-        );
-      }
+    final usuarioDetalleState = ref.read(usuarioDetalleProvider).usuarioDetalle;
+    if (usuarioDetalleState == null || empleado == null || tpIncapacidad == null || ctrIncapacidad == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Faltan datos obligatorios')));
+      return;
     }
+
+    final incapacidad = IncapacidadGuardarDetalle(
+      idEmpleadoInc: empleado!.idEmpleadoInc,
+      idEmpleadoRev: usuarioDetalleState.numeroUsuario,
+      tipoIncapacidad: tpIncapacidad!.idTpIncapacidad,
+      controlIncapacidad: ctrIncapacidad!.idControlIncapacidad,
+      riesgoTrabajo: rsgTrabajo?.idRiesgoTrabajo,
+      tipoRiesgo: tpRiesgo?.idTipoRiesgo,
+      folio: folioController.text.trim(),
+      diasAutorizados: int.parse(diasAutorizadosController.text.trim()),
+      fechaInicio: FormatUtil.formatearFechaStringOffset(fechaInicioController.text.trim()),
+      descripcion: descripcionController.text.trim(),
+    );
+
+    await ref.read(incapacidadDetalleGuardarProvider.notifier).guardarIncapacidad(incapacidad.toJson());
   }
 
   Future<void> _mostrarDialogoConfirmacion() async 
@@ -140,7 +143,7 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
               backgroundColor: Colors.blue,
               foregroundColor: Colors.white,
             ),
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () => context.pop(true),
             child: const Text('Sí'),
           ),
 
@@ -149,18 +152,18 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
               backgroundColor: Colors.grey,
               foregroundColor: Colors.black,
             ),
-            onPressed: () => Navigator.of(context).pop(false),
+            onPressed: () => context.pop(false),
             child: const Text('No'),
           ),
         ],
       ),
     );
 
-  if(confirmar == true) 
-  {
-    _guardarFormulario();
+    if(confirmar == true) 
+    {
+      _guardarFormulario();
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) 
@@ -177,7 +180,7 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
     final listRiesgoTrabajo = riesgoTrabajoState.riesgoTrabajo;
     final listTipoRiesgo = tipoRiesgoState.tipoRiesgo;
 
-    final enableEmpleado = empleado?.idEmpleadoInc != null ? true : false; 
+    final enableEmpleado = empleado?.idEmpleadoInc != null; 
     final enableTpIncapacidad = tpIncapacidad?.clave.contains('ENFG') == true;
 
     return Form
@@ -202,7 +205,7 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
                 ),
               ),
               onChanged: (nuevo) => setState(() => empleado = nuevo),
-              validator: (v) => v == null ? 'Por favor selecciona un tipo de incapacidad' : null,
+              validator: (v) => v == null ? 'Por favor selecciona un empleado' : null,
             ),
 
             const SizedBox(height: 16),
@@ -218,7 +221,7 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
                 (nuevo) => setState(() => tpIncapacidad = nuevo) 
                 : null,
               validator: (v) {
-                if(!enableEmpleado) return null;
+                if(enableEmpleado) return null;
                 return v == null ? 'Por favor selecciona un tipo de incapacidad' : null;
               },
             ),
@@ -236,7 +239,7 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
                 (nuevo) => setState(() => ctrIncapacidad = nuevo) 
                 : null,
               validator: (v) { 
-                if(!enableEmpleado) return null; 
+                if(enableEmpleado) return null; 
                 return v == null ? 'Por favor selecciona un control de incapacidad' : null;
               },
             ),
@@ -277,7 +280,7 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
               },
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 10),
 
             TextFormField(
               controller: folioController,

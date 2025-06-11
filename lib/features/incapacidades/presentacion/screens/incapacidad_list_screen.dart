@@ -146,9 +146,13 @@ class _IncapacidadListState extends ConsumerState<IncapacidadListScreen>
                           getSubtitle:
                               (incapacidad) =>
                                   FormatUtil.stringToStandard(incapacidad.fechaCaptura),
-                          getRoute:
-                              (incapacidad) =>
-                                  '/incapacidadDetalle/${incapacidad.idIncapacidad}', // Ruta personalizada
+                          onTap: (incapacidad) async 
+                          {
+                            final result = await context.push('/incapacidadDetalle/${incapacidad.idIncapacidad}');
+                            if (result == true) {
+                              ref.read(incapacidadNotifierProvider.notifier).obtenerRegistros(fechaIni, fechaFin);
+                            }
+                          },
                           getBackgroundColor: 
                               (incapacidad) => estados[incapacidad.clave],
                         ),

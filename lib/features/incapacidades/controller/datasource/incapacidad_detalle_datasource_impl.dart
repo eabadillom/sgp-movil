@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:sgp_movil/conf/constants/environment.dart';
 import 'package:sgp_movil/conf/loggers/logger_singleton.dart';
 import 'package:sgp_movil/conf/security/dio_client.dart';
 import 'package:sgp_movil/features/incapacidades/controller/controller.dart';
@@ -7,7 +8,7 @@ import 'package:sgp_movil/features/incapacidades/domain/domain.dart';
 class IncapacidadDetalleDatasourceImpl extends IncapacidadDetalleDatasource
 {
   final LoggerSingleton log = LoggerSingleton.getInstance('IncapacidadDatasourceImpl');
-  final DioClient httpService = DioClient(nameContext: 'Movil');
+  final DioClient httpService = DioClient();
   final String accessToken;
 
   IncapacidadDetalleDatasourceImpl({required this.accessToken});
@@ -18,7 +19,8 @@ class IncapacidadDetalleDatasourceImpl extends IncapacidadDetalleDatasource
     httpService.setAccessToken(accessToken);
     
     try {
-      String url = '/incapacidad/$idIncapacidad';
+      String contexto = Environment.obtenerUrlPorNombre('Movil'); 
+      String url = '$contexto/incapacidad/$idIncapacidad';
 
       final response = await httpService.dio.get(url);
       
@@ -38,7 +40,8 @@ class IncapacidadDetalleDatasourceImpl extends IncapacidadDetalleDatasource
 
     try {
       final String method = 'PATCH';
-      String url = '/incapacidad/$numeroUsuario/cancelar';
+      String contexto = Environment.obtenerUrlPorNombre('Movil'); 
+      String url = '$contexto/incapacidad/$numeroUsuario/cancelar';
 
       final response = await httpService.dio.request(url, data: incapacidad, options: Options(method: method));
       
@@ -64,7 +67,8 @@ class IncapacidadDetalleDatasourceImpl extends IncapacidadDetalleDatasource
     httpService.setAccessToken(accessToken);
 
     try {
-      String url = '/incapacidad/empleados';
+      String contexto = Environment.obtenerUrlPorNombre('Movil'); 
+      String url = '$contexto/incapacidad/empleados';
 
       final response = await httpService.dio.get(url);
       
@@ -88,7 +92,8 @@ class IncapacidadDetalleDatasourceImpl extends IncapacidadDetalleDatasource
     httpService.setAccessToken(accessToken);
 
     try {
-      String url = '/incapacidad/tiposIncapacidades';
+      String contexto = Environment.obtenerUrlPorNombre('Movil'); 
+      String url = '$contexto/incapacidad/tiposIncapacidades';
       final List<TipoIncapacidad> tiposIncapacidades = [];
 
       final response = await httpService.dio.get(url);      
@@ -111,7 +116,8 @@ class IncapacidadDetalleDatasourceImpl extends IncapacidadDetalleDatasource
     httpService.setAccessToken(accessToken);
     
     try {
-      String url = '/incapacidad/controlIncapacidades';
+      String contexto = Environment.obtenerUrlPorNombre('Movil'); 
+      String url = '$contexto/incapacidad/controlIncapacidades';
       final List<ControlIncapacidad> controlIncapacidades = [];
 
       final response = await httpService.dio.get(url);      
@@ -134,7 +140,8 @@ class IncapacidadDetalleDatasourceImpl extends IncapacidadDetalleDatasource
     httpService.setAccessToken(accessToken);
 
     try {
-      String url = '/incapacidad/riesgosTrabajos';
+      String contexto = Environment.obtenerUrlPorNombre('Movil'); 
+      String url = '$contexto/incapacidad/riesgosTrabajos';
       final List<RiesgoTrabajo> riesgoTrabajo = [];
 
       final response = await httpService.dio.get(url);      
@@ -157,7 +164,8 @@ class IncapacidadDetalleDatasourceImpl extends IncapacidadDetalleDatasource
     httpService.setAccessToken(accessToken);
 
     try {
-      String url = '/incapacidad/tiposRiesgos';
+      String contexto = Environment.obtenerUrlPorNombre('Movil'); 
+      String url = '$contexto/incapacidad/tiposRiesgos';
       final List<TipoRiesgo> tipoRiesgo = [];
 
       final response = await httpService.dio.get(url);      
@@ -180,7 +188,8 @@ class IncapacidadDetalleDatasourceImpl extends IncapacidadDetalleDatasource
     httpService.setAccessToken(accessToken);
     try {
       final String method = 'PATCH';
-      final String url = '/incapacidad/guardar';
+      String contexto = Environment.obtenerUrlPorNombre('Movil'); 
+      final String url = '$contexto/incapacidad/guardar';
 
       final response = await httpService.dio.request(url, data: incapacidad, options: Options(method: method));
 
@@ -188,17 +197,20 @@ class IncapacidadDetalleDatasourceImpl extends IncapacidadDetalleDatasource
 
       return inc;
     } on DioException catch (e) {
-      if (e.response != null) {
-        log.logger.warning('Entre a incapacidad detalle datasource impl');
-
-        final mensaje = e.response?.data ?? 'Ocurrió un error inesperado, favor de contactar al administrador de sistemas';
-        throw RegistroNotFound(mensaje);
-      } else{
-        throw RegistroNotFound('Revisar conexión a internet');
+      log.logger.warning('Entre a incapacidad detalle datasource impl');
+      
+      if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.unknown) {
+        throw NoInternetException();
+      } else if(e.type == DioExceptionType.badResponse){
+        throw ServerException(message: e.response?.data);
+      } else if (e.response?.statusCode == 409) {
+        throw ServerException(message: 'Error: el registro de la incapacidad ya existe');
+      } else {
+        throw ServerException(message: 'Error, contacte con el administrador de sistemas');
       }
-    } catch (e) 
-    {
-      throw Exception();
+    } catch (e) {
+      log.logger.warning(e);
+      throw RegistroNotFound("Error: contacte con el administrador de sistemas");
     }
   }
 

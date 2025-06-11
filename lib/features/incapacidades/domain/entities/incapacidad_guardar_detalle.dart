@@ -1,5 +1,6 @@
 class IncapacidadGuardarDetalle 
 {
+  final int? idIncapacidad;
   final int idEmpleadoInc;
   final String idEmpleadoRev;
   final int tipoIncapacidad;
@@ -13,6 +14,7 @@ class IncapacidadGuardarDetalle
   final String? estatusIncapacidad;
 
   IncapacidadGuardarDetalle({
+    this.idIncapacidad,
     required this.idEmpleadoInc,
     required this.idEmpleadoRev,
     required this.tipoIncapacidad,

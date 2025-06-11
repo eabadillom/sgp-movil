@@ -9,7 +9,7 @@ import 'package:sgp_movil/features/login/domain/domain.dart';
 
 class LoginDatasourceImpl extends LoginDatasource
 {
-  final DioClient httpService = DioClient(nameContext: 'Movil');
+  final DioClient httpService = DioClient();
   final LoggerSingleton log = LoggerSingleton.getInstance('LoginDatasourceImpl');
   
   @override
@@ -20,7 +20,9 @@ class LoginDatasourceImpl extends LoginDatasource
     try 
     {
       httpService.setAccessToken(token);
-      final response = await httpService.dio.get('/verificar');
+      String contexto = Environment.obtenerUrlPorNombre('Movil'); 
+      String url = '$contexto/verificar';
+      final response = await httpService.dio.get(url);
 
       if(response.statusCode == 200)
       {
@@ -73,7 +75,9 @@ class LoginDatasourceImpl extends LoginDatasource
       httpService.setBasicAuth(nombre, contrasenia);
       //final response = await httpService.dio.get('/generar', data: {'numeroUsuario': numeroEmpleado});
       //final response = await httpService.dio.get('/generar', queryParameters: {'numeroEmpleado': numeroEmpleado});
-      final response = await httpService.dio.request('/generar', data: {'numeroUsuario': numeroEmpleado}, options: Options(method: 'GET'));
+      String contexto = Environment.obtenerUrlPorNombre('Movil'); 
+      String url = '$contexto/generar';
+      final response = await httpService.dio.request(url, data: {'numeroUsuario': numeroEmpleado}, options: Options(method: 'GET'));
 
       LoginUsuario loginUsuario = LoginUsuarioMapper.tokenJsonToEntity(response.data);
 

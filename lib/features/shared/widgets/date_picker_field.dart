@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sgp_movil/conf/util/format_util.dart';
 
 class DatePickerField extends StatefulWidget 
 {
@@ -18,7 +19,7 @@ class DatePickerField extends StatefulWidget
 
 class DatePickerFieldState extends State<DatePickerField> 
 {
-  final DateFormat _dateFormat = DateFormat('dd-MM-yyyy');
+  final DateFormat _dateFormat = DateFormat('dd-MM-yyyyTHH:mm');
 
   Future<void> _selectDate(BuildContext context) async 
   {
@@ -31,8 +32,10 @@ class DatePickerFieldState extends State<DatePickerField>
 
     if (picked != null) 
     {
+      String formatted = _dateFormat.format(picked);
+      DateTime parsed = _dateFormat.parse(formatted);
       setState(() {
-        widget.controller.text = _dateFormat.format(picked);
+        widget.controller.text = FormatUtil.stringToStandard(FormatUtil.dateFormated(parsed));
       });
     }
   }

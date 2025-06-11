@@ -33,11 +33,10 @@ class DioClient
   }
 
   // Factoria para acceder a la instancia de HttpService
-  factory DioClient({String nameContext = 'Movil'}) 
+  factory DioClient() 
   {
     _dio ??= Dio(
       BaseOptions(
-        baseUrl: Environment.obtenerUrlPorNombre(nameContext), // Reemplaza con tu URL base
         connectTimeout: Duration(seconds: 5), // 5 segundos
         receiveTimeout: Duration(seconds: 3), // 3 segundos
         validateStatus: (status) 

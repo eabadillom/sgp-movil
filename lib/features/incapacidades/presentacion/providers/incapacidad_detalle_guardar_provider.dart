@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sgp_movil/conf/loggers/logger_singleton.dart';
+import 'package:sgp_movil/features/incapacidades/controller/errors/registro_errores.dart';
 import 'package:sgp_movil/features/incapacidades/domain/domain.dart';
 import 'package:sgp_movil/features/incapacidades/presentacion/providers/providers.dart';
-import 'package:sgp_movil/features/incidencias/controller/errors/registro_errors.dart';
 
 final incapacidadDetalleGuardarProvider = StateNotifierProvider<IncapacidadDetalleGuardarNotifier,IncapacidadDetalleGuardarState> ((ref)
 {
@@ -30,21 +30,30 @@ class IncapacidadDetalleGuardarNotifier extends StateNotifier<IncapacidadDetalle
         isLoading: false,
         detalleIncapacidad: guardarIncapacidad,
       );
-    } on RegistroNotFound catch (e) 
-    {
-      log.logger.warning('Entre a incapacidad detalle guardar provider');
-      final errorMsg = e.message;
-
-      log.logger.severe('Error al guardar: $errorMsg');
+    } on NoInternetException {
+      final errorMsg = 'Error: sin conexion a internet';
+      log.logger.severe(errorMsg);
       
       state = state.copyWith(
         isLoading: false,
         errorMessage: errorMsg,
       );
-    }catch (e){
+    } on ServerException catch (e) {
+      final errorMsg = e.message;
+      log.logger.severe(errorMsg);
+
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Error, contacte a su administrador de sistemas',
+        errorMessage: errorMsg,
+      );
+    } on RegistroNotFound catch (e)
+    {
+      final errorMsg = e.message;
+      log.logger.severe(errorMsg);
+
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: errorMsg,
       );
     }
   }
