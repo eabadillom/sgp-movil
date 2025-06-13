@@ -20,7 +20,7 @@ class ImagenDesdeInternet extends StatelessWidget {
       url!,
       width: ancho,
       height: alto,
-      fit: fit,
+      fit: BoxFit.contain,
       loadingBuilder: (context, child, loadingProgress) {
         if (loadingProgress == null) return child;
         return Center(child: CircularProgressIndicator());

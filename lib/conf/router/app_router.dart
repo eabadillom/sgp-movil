@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sgp_movil/conf/config.dart';
@@ -82,7 +83,11 @@ final goRouterProvider = Provider((ref) {
         builder: (cotext, state) {
           String tipo = "PR";
           String rutaDetalle = 'detalleSolicitud';
-          return ListarIncidenciasScreen(tipo: tipo, rutaDetalle: rutaDetalle);
+          return ListarIncidenciasScreen(
+            key: ValueKey("uniformes_${DateTime.now().millisecondsSinceEpoch}"),
+            tipo: tipo,
+            rutaDetalle: rutaDetalle,
+          );
         },
       ),
 
@@ -91,7 +96,11 @@ final goRouterProvider = Provider((ref) {
         builder: (context, state) {
           String tipo = "A";
           String rutaDetalle = "detalleSolicitud";
-          return ListarIncidenciasScreen(tipo: tipo, rutaDetalle: rutaDetalle);
+          return ListarIncidenciasScreen(
+            key: ValueKey("uniformes_${DateTime.now().millisecondsSinceEpoch}"),
+            tipo: tipo,
+            rutaDetalle: rutaDetalle,
+          );
         },
       ),
 

@@ -24,6 +24,7 @@ class ListarIncidenciasScreen extends ConsumerStatefulWidget {
 }
 
 class _ListarIncidenciasState extends ConsumerState<ListarIncidenciasScreen> {
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _fechaController = TextEditingController();
   late DateTime fechaIni;
   late DateTime fechaFin;
@@ -109,18 +110,30 @@ class _ListarIncidenciasState extends ConsumerState<ListarIncidenciasScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
+        key: scaffoldKey,
+        drawer: SideMenu(scaffoldKey: scaffoldKey),
         appBar: AppBar(
+          centerTitle: true,
           title: Text(nombrePantalla),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              ref.invalidate(listarNotifierProvider);
-              ref.invalidate(estatusSeleccionadoProvider);
-              ref.invalidate(fechaInicialProvider);
-              ref.invalidate(fechaFinalProvider);
-              context.go('/dashboard');
-            },
+          leading: Builder(
+            builder:
+                (context) => IconButton(
+                  icon: Icon(Icons.menu),
+                  onPressed: () => Scaffold.of(context).openDrawer(),
+                ),
           ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                ref.invalidate(listarNotifierProvider);
+                ref.invalidate(estatusSeleccionadoProvider);
+                ref.invalidate(fechaInicialProvider);
+                ref.invalidate(fechaFinalProvider);
+                context.go('/dashboard');
+              },
+            ),
+          ],
         ),
         body: Padding(
           padding: const EdgeInsets.all(16),
