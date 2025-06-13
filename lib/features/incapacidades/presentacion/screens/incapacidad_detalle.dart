@@ -25,16 +25,18 @@ class _IncapacidadDetalleState extends ConsumerState<IncapacidadDetalle>
   late int idIncapacidad;
 
   @override
-  void initState() {
+  void initState() 
+  {
     super.initState();
     idIncapacidad = widget.id;
     titulo = 'Incapacidad Detalle';
 
-    Future.microtask(() {
+    Future.microtask(() 
+    {
       ref.read(incapacidadDetalleProvider.notifier).obtenerIncapacidad(idIncapacidad);
     });
   }
-  @override
+  
   @override
   Widget build(BuildContext context) 
   {
@@ -185,11 +187,11 @@ class _IncapacidadDetalleState extends ConsumerState<IncapacidadDetalle>
         content: const Text('¿Estás seguro que deseas cancelar esta incapacidad?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () => context.pop(true),
             child: const Text('Sí'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
+            onPressed: () => context.pop(false),
             child: const Text('No'),
           ),
         ],

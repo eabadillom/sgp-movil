@@ -12,24 +12,28 @@ class EtiquetaRegistroWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
-      child: Row(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            '$label: ',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              fontSize: 18.0,
+          ConstrainedBox(
+            constraints: const BoxConstraints(minWidth: 100),
+            child: Text(
+              '$label:',
+              style: textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: 16.0,
+              ),
             ),
           ),
-          Expanded(
+          const SizedBox(width: 4),
+          Align(
+            alignment: Alignment.center,
             child: Text(
               value,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(fontSize: 18.0),
+              style: textTheme.bodyMedium?.copyWith(fontSize: 16.0),
               softWrap: true,
               overflow: TextOverflow.visible,
             ),

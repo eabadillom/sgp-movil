@@ -20,8 +20,8 @@ class IncapacidadDetalleGuardarNotifier extends StateNotifier<IncapacidadDetalle
 
   Future<void> guardarIncapacidad(Map<String, dynamic> incapacidad) async
   {
-    state = state.copyWith(isLoading: true, errorMessage: null);
-    log.logger.info('Info incapacidad: ${incapacidad.toString()}');
+    state = state.copyWith(isLoading: true, errorMessage: null, mostrarMensaje: false);
+    
     try 
     {
       final guardarIncapacidad = await incapacidadDetalleRepository.guardarIncapacidad(incapacidad);
@@ -29,6 +29,8 @@ class IncapacidadDetalleGuardarNotifier extends StateNotifier<IncapacidadDetalle
       state = state.copyWith(
         isLoading: false,
         detalleIncapacidad: guardarIncapacidad,
+        errorMessage: null,
+        mostrarMensaje: true,
       );
     } on NoInternetException {
       final errorMsg = 'Error: sin conexion a internet';
@@ -37,6 +39,7 @@ class IncapacidadDetalleGuardarNotifier extends StateNotifier<IncapacidadDetalle
       state = state.copyWith(
         isLoading: false,
         errorMessage: errorMsg,
+        mostrarMensaje: true,
       );
     } on ServerException catch (e) {
       final errorMsg = e.message;
@@ -45,6 +48,7 @@ class IncapacidadDetalleGuardarNotifier extends StateNotifier<IncapacidadDetalle
       state = state.copyWith(
         isLoading: false,
         errorMessage: errorMsg,
+        mostrarMensaje: true,
       );
     } on RegistroNotFound catch (e)
     {
@@ -54,8 +58,14 @@ class IncapacidadDetalleGuardarNotifier extends StateNotifier<IncapacidadDetalle
       state = state.copyWith(
         isLoading: false,
         errorMessage: errorMsg,
+        mostrarMensaje: true,
       );
     }
+  }
+
+  void marcarMensajeMostrado() 
+  {
+    state = state.copyWith(isLoading: true, mostrarMensaje: false);
   }
 }
 
@@ -64,11 +74,13 @@ class IncapacidadDetalleGuardarState
   final bool isLoading;
   final IncapacidadGuardarDetalle? detalleIncapacidad;
   final String? errorMessage;
+  final bool mostrarMensaje;
 
   IncapacidadDetalleGuardarState({
     this.isLoading = false,
     this.detalleIncapacidad,
     this.errorMessage,
+    this.mostrarMensaje = false,
   });
 
   factory IncapacidadDetalleGuardarState.initial() => IncapacidadDetalleGuardarState();
@@ -77,10 +89,12 @@ class IncapacidadDetalleGuardarState
     bool? isLoading,
     IncapacidadGuardarDetalle? detalleIncapacidad,
     String? errorMessage,
+    bool? mostrarMensaje,
   }) => IncapacidadDetalleGuardarState(
     isLoading: isLoading ?? this.isLoading,
     detalleIncapacidad: detalleIncapacidad ?? this.detalleIncapacidad,
-    errorMessage: errorMessage ?? this.errorMessage,
+    errorMessage: errorMessage,
+    mostrarMensaje: mostrarMensaje ?? this.mostrarMensaje,
   );
 
 }

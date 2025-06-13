@@ -83,11 +83,12 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
       ref.listenManual<IncapacidadDetalleGuardarState>(
         incapacidadDetalleGuardarProvider,
         (prev, next) {
-          if (next.errorMessage != null && prev?.errorMessage != next.errorMessage) {
+          if(next.mostrarMensaje && next.errorMessage != null) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(next.errorMessage!)));
-          } else if (prev?.isLoading == true && next.isLoading == false && next.errorMessage == null) {
+            ref.read(incapacidadDetalleGuardarProvider.notifier).marcarMensajeMostrado();
+          } else if(prev?.isLoading == true && next.isLoading == false && next.errorMessage == null) {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Datos guardados correctamente')));
-            if (mounted) context.pop(true);
+            if(mounted) context.pop(true);
           }
         },
       );
@@ -97,11 +98,11 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
   @override
   void dispose() 
   {
-    super.dispose();
     folioController.dispose();
     diasAutorizadosController.dispose();
     fechaInicioController.dispose();
     descripcionController.dispose();
+    super.dispose();
   }
 
   Future<void> _guardarFormulario() async 
@@ -174,12 +175,6 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
     final riesgoTrabajoState = ref.watch(riesgoTrabajoProvider);
     final tipoRiesgoState = ref.watch(tipoRiesgoProvider);
 
-    final listEmpleados = empleadoState.empleadoIncapacidad;
-    final listTipoIncapacidad = tipoIncapacidadState.tipoIncapacidad;
-    final listControlIncapacidad = controlIncapacidadState.controlIncapacidad;
-    final listRiesgoTrabajo = riesgoTrabajoState.riesgoTrabajo;
-    final listTipoRiesgo = tipoRiesgoState.tipoRiesgo;
-
     final enableEmpleado = empleado?.idEmpleadoInc != null; 
     final enableTpIncapacidad = tpIncapacidad?.clave.contains('ENFG') == true;
 
@@ -192,7 +187,7 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CustomDropdown<EmpleadoIncapacidad>(
-              items: listEmpleados,
+              items: empleadoState.empleadoIncapacidad,
               value: empleado,
               label: 'Empleado',
               itemLabelBuilder: (emp) => '${emp.nombreEmpleado} ${emp.primerApEmpleado} ${emp.segundoApEmpleado}',
@@ -200,8 +195,7 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
                 radius: 16,
                 backgroundColor: Colors.blue,
                 child: Text(
-                  emp.nombreEmpleado.isNotEmpty ? emp.nombreEmpleado[0] : '?',
-                  style: const TextStyle(fontSize: 12, color: Colors.white),
+                  emp.nombreEmpleado.isNotEmpty ? emp.nombreEmpleado[0] : '?', style: const TextStyle(fontSize: 12, color: Colors.white),
                 ),
               ),
               onChanged: (nuevo) => setState(() => empleado = nuevo),
@@ -211,106 +205,64 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
             const SizedBox(height: 16),
 
             CustomDropdown<TipoIncapacidad>(
-              items: listTipoIncapacidad,
+              items: tipoIncapacidadState.tipoIncapacidad,
               value: tpIncapacidad,
               label: 'Tipo de Incapacidad',
               enabled: enableEmpleado,
               iconDataBuilder: (_) => Icons.healing,
               itemLabelBuilder: (tipo) => '${tipo.clave} - ${tipo.descripcion}',
-              onChanged: enableEmpleado ? 
-                (nuevo) => setState(() => tpIncapacidad = nuevo) 
-                : null,
-              validator: (v) {
-                if(enableEmpleado) return null;
-                return v == null ? 'Por favor selecciona un tipo de incapacidad' : null;
-              },
+              onChanged: enableEmpleado ? (nuevo) => setState(() => tpIncapacidad = nuevo) : null,
+              validator: (v) => enableEmpleado ? null : 'Por favor selecciona un tipo de incapacidad',
             ),
 
             const SizedBox(height: 16),
 
             CustomDropdown<ControlIncapacidad>(
-              items: listControlIncapacidad,
+              items: controlIncapacidadState.controlIncapacidad,
               value: ctrIncapacidad,
               label: 'Control Incapacidad',
               enabled: enableEmpleado,
               iconDataBuilder: (_) => Icons.assignment,
               itemLabelBuilder: (control) => '${control.clave} - ${control.descripcion}',
-              onChanged:  enableEmpleado ? 
-                (nuevo) => setState(() => ctrIncapacidad = nuevo) 
-                : null,
-              validator: (v) { 
-                if(enableEmpleado) return null; 
-                return v == null ? 'Por favor selecciona un control de incapacidad' : null;
-              },
+              onChanged:  enableEmpleado ? (nuevo) => setState(() => ctrIncapacidad = nuevo) : null,
+              validator: (v) => enableEmpleado ? null : 'Por favor selecciona un control de incapacidad',
             ),
 
             const SizedBox(height: 16),
 
             CustomDropdown<RiesgoTrabajo>(
-              items: listRiesgoTrabajo,
+              items: riesgoTrabajoState.riesgoTrabajo,
               value: rsgTrabajo,
               label: 'Riesgo de Trabajo',
               enabled: enableTpIncapacidad && enableEmpleado,
               iconDataBuilder: (_) => Icons.warning,
               itemLabelBuilder: (riesgo) => '${riesgo.clave} - ${riesgo.descripcion}',
-              onChanged: (enableTpIncapacidad && enableEmpleado)
-                ? (nuevo) => setState(() => rsgTrabajo = nuevo)
-                : null,
-              validator: (v) {
-                if ((!enableTpIncapacidad && !enableEmpleado) && v == null) return 'Por favor selecciona un riesgo de trabajo';
-                return null;
-              },
+              onChanged: (enableTpIncapacidad && enableEmpleado) ? (nuevo) => setState(() => rsgTrabajo = nuevo): null,
+              validator: (v) => (!enableTpIncapacidad && !enableEmpleado && v == null) ? 'Por favor selecciona un riesgo de trabajo' : null,
             ),
 
             const SizedBox(height: 16),
 
             CustomDropdown<TipoRiesgo>(
-              items: listTipoRiesgo,
+              items: tipoRiesgoState.tipoRiesgo,
               value: tpRiesgo,
               label: 'Tipo de Riesgo',
               enabled: enableTpIncapacidad && enableEmpleado,
               iconDataBuilder: (_) => Icons.security,
               itemLabelBuilder: (riesgo) => '${riesgo.clave} - ${riesgo.descripcion}',
-              onChanged: (enableTpIncapacidad && enableEmpleado) 
-                ? (nuevo) => setState(() => tpRiesgo = nuevo)
-                : null,
-              validator: (v) {
-                if ((!enableTpIncapacidad && !enableEmpleado) && v == null) return 'Por favor selecciona un riesgo de trabajo';
-                return null;
-              },
+              onChanged: (enableTpIncapacidad && enableEmpleado) ? (nuevo) => setState(() => tpRiesgo = nuevo) : null,
+              validator: (v) => (!enableTpIncapacidad && !enableEmpleado && v == null) ? 'Por favor selecciona un tipo de riesgo' : null,
             ),
 
             const SizedBox(height: 10),
 
-            TextFormField(
-              controller: folioController,
-              decoration: const InputDecoration(labelText: 'Folio'),
-              validator: (value) => value == null || value.isEmpty ? 'Por favor ingresa el folio' : null,
-            ),
-
-            TextFormField(
-              controller: diasAutorizadosController,
-              decoration: const InputDecoration(labelText: 'Días Autorizados'),
-              keyboardType: TextInputType.number,
-              validator: (value) => value == null || value.isEmpty ? 'Por favor ingresa los días' : null,
-            ),
-
+            _buildTextField(controller: folioController, label: 'Folio'),
+            _buildTextField(controller: diasAutorizadosController, label: 'Días Autorizados'),
             DatePickerField(
               controller: fechaInicioController,
-              validator: (value) 
-              {
-                if (value == null || value.isEmpty) {
-                  return 'Por favor selecciona una fecha';
-                }
-                return null;
-              },
+              validator: (value) => value?.isEmpty ?? true ? 'Por favor selecciona una fecha' : null,
             ),
-
-            TextFormField(
-              controller: descripcionController,
-              decoration: const InputDecoration(labelText: 'Descripción'),
-              validator: (value) => value == null || value.isEmpty ? 'Por favor ingresa la descripción' : null,
-            ),
+            _buildTextField(controller: descripcionController, label: 'Descripcion'),
 
             const SizedBox(height: 24),
 
@@ -329,4 +281,13 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
       ),
     );
   }
+}
+
+Widget _buildTextField({required TextEditingController controller, required String label, TextInputType? keyboardType}) {
+  return TextFormField(
+    controller: controller,
+    keyboardType: keyboardType,
+    decoration: InputDecoration(labelText: label),
+    validator: (value) => value == null || value.isEmpty ? 'Por favor ingresa ${label.toLowerCase()}' : null,
+  );
 }

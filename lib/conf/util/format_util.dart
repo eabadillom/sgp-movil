@@ -39,6 +39,13 @@ class FormatUtil {
     return formatter;
   }
 
+  static String fechaHoy()
+  {
+    DateTime hoy = DateTime.now();
+    String fechaFormateada = DateFormat('EEEE, d MMMM yyyy','es').format(hoy);
+    return fechaFormateada;
+  }
+
   static String formatearFecha(DateTime? fecha) {
     if (fecha == null) return '';
     // Ajustar manualmente a UTC-6
