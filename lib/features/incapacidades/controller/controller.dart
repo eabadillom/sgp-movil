@@ -1,6 +1,7 @@
 export 'datasource/incapacidad_datasource_impl.dart';
 export 'datasource/incapacidad_detalle_datasource_impl.dart';
 export 'errors/registro_errores.dart';
+export 'errors/not_found_exception.dart';
 export 'mappers/incapacidad_mapper.dart';
 export 'mappers/incapacidad_detalle_mapper.dart';
 export 'mappers/incapacidad_guardar_detalle_mapper.dart';

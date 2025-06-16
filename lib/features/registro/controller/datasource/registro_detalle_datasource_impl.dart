@@ -5,7 +5,7 @@ import 'package:sgp_movil/features/registro/controller/controller.dart';
 
 class RegistroDetalleDatasourceImpl extends RegistroDetalleDatasource 
 {
-  final DioClient httpService = DioClient(nameContext: 'Movil');
+  final DioClient httpService = DioClient();
   final LoggerSingleton log = LoggerSingleton.getInstance('RegistroDetalleDatasourceImpl',);
   final String accessToken;
 
@@ -20,7 +20,8 @@ class RegistroDetalleDatasourceImpl extends RegistroDetalleDatasource
     httpService.setAccessToken(accessToken);
     try {
       final String method = 'PATCH';
-      final String url = '/registros/$id/estatus'; // Corrección aquí
+      String contexto = Environment.obtenerUrlPorNombre('Movil'); 
+      final String url = '$contexto/registros/$id/estatus';
 
       final response = await httpService.dio.request(
         url,
@@ -46,8 +47,9 @@ class RegistroDetalleDatasourceImpl extends RegistroDetalleDatasource
   Future<RegistroDetalle> registroDetalle(int id) async {
     httpService.setAccessToken(accessToken);
     try {
-      String ruta = '/registros/$id/estatus';
-      final response = await httpService.dio.get(ruta);
+      String contexto = Environment.obtenerUrlPorNombre('Movil'); 
+      String url = '$contexto/registros/$id/estatus';
+      final response = await httpService.dio.get(url);
       final registro = RegistroDetalleMapper.jsonToEntity(response.data);
       return registro;
     } on DioException catch (e) {

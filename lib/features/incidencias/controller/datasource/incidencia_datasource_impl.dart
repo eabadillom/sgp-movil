@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:sgp_movil/conf/constants/environment.dart';
 import 'package:sgp_movil/conf/loggers/logger_singleton.dart';
 import 'package:sgp_movil/conf/security/dio_client.dart';
 import 'package:sgp_movil/conf/util/format_util.dart';
@@ -12,7 +13,7 @@ class IncidenciaDatasourceImpl extends IncidenciaDatasource {
   final LoggerSingleton log = LoggerSingleton.getInstance(
     'IncidenciaDatasourceImpl',
   );
-  final DioClient httpService = DioClient(nameContext: 'Movil');
+  final DioClient httpService = DioClient();
   final String accessToken;
 
   IncidenciaDatasourceImpl({required this.accessToken});
@@ -28,7 +29,8 @@ class IncidenciaDatasourceImpl extends IncidenciaDatasource {
     try {
       String fechaI = FormatUtil.stringToISO(fechaInicial);
       String fechaF = FormatUtil.stringToISO(fechaFinal);
-      String url = '/incidencias/$tipo/$fechaI/$fechaF';
+      String contexto = Environment.obtenerUrlPorNombre('Movil');
+      String url = '$contexto/incidencias/$tipo/$fechaI/$fechaF';
 
       final response = await httpService.dio.get<List>(url);
 

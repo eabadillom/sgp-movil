@@ -51,9 +51,7 @@ class _DetalleSolicitudScreenState
   Widget build(BuildContext context) {
     final state = ref.watch(solicitudNotifierProvider);
     DioClient http = DioClient();
-    String baseUrl = http.dio.options.baseUrl;
     String contexto = Environment.obtenerUrlPorNombre('SGP');
-    String url = '$baseUrl/$contexto';
     final usuarioDetalleState =
         ref.watch(usuarioDetalleProvider).usuarioDetalle;
     if (state.errorMessage != null) {
@@ -73,7 +71,8 @@ class _DetalleSolicitudScreenState
       final articulo = (state.solicitud as SolicitudArticuloDetalle).data;
       contenido = _buildContenido(
         descripcion: articulo.descripcion,
-        imagenUrl: '$url/${articulo.rutaImagen}${articulo.descripcion}.jpg',
+        imagenUrl:
+            '$contexto/${articulo.rutaImagen}${articulo.descripcion}.jpg',
         detalle: articulo.detalle,
         tipo: 'A',
         unidad: articulo.unidad,
@@ -90,7 +89,7 @@ class _DetalleSolicitudScreenState
       final prenda = (state.solicitud as SolicitudPrendaDetalle).data;
       contenido = _buildContenido(
         descripcion: prenda.descripcion,
-        imagenUrl: '$url/${prenda.rutaImagen}${prenda.descripcion}.jpg',
+        imagenUrl: '$contexto/${prenda.rutaImagen}${prenda.descripcion}.jpg',
         detalle: prenda.detalle,
         tipo: 'PR',
         precio: prenda.precio,

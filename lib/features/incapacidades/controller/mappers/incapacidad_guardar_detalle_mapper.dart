@@ -2,18 +2,21 @@ import 'package:sgp_movil/features/incapacidades/domain/entities/incapacidad_gua
 
 class IncapacidadGuardarDetalleMapper 
 {
-  static jsonToEntity(Map<String, dynamic> json) => IncapacidadGuardarDetalle(
-    idIncapacidad: json['idIncapacidad'], 
-    idEmpleadoInc: json['idEmpleadoInc'], 
-    idEmpleadoRev: json['idEmpleadoRev'], 
-    tipoIncapacidad: json['tipoIncapacidad'], 
-    controlIncapacidad: json['controlIncapacidad'], 
-    riesgoTrabajo: json['riesgoTrabajo'], 
-    tipoRiesgo: json['tipoRiesgo'], 
-    folio: json['folio'], 
-    diasAutorizados: json['diasAutorizados'], 
-    fechaInicio: DateTime.parse(json['fechaInicio']), 
-    descripcion: json['descripcion'], 
-    estatusIncapacidad: json['estatusIncapacidad'],
-  );
+  static IncapacidadGuardarDetalle jsonToEntity(Map<String, dynamic> json) 
+  {
+    return IncapacidadGuardarDetalle(
+      idIncapacidad: json['idIncapacidad'] as int?,
+      idEmpleadoInc: json['idEmpleadoInc'] as int,
+      idEmpleadoRev: json['idEmpleadoRev'] as String,
+      tipoIncapacidad: json['tipoIncapacidad'] as int,
+      controlIncapacidad: json['controlIncapacidad'] as int,
+      riesgoTrabajo: json['riesgoTrabajo'] as int?,
+      tipoRiesgo: json['tipoRiesgo'] as int?,
+      folio: json['folio'] as String,
+      diasAutorizados: json['diasAutorizados'] ?? 0,
+      fechaInicio: DateTime.tryParse(json['fechaInicio'] ?? '') ?? DateTime.now(),
+      descripcion: json['descripcion'] ?? '',
+      estatusIncapacidad: json['estatusIncapacidad'] as String,
+    );
+  }
 }

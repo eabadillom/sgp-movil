@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:sgp_movil/conf/constants/environment.dart';
 import 'package:sgp_movil/conf/loggers/logger_singleton.dart';
 import 'package:sgp_movil/conf/security/dio_client.dart';
 import 'package:sgp_movil/features/solicitudes/controller/mappers/solicitud_articulo_mapper.dart';
@@ -10,17 +11,18 @@ class SolicicitudDatasourceImpl extends SolicitudDatasource {
     'SolicicitudDatasourceImpl',
   );
 
-  final DioClient httpService = DioClient(nameContext: 'Movil');
+  final DioClient httpService = DioClient();
   final String accessToken;
 
   SolicicitudDatasourceImpl({required this.accessToken});
 
   @override
   Future<dynamic> obtenerSolicitud(String tipo, int id) async {
+    String contexto = Environment.obtenerUrlPorNombre('Movil');
     httpService.setAccessToken(accessToken);
 
     try {
-      String url = '/solicitudes/$id/estatus';
+      String url = '$contexto/solicitudes/$id/estatus';
       final response = await httpService.dio.get<dynamic>(url);
 
       switch (tipo) {

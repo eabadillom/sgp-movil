@@ -8,7 +8,7 @@ class Environment
     Context(name: 'Movil', context: 'sgp-api/movil'),
   ];
 
-  static String apiUrl = dotenv.env['API_URL'] ?? 'No está configurado el API_URL';
+  static String baseURL = dotenv.env['HOST'] ?? 'No está configurado el API_URL';
 
   static initEnvironmet () async{
     await dotenv.load(fileName: ".env");
@@ -20,6 +20,6 @@ class Environment
       (c) => c.name == nombre,
       orElse: () => throw ArgumentError('Nombre de contexto no válido'),
     );
-    return "$apiUrl/${ctx.context}";
+    return "$baseURL/${ctx.context}";
   }
 }

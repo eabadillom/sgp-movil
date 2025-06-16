@@ -55,6 +55,11 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
 
     final detalle = registroState.registroDetalle;
 
+    Widget? renderEtiqueta(String label, String? value) {
+      if (value == null || value.trim().isEmpty) return null;
+      return EtiquetaRegistroWidget(label: label, value: value);
+    }
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -78,24 +83,16 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                EtiquetaRegistroWidget(
-                  label: 'Empleado',
-                  value:
-                      '${detalle?.nombreEmpleado ?? ''} ${detalle?.primerApEmpleado ?? ''} ${detalle?.segundoApEmpleado ?? ''}',
-                ),
-                EtiquetaRegistroWidget(
-                  label: 'Planta',
-                  value: detalle?.plantaEmpleado ?? '',
-                ),
-                EtiquetaRegistroWidget(
-                  label: 'Entrada',
-                  value: FormatUtil.formatearFecha(detalle?.fechaEntrada),
-                ),
-                EtiquetaRegistroWidget(
-                  label: 'Salida',
-                  value: FormatUtil.formatearFecha(detalle?.fechaSalida),
-                ),
+
+                ...[
+                  renderEtiqueta('Empleado', '${detalle?.nombreEmpleado ?? ''} ${detalle?.primerApEmpleado ?? ''} ${detalle?.segundoApEmpleado ?? ''}'),
+                  renderEtiqueta('Planta', detalle?.plantaEmpleado ?? ''),
+                  renderEtiqueta('Entrada', FormatUtil.formatearFecha(detalle?.fechaEntrada)),
+                  renderEtiqueta('Salida', FormatUtil.formatearFecha(detalle?.fechaSalida))
+                ].whereType<Widget>(),
+                
                 const SizedBox(height: 32),
+                
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [

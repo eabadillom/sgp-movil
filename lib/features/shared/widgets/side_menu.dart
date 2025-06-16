@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sgp_movil/conf/util/format_util.dart';
 import 'package:sgp_movil/features/dashboard/presentation/providers/usuario_detalle_provider.dart';
 import 'package:sgp_movil/features/login/presentation/providers/login_provider.dart';
 import 'package:sgp_movil/features/shared/shared.dart';
@@ -27,7 +28,8 @@ class SideMenuState extends ConsumerState<SideMenu>
   {
     final usuarioDetalleState = ref.watch(usuarioDetalleProvider).usuarioDetalle;
     final hasNotch = MediaQuery.of(context).viewPadding.top > 35;
-    final textStyles = Theme.of(context).textTheme; 
+    final textStyles = Theme.of(context).textTheme;
+    final String fechaHoy = FormatUtil.fechaHoy();
 
     return NavigationDrawer
     (
@@ -82,20 +84,18 @@ class SideMenuState extends ConsumerState<SideMenu>
           ),
         ),
 
-        /*const NavigationDrawerDestination(
-            icon: Icon(Icons.home_outlined), 
-            label: Text('Incapacidades'),
-        ),
-
         const Padding(
           padding: EdgeInsets.fromLTRB(28, 16, 28, 10),
           child: Divider(),
         ),
 
-        const Padding(
-          padding: EdgeInsets.fromLTRB(28, 10, 16, 10),
-          child: Text('Vacaciones'),
-        ),*/
+        Align(
+          alignment: Alignment.center,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+            child: Text(fechaHoy),
+          ),
+        ),
         
         const Padding(
           padding: EdgeInsets.fromLTRB(28, 16, 28, 10),

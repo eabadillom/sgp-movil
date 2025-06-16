@@ -1,13 +1,11 @@
-import 'package:sgp_movil/conf/loggers/logger_singleton.dart';
-import 'package:sgp_movil/conf/security/dio_client.dart';
-import 'package:sgp_movil/conf/util/format_util.dart';
+import 'package:sgp_movil/conf/config.dart';
 import 'package:sgp_movil/features/incapacidades/controller/controller.dart';
 import 'package:sgp_movil/features/incapacidades/domain/domain.dart';
 
 class IncapacidadDatasourceImpl extends IncapacidadDatasource
 {
   final LoggerSingleton log = LoggerSingleton.getInstance('IncapacidadDatasourceImpl');
-  final DioClient httpService = DioClient(nameContext: 'Movil');
+  final DioClient httpService = DioClient();
   final String accessToken;
 
   IncapacidadDatasourceImpl({required this.accessToken});
@@ -20,7 +18,8 @@ class IncapacidadDatasourceImpl extends IncapacidadDatasource
     try {
       String fechaI = FormatUtil.stringToISO(fechaInicial);
       String fechaF = FormatUtil.stringToISO(fechaFinal);
-      String url = '/incapacidades/$fechaI/$fechaF';
+      String contexto = Environment.obtenerUrlPorNombre('Movil'); 
+      String url =  '$contexto/incapacidades/$fechaI/$fechaF';
 
       final response = await httpService.dio.get<List>(url);
 
