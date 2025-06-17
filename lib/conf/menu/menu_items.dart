@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class MenuItems 
-{
+class MenuItems {
   final String title;
   final String subTitle;
   final String link;
@@ -15,11 +15,10 @@ class MenuItems
   });
 }
 
-const appMenuItem = <MenuItems> 
-[
+const appMenuItem = <MenuItems>[
   MenuItems(
-    title: 'Incapacidad', 
-    subTitle: 'Solicitud de incapacidades', 
+    title: 'Incapacidad',
+    subTitle: 'Solicitud de incapacidades',
     link: '/incapacidades',
     icon: Icons.health_and_safety_outlined,
   ),
@@ -34,7 +33,7 @@ const appMenuItem = <MenuItems>
   MenuItems(
     title: 'Permisos',
     subTitle: 'Solicitud de permisos',
-    link: '/permisos',
+    link: '/Permisos',
     icon: Icons.assignment_turned_in,
   ),
 
@@ -42,28 +41,27 @@ const appMenuItem = <MenuItems>
     title: 'Ausencias',
     subTitle: 'Justificar las ausencias',
     link: '/justificar_faltas',
-    icon: Icons.account_box_rounded,
+    icon: Icons.person_off,
   ),
 
   MenuItems(
     title: 'Retardos',
     subTitle: 'Justificar los retardos',
     link: '/justificar_retardos',
-    icon: Icons.alarm,
+    icon: Icons.hourglass_empty,
   ),
 
   MenuItems(
     title: 'Uniformes',
     subTitle: 'Solicitud de uniformes',
     link: '/uniformes',
-    icon: Icons.dry_cleaning,
+    icon: FontAwesomeIcons.shirt ,
   ),
-  
+
   MenuItems(
     title: 'Articulos',
     subTitle: 'Solicitud de articulos',
     link: '/articulos',
-    icon: Icons.handyman,
+    icon: Icons.cleaning_services_rounded,
   ),
-
 ];

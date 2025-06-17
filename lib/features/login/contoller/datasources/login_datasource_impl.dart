@@ -3,9 +3,9 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:sgp_movil/conf/config.dart';
-import 'package:sgp_movil/features/login/contoller/mappers/token_mapper.dart';
+import 'package:sgp_movil/features/login/contoller/controller.dart';
+import 'package:sgp_movil/features/login/contoller/mappers/login_usuario_mapper.dart';
 import 'package:sgp_movil/features/login/domain/domain.dart';
-import '../controller.dart';
 
 class LoginDatasourceImpl extends LoginDatasource
 {
@@ -65,16 +65,19 @@ class LoginDatasourceImpl extends LoginDatasource
   }
   
   @override
-  Future<Token> login(String nombre, String contrasenia) async
+  Future<LoginUsuario> login(String numeroEmpleado, String nombre, String contrasenia) async
   {
     log.setupLoggin();
     try 
     {
       httpService.setBasicAuth(nombre, contrasenia);
-      final response = await httpService.dio.get('/generar');
+      //final response = await httpService.dio.get('/generar', data: {'numeroUsuario': numeroEmpleado});
+      //final response = await httpService.dio.get('/generar', queryParameters: {'numeroEmpleado': numeroEmpleado});
+      final response = await httpService.dio.request('/generar', data: {'numeroUsuario': numeroEmpleado}, options: Options(method: 'GET'));
 
-      Token token = TokenMapper.tokenJsonToEntity(response.data);
-      return token;
+      LoginUsuario loginUsuario = LoginUsuarioMapper.tokenJsonToEntity(response.data);
+
+      return loginUsuario;
     } on DioException catch (e) 
     {
       if(e.response?.statusCode == 401)

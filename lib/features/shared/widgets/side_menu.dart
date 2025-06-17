@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sgp_movil/features/dashboard/presentation/providers/usuario_detalle_provider.dart';
 import 'package:sgp_movil/features/login/presentation/providers/login_provider.dart';
 import 'package:sgp_movil/features/shared/shared.dart';
 
@@ -24,6 +25,7 @@ class SideMenuState extends ConsumerState<SideMenu>
   @override
   Widget build(BuildContext context) 
   {
+    final usuarioDetalleState = ref.watch(usuarioDetalleProvider).usuarioDetalle;
     final hasNotch = MediaQuery.of(context).viewPadding.top > 35;
     final textStyles = Theme.of(context).textTheme; 
 
@@ -50,9 +52,25 @@ class SideMenuState extends ConsumerState<SideMenu>
           child: Text('Bienvenido', style: textStyles.titleMedium),
         ),
 
+        const Padding(
+          padding: EdgeInsets.fromLTRB(28, 16, 28, 10),
+          child: Divider(),
+        ),
+
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 16, 10),
-          child: Text('Severo', style: textStyles.titleSmall),
+          child: Text(
+            '${usuarioDetalleState?.nombreUsuario} ${usuarioDetalleState?.primerApUsuario} ${usuarioDetalleState?.segundoApUsuario}', 
+            style: textStyles.titleSmall
+          ),
+        ),
+
+        Padding(
+          padding: EdgeInsets.fromLTRB(28, 10, 16, 10),
+          child: Text(
+            'Puesto: ${usuarioDetalleState?.puesto}',
+            style: textStyles.titleSmall
+          ),
         ),
 
         /*const NavigationDrawerDestination(

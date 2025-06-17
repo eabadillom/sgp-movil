@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.ferbo.sgp.sgp_movil"
+    namespace = "mx.com.ferbo.sgp_movil"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.ferbo.sgp.sgp_movil"
+        applicationId = "mx.com.ferbo.sgp_movil"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion

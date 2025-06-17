@@ -1,10 +1,12 @@
 class Usuario 
 {
+  final String numeroEmpleado;
   final String nombre;
   final String contrasenia;
 
   Usuario
   ({
+    required this.numeroEmpleado,
     required this.nombre,
     required this.contrasenia,
   });
@@ -12,7 +14,7 @@ class Usuario
   @override
   String toString()
   {
-    return 'Usuario[id: $nombre, contraseña: $contrasenia]';
+    return 'Usuario[NumeroEmpleado: $numeroEmpleado, Nombre: $nombre, Contraseña: $contrasenia]';
   }
 
 }

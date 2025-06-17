@@ -3,29 +3,34 @@ import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sgp_movil/conf/loggers/logger_singleton.dart';
+import 'package:sgp_movil/features/dashboard/presentation/providers/usuario_detalle_provider.dart';
 import 'package:sgp_movil/features/login/domain/domain.dart';
 import 'package:sgp_movil/features/login/contoller/controller.dart';
-import 'package:sgp_movil/features/shared/controller/services/key_value_storage_service_impl.dart';
+import 'package:sgp_movil/features/shared/shared.dart';
 
 final loginProvider = StateNotifierProvider<LoginNotifier, LoginState>((ref) 
 {
   final loginRepository = LoginRepositoryImpl();
 
   return LoginNotifier(
-    loginRepository: loginRepository
+    loginRepository: loginRepository,
+    ref: ref,
   );
 });
 
 class LoginNotifier extends StateNotifier<LoginState> 
 {
-  final LoginRepository loginRepository;
   final LoggerSingleton log = LoggerSingleton.getInstance('LoginProvider'); 
+  final storage = SecureStorageService();
+  final LoginRepository loginRepository;
+  final Ref ref;
 
   LoginNotifier({
     required this.loginRepository,
+    required this.ref,
   }): super(LoginState()){checkLoginStatus();} 
 
-  Future<void> loginUser(String nombre, String contrasenia) async 
+  Future<void> loginUser(String numeroEmpleado, String nombre, String contrasenia) async 
   {
     await Future.delayed(const Duration(milliseconds: 500));
     log.setupLoggin();
@@ -33,8 +38,11 @@ class LoginNotifier extends StateNotifier<LoginState>
     try 
     {
       log.logger.info('Inicio Sesion');
-      final Usuario usuario = Usuario(nombre: nombre, contrasenia: contrasenia);
-      final token = await loginRepository.login(usuario.nombre, usuario.contrasenia);
+      final Usuario usuario = Usuario(numeroEmpleado: numeroEmpleado, nombre: nombre, contrasenia: contrasenia);
+      final LoginUsuario loginUsuario = await loginRepository.login(usuario.numeroEmpleado, usuario.nombre, usuario.contrasenia);
+      final Token token = Token(accessToken: loginUsuario.accessToken, refreshToken: loginUsuario.refreshToken);
+      final UsuarioDetalle usuarioDetalle = UsuarioDetalle(numeroUsuario: loginUsuario.numeroUsuario, nombreUsuario: loginUsuario.nombreUsuario, primerApUsuario: loginUsuario.primerApUsuario, segundoApUsuario: loginUsuario.segundoApUsuario, puesto: loginUsuario.puesto);
+      ref.read(usuarioDetalleProvider.notifier).setUsuarioDetalle(usuarioDetalle);
       _setLoggedUser(token, usuario);
 
     } on CustomError catch (e)
@@ -72,10 +80,11 @@ class LoginNotifier extends StateNotifier<LoginState>
     log.logger.info('Validando estatus');
     try 
     {
-      final token = await KeyValueStorageServiceImpl.getValue<String>('token');
-      final tokenRe = await KeyValueStorageServiceImpl.getValue<String>('tokenRe');
-      final nombre = await KeyValueStorageServiceImpl.getValue<String>('nombre');
-      final contrasenia = await KeyValueStorageServiceImpl.getValue<String>('contrasenia');
+      final token = await storage.read(key: 'token');
+      final tokenRe = await storage.read(key: 'tokenRe');
+      final numeroEmpleado = await storage.read(key: 'numeroEmpleado');
+      final nombre = await storage.read(key: 'nombre');
+      final contrasenia = await storage.read(key: 'contrasenia');
       
       if(token != null && tokenRe != null)
       {
@@ -83,25 +92,34 @@ class LoginNotifier extends StateNotifier<LoginState>
 
         if(status == 200)
         {
-          Token tokenOb = Token(accessToken: token, refreshToken: tokenRe);
-          if(nombre != null && contrasenia != null) 
+          final Token tokenObj = Token(accessToken: token, refreshToken: tokenRe);
+          if(nombre != null && contrasenia != null && numeroEmpleado != null) 
           {  
-            final Usuario usuario = Usuario(nombre: nombre, contrasenia: contrasenia);
-            _setLoggedUser(tokenOb, usuario);
+            final Usuario usuario = Usuario(numeroEmpleado: numeroEmpleado, nombre: nombre, contrasenia: contrasenia);
+            final LoginUsuario loginUsuario = await loginRepository.login(usuario.numeroEmpleado, usuario.nombre, usuario.contrasenia);
+            final UsuarioDetalle usuarioDetalle = UsuarioDetalle(numeroUsuario: loginUsuario.numeroUsuario, nombreUsuario: loginUsuario.nombreUsuario, primerApUsuario: loginUsuario.primerApUsuario, segundoApUsuario: loginUsuario.segundoApUsuario, puesto: loginUsuario.puesto);
+            ref.read(usuarioDetalleProvider.notifier).setUsuarioDetalle(usuarioDetalle);
+            
+            _setLoggedUser(tokenObj, usuario);
           }
         }
       }
     
-      if(nombre == null || contrasenia == null)
+      if(nombre == null || contrasenia == null || numeroEmpleado == null)
       {
         return logout();
       }
 
-      final Usuario usuario = Usuario(nombre: nombre, contrasenia: contrasenia);
-      final Token tokenOb = await loginRepository.login(usuario.nombre, usuario.contrasenia);
-      await KeyValueStorageServiceImpl.setKeyValue('token', tokenOb.accessToken);
+      final Usuario usuario = Usuario(numeroEmpleado: numeroEmpleado, nombre: nombre, contrasenia: contrasenia);
+      final LoginUsuario loginUsuario = await loginRepository.login(usuario.numeroEmpleado, usuario.nombre, usuario.contrasenia);
+      final Token tokenObj = Token(accessToken: loginUsuario.accessToken, refreshToken: loginUsuario.refreshToken);
+      final UsuarioDetalle usuarioDetalle = UsuarioDetalle(numeroUsuario: loginUsuario.numeroUsuario, nombreUsuario: loginUsuario.nombreUsuario, primerApUsuario: loginUsuario.primerApUsuario, segundoApUsuario: loginUsuario.segundoApUsuario, puesto: loginUsuario.puesto);
+      ref.read(usuarioDetalleProvider.notifier).setUsuarioDetalle(usuarioDetalle);
+      
+      await storage.write(key: 'token', value: tokenObj.accessToken);
+      await storage.write(key: 'tokenRe', value: tokenObj.refreshToken);
 
-      _setLoggedUser(tokenOb, usuario);
+      _setLoggedUser(tokenObj, usuario);
     } catch (e) 
     {
       if(e is SocketException)
@@ -125,10 +143,11 @@ class LoginNotifier extends StateNotifier<LoginState>
   void _setLoggedUser(Token token, Usuario usuario) async
   {
     log.setupLoggin();
-    await KeyValueStorageServiceImpl.setKeyValue('token', token.accessToken);
-    await KeyValueStorageServiceImpl.setKeyValue('tokenRe', token.refreshToken);
-    await KeyValueStorageServiceImpl.setKeyValue('nombre', usuario.nombre);
-    await KeyValueStorageServiceImpl.setKeyValue('contrasenia', usuario.contrasenia);
+    await storage.write(key: 'token', value: token.accessToken);
+    await storage.write(key: 'tokenRe', value: token.refreshToken);
+    await storage.write(key: 'numeroEmpleado', value: usuario.numeroEmpleado);
+    await storage.write(key: 'nombre', value: usuario.nombre);
+    await storage.write(key: 'contrasenia', value: usuario.contrasenia);
 
     log.logger.info('Usuario ingresado correctamente');
     state = state.copyWith(
@@ -141,8 +160,8 @@ class LoginNotifier extends StateNotifier<LoginState>
 
   Future<void> logout([String? errorMessage]) async 
   {
-    await KeyValueStorageServiceImpl.removeKey('token');
-    await KeyValueStorageServiceImpl.removeKey('tokenRe');
+    await storage.delete(key: 'token');
+    await storage.delete(key: 'tokenRe');
 
     state = state.copyWith(
       loginStatus: LoginStatus.notAuthenticated,
