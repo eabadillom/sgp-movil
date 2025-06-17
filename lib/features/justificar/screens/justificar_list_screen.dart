@@ -22,6 +22,10 @@ class _JustificarListState extends ConsumerState<JustificarListScreen> {
   late String codigo;
   late String nombrePantalla;
 
+  int paginaActual = 0;
+  final int elementosPorPagina = 5;
+  int totalPaginas = 0;
+
   @override
   void initState() {
     super.initState();
@@ -95,6 +99,7 @@ class _JustificarListState extends ConsumerState<JustificarListScreen> {
   @override
   Widget build(BuildContext context) {
     final registroState = ref.watch(justificarNotifierProvider);
+    totalPaginas = (registroState.registrosFiltrados.length / elementosPorPagina).ceil();
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -104,12 +109,7 @@ class _JustificarListState extends ConsumerState<JustificarListScreen> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
-              if (Navigator.of(context).canPop()) 
-              {
-                Navigator.of(context).pop();
-              } else {
-                context.go('/dashboard');
-              }
+              context.go('/dashboard');
             },
           ),
         ),
@@ -143,7 +143,10 @@ class _JustificarListState extends ConsumerState<JustificarListScreen> {
               else
                 Expanded(
                   child: ListaTarjetaGenerica<Registro>(
-                    items: registroState.registrosFiltrados,
+                    items: registroState.registrosFiltrados
+                      .skip(paginaActual * elementosPorPagina)
+                      .take(elementosPorPagina)
+                      .toList(),
                     getTitle:
                         (registro) =>
                             '${registro.nombreEmpleado} ${registro.primerApEmpleado} ${registro.segundoApEmpleado}',
@@ -154,6 +157,28 @@ class _JustificarListState extends ConsumerState<JustificarListScreen> {
                         (registro) =>
                             '/detalle/${registro.id}/${registro.codigoRegistro}', // Ruta personalizada
                   ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                      onPressed: paginaActual > 0
+                          ? () {
+                              setState(() {
+                                paginaActual--;
+                              });
+                            }
+                          : null,
+                      child: const Text('Anterior'),
+                    ),
+                    Text('Página ${paginaActual + 1} de $totalPaginas'),
+                    ElevatedButton(
+                      onPressed: paginaActual + 1 < totalPaginas
+                          ? () { setState(() { paginaActual++; }); } : null,
+                      child: const Text('Siguiente'),
+                    ),
+                  ],
                 ),
             ],
           ),

@@ -6,7 +6,7 @@ import 'package:sgp_movil/features/incidencias/controller/controller.dart';
 class IncidenciaPermisoDetalleDatasourceImpl extends IncidenciaPermisoDetalleDatasource
 {
   final DioClient httpService = DioClient();
-  final LoggerSingleton log = LoggerSingleton.getInstance('RegistroDetalleDatasourceImpl');
+  final LoggerSingleton log = LoggerSingleton.getInstance('IncidenciaPermisoDetalleDatasourceImpl');
   final String accessToken;
 
   IncidenciaPermisoDetalleDatasourceImpl({required this.accessToken});
@@ -17,7 +17,8 @@ class IncidenciaPermisoDetalleDatasourceImpl extends IncidenciaPermisoDetalleDat
     httpService.setAccessToken(accessToken);
     try {
       final String method = 'PATCH';
-      final String url = '/incidencias/$idIncidencia/estatus';
+      String contexto = Environment.obtenerUrlPorNombre('Movil'); 
+      final String url = '$contexto/incidencias/$idIncidencia/estatus';
       final response = await httpService.dio.request(url, data: incidencia, options: Options(method: method));
       final inc = IncidenciaPermisoDetalleMapper.jsonToEntity(response.data);
       return inc;
@@ -35,8 +36,9 @@ class IncidenciaPermisoDetalleDatasourceImpl extends IncidenciaPermisoDetalleDat
   {
     httpService.setAccessToken(accessToken);
     try {
-      String ruta = '/incidencia/$idIncidencia';
-      final response = await httpService.dio.get(ruta);
+      String contexto = Environment.obtenerUrlPorNombre('Movil'); 
+      String url = '$contexto/incidencia/$idIncidencia';
+      final response = await httpService.dio.get(url);
       final incidencia = IncidenciaPermisoDetalleMapper.jsonToEntity(response.data);
       return incidencia;
     }on DioException catch (e) {

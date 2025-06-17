@@ -6,4 +6,10 @@ abstract class IncidenciaDatasource {
     DateTime fechaInicial,
     DateTime fechaFinal,
   );
+
+  Future<dynamic> actualizarIncidencia(
+    String baseUrl,
+    int id,
+    Map<String, dynamic> incidencia,
+  );
 }

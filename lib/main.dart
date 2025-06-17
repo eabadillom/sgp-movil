@@ -21,7 +21,6 @@ class MainApp extends ConsumerWidget
     final AppTheme appTheme = ref.watch(themeNotifierProvider);
     return MaterialApp.router(
       routerConfig: appRouter,
-      //theme: AppTheme().getTheme(),
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

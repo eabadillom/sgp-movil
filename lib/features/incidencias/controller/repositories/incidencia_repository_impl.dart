@@ -15,4 +15,13 @@ class IncidenciaRepositoryImpl extends IncidenciaRepository {
   ) {
     return datasource.getIncidencias(tipo, fechaInicial, fechaFinal);
   }
+
+  @override
+  Future<dynamic> actualizarIncidencia(
+    String baseUrl,
+    int id,
+    Map<String, dynamic> incidencia,
+  ) {
+    return datasource.actualizarIncidencia(baseUrl, id, incidencia);
+  }
 }

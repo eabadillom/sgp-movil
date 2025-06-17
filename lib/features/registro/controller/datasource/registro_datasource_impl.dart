@@ -20,7 +20,8 @@ class RegistroDatasourceImpl extends RegistroDatasource
     {
       String fechaI = FormatUtil.stringToISO(fechaIni);
       String fechaF = FormatUtil.stringToISO(fechaFin);
-      String url = '/registros/$fechaI/$fechaF/$codigo';
+      String contexto = Environment.obtenerUrlPorNombre('Movil'); 
+      String url = '$contexto/registros/$fechaI/$fechaF/$codigo';
 
       final response = await httpService.dio.get<List>(url);
       

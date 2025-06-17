@@ -5,6 +5,8 @@ class Incidencia {
   final String nombreSolicitante;
   final String primerApSolicitante;
   final String segundoApSolicitante;
+  final String? numeroRevisor;
+  final String? motivoRechazo;
   final DateTime fechaCaptura;
   final int? solicitudPermiso;
   final int? solicitudPrenda;
@@ -17,6 +19,8 @@ class Incidencia {
     required this.nombreSolicitante,
     required this.primerApSolicitante,
     required this.segundoApSolicitante,
+    required this.numeroRevisor,
+    required this.motivoRechazo,
     required this.fechaCaptura,
     this.solicitudPermiso,
     this.solicitudPrenda,
@@ -29,8 +33,17 @@ class Incidencia {
       codigoEstadoIncidencia: json['codigoEstadoIncidencia'] as String,
       codigoTipoIncidencia: json['codigoTipoIncidencia'] as String,
       nombreSolicitante: json['nombreSolicitante'] as String,
+
       primerApSolicitante: json['primerApSolicitante'] as String,
       segundoApSolicitante: json['segundoApSolicitante'] as String,
+      numeroRevisor:
+          json['numeroRevisor'] != null
+              ? json['numeroRevisor'] as String
+              : null,
+      motivoRechazo:
+          json['motivoRechazo'] != null
+              ? json['motivoRechazo'] as String
+              : null,
       fechaCaptura: DateTime.parse(json['fechaCaptura']),
       solicitudPermiso:
           json['solicitudPermiso'] != null

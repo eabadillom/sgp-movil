@@ -1,5 +1,4 @@
-class RegistroNotFound implements Exception 
-{
+class RegistroNotFound implements Exception {
   final String message;
 
   // final int errorCode;
