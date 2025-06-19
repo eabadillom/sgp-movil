@@ -175,16 +175,18 @@ class _DetalleSolicitudScreenState
             if (tipo == 'PR' && talla != null)
               TextoRicoWidget(constante: 'Talla: ', variable: talla),
             const SizedBox(height: 8),
+
             TextoRicoWidget(
               constante: 'Fecha de captura: ',
               variable: formatDate(fechaCaptura),
             ),
             const SizedBox(height: 8),
 
-            TextoRicoWidget(
-              constante: 'Fecha de Modificacion: ',
-              variable: formatDate(fechaModificacion!),
-            ),
+            if (fechaModificacion != null)
+              TextoRicoWidget(
+                constante: 'Fecha de Modificacion: ',
+                variable: formatDate(fechaModificacion!),
+              ),
             const SizedBox(height: 8),
 
             SolicitanteWidget(
