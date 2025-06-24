@@ -98,7 +98,12 @@ class _IncapacidadListState extends ConsumerState<IncapacidadListScreen>
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(nombrePantalla),
+          centerTitle: true,
+          title: Text(
+            nombrePantalla,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 22),
+          ),
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {

@@ -4,8 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sgp_movil/conf/config.dart';
 import 'package:sgp_movil/features/justificar/providers/justificar_detalle_provider.dart';
 import 'package:sgp_movil/features/justificar/justificar.dart';
-import 'package:sgp_movil/features/shared/widgets/dialogo_confirmacion.dart';
-import 'package:sgp_movil/features/shared/widgets/side_menu.dart';
+import 'package:sgp_movil/features/shared/widgets/widgets.dart';
 
 class JusitificarDetalle extends ConsumerStatefulWidget {
   final int id;
@@ -63,15 +62,12 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('Justificación de "$titulo"'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.keyboard_return_sharp),
-            onPressed: () {
-              context.pop();
-            },
-          ),
-        ],
+        centerTitle: true,
+        title: Text(
+          'Justificación de "$titulo"',
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontSize: 22),
+        ),
       ),
       drawer: SideMenu(scaffoldKey: _scaffoldKey),
       body: SingleChildScrollView(
@@ -97,13 +93,33 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ElevatedButton.icon(
-                      icon: const Icon(Icons.check, color: Colors.white),
+                      icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                      label: const Text(
+                        'Regresar',
+                        style: TextStyle(fontSize: 18.0, color: Colors.white),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueGrey,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24.0,
+                          vertical: 12.0,
+                        ),
+                      ),
+                      onPressed: () => {
+                        context.pop(),
+                      },
+                    ),
+
+                    const SizedBox(width: 10),
+                    
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.event_available, color: Colors.white),
                       label: const Text(
                         'Justificar',
                         style: TextStyle(fontSize: 18.0, color: Colors.white),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue, // Fondo azul
+                        backgroundColor: Colors.red,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 24.0,
                           vertical: 12.0,
@@ -124,17 +140,16 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
                             if (!context.mounted) return;
 
                             final state = ref.read(justificarDetalleProvider);
-                            final messenger = ScaffoldMessenger.of(context);
+                            /*final messenger = ScaffoldMessenger.of(context);*/
 
                             if (state.errorMessage == null) {
-                              messenger.showSnackBar(
-                                const SnackBar(
-                                  content: Text('Registro justificado exitosamente'),
-                                  duration: Duration(seconds: 2),
-                                ),
+                              /*messenger.showSnackBar(const SnackBar(content: Text('Registro justificado exitosamente'), duration: Duration(seconds: 2)));*/
+                              CustomSnackBarCentrado.mostrar(
+                                context,
+                                mensaje: 'Registro justificado exitosamente',
+                                tipo: SnackbarTipo.success,
                               );
-
-                              await Future.delayed(const Duration(seconds: 5));
+                              await Future.delayed(const Duration(seconds: 2));
 
                               // Verifica de nuevo antes de navegar
                               if (!context.mounted) return;
@@ -146,29 +161,15 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
                                 ),
                               );
                             } else {
-                              messenger.showSnackBar(
-                                SnackBar(content: Text(state.errorMessage!)),
+                              /*messenger.showSnackBar(SnackBar(content: Text(state.errorMessage!)));*/
+                              CustomSnackBarCentrado.mostrar(
+                                context,
+                                mensaje: state.errorMessage!,
+                                tipo: SnackbarTipo.error,
                               );
                             }
                           },
                         );
-                      },
-                    ),
-                    ElevatedButton.icon(
-                      icon: const Icon(Icons.close, color: Colors.white),
-                      label: const Text(
-                        'Mantener',
-                        style: TextStyle(fontSize: 18.0, color: Colors.white),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueGrey, // Fondo rojo
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24.0,
-                          vertical: 12.0,
-                        ),
-                      ),
-                      onPressed: () => {
-                        context.pop(),
                       },
                     ),
                   ],

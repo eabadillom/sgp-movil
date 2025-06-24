@@ -6,7 +6,7 @@ import 'package:sgp_movil/features/dashboard/presentation/providers/usuario_deta
 import 'package:sgp_movil/features/incapacidades/controller/controller.dart';
 import 'package:sgp_movil/features/incapacidades/presentacion/providers/incapacidad_detalle_provider.dart';
 import 'package:sgp_movil/features/justificar/widgets/etiqueta_registro_widget.dart';
-import 'package:sgp_movil/features/shared/widgets/side_menu.dart';
+import 'package:sgp_movil/features/shared/widgets/widgets.dart';
 
 class IncapacidadDetalle extends ConsumerStatefulWidget 
 {
@@ -61,16 +61,12 @@ class _IncapacidadDetalleState extends ConsumerState<IncapacidadDetalle>
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(titulo),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.keyboard_return_sharp),
-            onPressed: () 
-            {
-              context.pop(true);
-            },
-          ),
-        ],
+        centerTitle: true,
+        title: Text(
+          titulo,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontSize: 22),
+        ),
       ),
       drawer: SideMenu(scaffoldKey: _scaffoldKey),
       body: SingleChildScrollView(
@@ -108,7 +104,24 @@ class _IncapacidadDetalleState extends ConsumerState<IncapacidadDetalle>
                   mainAxisAlignment: MainAxisAlignment.center, 
                   children: [
                     ElevatedButton.icon(
-                      icon: const Icon(Icons.check, color: Colors.white),
+                      icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                      onPressed: () => {
+                        context.pop(false),
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueGrey,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24.0,
+                          vertical: 12.0,
+                        ),
+                      ),
+                      label: const Text('Regresar', style: TextStyle(fontSize: 18.0, color: Colors.white),),
+                    ),
+
+                    const SizedBox(width: 10),
+
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.cancel_sharp, color: Colors.white),
                       onPressed: botonesHabilitados
                         ? () async {
                         final confirmar = await mostrarConfirmacion(context);
@@ -123,13 +136,14 @@ class _IncapacidadDetalleState extends ConsumerState<IncapacidadDetalle>
 
                           if (!context.mounted) return;
 
-                          final snackBarController = ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Incapacidad actualizada'),
-                              duration: Duration(seconds: 5),
-                            ),
+                          await CustomSnackBarCentrado.mostrar(
+                            context,
+                            mensaje: 'Incapacidad actualizada',
+                            tipo: SnackbarTipo.success,
                           );
-                          await snackBarController.closed;
+
+                          /*final snackBarController = ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar.success('Incapacidad actualizada'));
+                          await snackBarController.closed;*/
 
                           if(!context.mounted) return;
 
@@ -137,8 +151,12 @@ class _IncapacidadDetalleState extends ConsumerState<IncapacidadDetalle>
                         } catch (e) {
                           if (!context.mounted) return;
 
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Error: $e}'))
+                          /*ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar.error('Error: $e'));*/
+
+                          await CustomSnackBarCentrado.mostrar(
+                            context,
+                            mensaje: 'Error: $e',
+                            tipo: SnackbarTipo.error,
                           );
                         }
                       } : null,
@@ -150,23 +168,6 @@ class _IncapacidadDetalleState extends ConsumerState<IncapacidadDetalle>
                         ),
                       ),
                       label: const Text('Cancelar', style: TextStyle(fontSize: 18.0, color: Colors.white),),
-                    ),
-
-                    const SizedBox(width: 10),
-                    
-                    ElevatedButton.icon(
-                      icon: const Icon(Icons.close, color: Colors.white),
-                      onPressed: () => {
-                        context.pop(false),
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueGrey,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24.0,
-                          vertical: 12.0,
-                        ),
-                      ),
-                      label: const Text('Mantener', style: TextStyle(fontSize: 18.0, color: Colors.white),),
                     ),
                   ],
                 ),
