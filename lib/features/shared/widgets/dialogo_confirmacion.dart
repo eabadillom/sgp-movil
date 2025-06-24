@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 Future<void> dialogoConfirmacion(
   BuildContext context,
   String mensajeConfirmacion,
-  VoidCallback onConfirm,
+  Future<void> Function() onConfirm,
 ) {
   return showDialog(
     context: context,
@@ -17,7 +18,6 @@ Future<void> dialogoConfirmacion(
         actions: <Widget>[
           ElevatedButton(
             onPressed: () {
-              Navigator.of(context).pop();
               onConfirm(); // Acción de confirmación
             },
             style: ElevatedButton.styleFrom(
@@ -31,7 +31,7 @@ Future<void> dialogoConfirmacion(
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.of(context).pop(); // Cierra el diálogo
+              context.pop();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,

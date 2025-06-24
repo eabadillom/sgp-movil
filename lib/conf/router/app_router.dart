@@ -1,8 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sgp_movil/conf/config.dart';
 import 'package:sgp_movil/features/atender/screens/incidencia_permiso_screen.dart';
 import 'package:sgp_movil/features/atender/screens/listar_incidencias_screen.dart';
+import 'package:sgp_movil/features/comprar/screens/screens.dart';
 import 'package:sgp_movil/features/dashboard/presentation/screens/dashbord_screen.dart';
 import 'package:sgp_movil/features/incapacidades/presentacion/screens/incapacidad_detalle.dart';
 import 'package:sgp_movil/features/incapacidades/presentacion/screens/incapacidad_detalle_guardar.dart';
@@ -61,7 +63,8 @@ final goRouterProvider = Provider((ref) {
         path: '/vacaciones',
         builder: (context, state) {
           String tipo = "V";
-          return ListarIncidenciasScreen(tipo: tipo);
+          String rutaDetalle = 'incidenciaPermisoDetalle';
+          return ListarIncidenciasScreen(tipo: tipo, rutaDetalle: rutaDetalle);
         },
       ),
 
@@ -70,13 +73,40 @@ final goRouterProvider = Provider((ref) {
         path: '/permisos',
         builder: (context, state) {
           String tipo = "PE";
-          return ListarIncidenciasScreen(tipo: tipo);
+          String rutaDetalle = 'incidenciaPermisoDetalle';
+          return ListarIncidenciasScreen(tipo: tipo, rutaDetalle: rutaDetalle);
+        },
+      ),
+
+      GoRoute(
+        path: '/uniformes',
+        builder: (cotext, state) {
+          String tipo = "PR";
+          String rutaDetalle = 'detalleSolicitud';
+          return ListarIncidenciasScreen(
+            key: ValueKey("uniformes_${DateTime.now().millisecondsSinceEpoch}"),
+            tipo: tipo,
+            rutaDetalle: rutaDetalle,
+          );
+        },
+      ),
+
+      GoRoute(
+        path: '/articulos',
+        builder: (context, state) {
+          String tipo = "A";
+          String rutaDetalle = "detalleSolicitud";
+          return ListarIncidenciasScreen(
+            key: ValueKey("uniformes_${DateTime.now().millisecondsSinceEpoch}"),
+            tipo: tipo,
+            rutaDetalle: rutaDetalle,
+          );
         },
       ),
 
       GoRoute(
         path: '/incapacidades',
-        builder: (context, state){
+        builder: (context, state) {
           return IncapacidadListScreen();
         },
       ),
@@ -88,6 +118,16 @@ final goRouterProvider = Provider((ref) {
           final codigo = state.pathParameters['codigo']!;
           final int id = int.tryParse(idParametro) ?? 0;
           return JusitificarDetalle(id: id, codigo: codigo);
+        },
+      ),
+
+      GoRoute(
+        path: '/detalleSolicitud/:idIncidencia/:codigoTipoIncidencia',
+        builder: (constext, state) {
+          final idIncidencia = state.pathParameters['idIncidencia']!;
+          final tipo = state.pathParameters['codigoTipoIncidencia']!;
+          final int id = int.tryParse(idIncidencia) ?? 0;
+          return DetalleSolicitudScreen(idIncidencia: id, tipoIncidencia: tipo);
         },
       ),
 
@@ -110,11 +150,10 @@ final goRouterProvider = Provider((ref) {
 
       GoRoute(
         path: '/agregarIncapacidad',
-        builder: (context, state){
+        builder: (context, state) {
           return IncapacidadDetalleGuardar();
         },
       ),
-
     ],
 
     redirect: (context, state) {

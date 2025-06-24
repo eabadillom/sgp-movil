@@ -8,6 +8,10 @@ class IncidenciaMapper {
     nombreSolicitante: json['nombreSolicitante'] as String,
     primerApSolicitante: json['primerApSolicitante'] as String,
     segundoApSolicitante: json['segundoApSolicitante'] as String,
+    numeroRevisor:
+        json['numeroRevisor'] != null ? json['numeroRevisor'] as String : null,
+    motivoRechazo:
+        json['motivoRechazo'] != null ? json['motivoRechazo'] as String : null,
     fechaCaptura: DateTime.parse(json['fechaCaptura'] as String),
     solicitudArticulo:
         json['solicitudArticulo'] != null

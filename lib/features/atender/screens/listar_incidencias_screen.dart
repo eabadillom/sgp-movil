@@ -10,8 +10,13 @@ import 'package:sgp_movil/features/shared/shared.dart';
 
 class ListarIncidenciasScreen extends ConsumerStatefulWidget {
   final String tipo;
+  final String rutaDetalle;
 
-  const ListarIncidenciasScreen({super.key, required this.tipo});
+  const ListarIncidenciasScreen({
+    super.key,
+    required this.tipo,
+    required this.rutaDetalle,
+  });
 
   @override
   ConsumerState<ListarIncidenciasScreen> createState() =>
@@ -19,12 +24,14 @@ class ListarIncidenciasScreen extends ConsumerStatefulWidget {
 }
 
 class _ListarIncidenciasState extends ConsumerState<ListarIncidenciasScreen> {
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _fechaController = TextEditingController();
   late DateTime fechaIni;
   late DateTime fechaFin;
   late String tipo;
   late String nombrePantalla;
   late String estatus;
+  late String rutaDetalle;
 
   @override
   void initState() {
@@ -34,9 +41,12 @@ class _ListarIncidenciasState extends ConsumerState<ListarIncidenciasScreen> {
     );
     fechaFin = FormatUtil.dateFormated(DateTime.now());
     tipo = widget.tipo;
+    rutaDetalle = widget.rutaDetalle;
 
-    if (tipo == 'PE') nombrePantalla = 'Permisos';
     if (tipo == 'V') nombrePantalla = 'Vacaciones';
+    if (tipo == 'PE') nombrePantalla = 'Permisos';
+    if (tipo == 'PR') nombrePantalla = 'Uniformes';
+    if (tipo == 'A') nombrePantalla = 'Articulos';
 
     Future.microtask(() {
       ref.invalidate(estatusSeleccionadoProvider);
@@ -100,18 +110,30 @@ class _ListarIncidenciasState extends ConsumerState<ListarIncidenciasScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
+        key: scaffoldKey,
+        drawer: SideMenu(scaffoldKey: scaffoldKey),
         appBar: AppBar(
+          centerTitle: true,
           title: Text(nombrePantalla),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              ref.invalidate(listarNotifierProvider);
-              ref.invalidate(estatusSeleccionadoProvider);
-              ref.invalidate(fechaInicialProvider);
-              ref.invalidate(fechaFinalProvider);
-              context.go('/dashboard');
-            },
+          leading: Builder(
+            builder:
+                (context) => IconButton(
+                  icon: Icon(Icons.menu),
+                  onPressed: () => Scaffold.of(context).openDrawer(),
+                ),
           ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                ref.invalidate(listarNotifierProvider);
+                ref.invalidate(estatusSeleccionadoProvider);
+                ref.invalidate(fechaInicialProvider);
+                ref.invalidate(fechaFinalProvider);
+                context.go('/dashboard');
+              },
+            ),
+          ],
         ),
         body: Padding(
           padding: const EdgeInsets.all(16),
@@ -161,7 +183,7 @@ class _ListarIncidenciasState extends ConsumerState<ListarIncidenciasScreen> {
                                 ),
                             getRoute:
                                 (incidencia) =>
-                                    '/incidenciaPermisoDetalle/${incidencia.idIncidencia}/${incidencia.codigoTipoIncidencia}',
+                                    '/$rutaDetalle/${incidencia.idIncidencia}/${incidencia.codigoTipoIncidencia}',
                           );
                     }
                   },
