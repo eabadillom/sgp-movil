@@ -9,7 +9,7 @@ class CustomSnackBarCentrado
     BuildContext context, {
     required String mensaje,
     SnackbarTipo tipo = SnackbarTipo.info,
-    Duration duration = const Duration(seconds: 2),
+    Duration duration = const Duration(seconds: 4),
   }) async {
     final overlay = Overlay.of(context);
     final completer = Completer<void>();
@@ -81,12 +81,11 @@ class _SnackbarCentradoWidget extends StatelessWidget
   final Color textColor;
 
   const _SnackbarCentradoWidget({
-    Key? key,
     required this.mensaje,
     required this.icono,
     required this.backgroundColor,
     required this.textColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) 

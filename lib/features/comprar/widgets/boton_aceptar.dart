@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sgp_movil/features/comprar/providers/detalle_solicitud_provider.dart';
 import 'package:sgp_movil/features/comprar/utils/utils.dart';
+import 'package:sgp_movil/features/shared/widgets/widgets.dart';
 
 class BotonAceptar extends ConsumerWidget {
   final int idIncidencia;
@@ -18,15 +19,21 @@ class BotonAceptar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ElevatedButton(
+    return ElevatedButton.icon(
+      icon: const Icon(Icons.check),
+      label: const Text('Aceptar'),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-        textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        shadowColor: Colors.blueAccent,
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        textStyle: const TextStyle(fontSize: 18),
       ),
       onPressed: () async {
-        final scaffoldMessenger = ScaffoldMessenger.of(context);
         try {
           await ref
               .read(solicitudNotifierProvider.notifier)
@@ -37,27 +44,28 @@ class BotonAceptar extends ConsumerWidget {
                 motivoRechazo: null,
               );
 
-          scaffoldMessenger.showSnackBar(
-            const SnackBar(
-              content: Text('Solicitud aceptada exitosamente'),
-              backgroundColor: Colors.green,
-            ),
-          );
+          if (!context.mounted) return;
 
-          await Future.delayed(const Duration(seconds: 2));
+          await CustomSnackBarCentrado.mostrar(
+            context,
+            mensaje: 'Solicitud aceptada exitosamente',
+            tipo: SnackbarTipo.success,
+          );
 
           limpiarVariables(ref);
 
+          if (!context.mounted) return;
           context.go('/${obtenerPagina(tipo)}');
         } catch (e) {
-          scaffoldMessenger.showSnackBar(
-            SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
-          );
+          if (!context.mounted) return;
 
-          await Future.delayed(const Duration(seconds: 2));
+          await CustomSnackBarCentrado.mostrar(
+            context,
+            mensaje: 'Error: $e',
+            tipo: SnackbarTipo.error,
+          );
         }
       },
-      child: const Text('Aceptar'),
     );
   }
 }

@@ -2,8 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sgp_movil/conf/loggers/logger_singleton.dart';
 import 'package:sgp_movil/features/comprar/providers/incidencia_repository_provider.dart';
 import 'package:sgp_movil/features/comprar/providers/solicitud_repository_provider.dart';
-import 'package:sgp_movil/features/dashboard/presentation/providers/usuario_detalle_provider.dart';
-import 'package:sgp_movil/features/incidencias/controller/controller.dart';
 import 'package:sgp_movil/features/incidencias/domain/respositories/incidencia_repository.dart';
 import 'package:sgp_movil/features/solicitudes/domain/entities/solicitudarticulo.dart';
 import 'package:sgp_movil/features/solicitudes/domain/entities/solicitudprenda.dart';
@@ -48,7 +46,7 @@ class DetalleSolicitudNotifier extends StateNotifier<DetalleSolicitudState> {
       }
 
       state = state.copyWith(isLoading: false, solicitud: solicitud);
-    } catch (e, stack) {
+    } catch (e) {
       final mensaje = e.toString().replaceFirst('Exception: ', '');
 
       log.logger.warning('Error al obtener solicitud: $mensaje');

@@ -114,7 +114,11 @@ class _ListarIncidenciasState extends ConsumerState<ListarIncidenciasScreen> {
         drawer: SideMenu(scaffoldKey: scaffoldKey),
         appBar: AppBar(
           centerTitle: true,
-          title: Text(nombrePantalla),
+          title: Text(
+            nombrePantalla,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 22),
+          ),
           leading: Builder(
             builder:
                 (context) => IconButton(
