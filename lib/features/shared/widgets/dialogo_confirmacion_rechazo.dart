@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 class DialogoConfirmacionRechazo extends StatefulWidget 
 {
   final String titulo;
-  final String mensaje;
   final IconData icono;
   final Color color;
   final void Function(String comentario) onConfirmar;
@@ -11,7 +10,6 @@ class DialogoConfirmacionRechazo extends StatefulWidget
   const DialogoConfirmacionRechazo({
     super.key,
     required this.titulo,
-    required this.mensaje,
     required this.icono,
     required this.color,
     required this.onConfirmar,
@@ -42,9 +40,9 @@ class _DialogoConfirmacionRechazoState extends State<DialogoConfirmacionRechazo>
       (
         children: 
         [
-          Icon(widget.icono, color: widget.color),
+          Icon(widget.icono, color: Colors.red),
           const SizedBox(width: 8),
-          Expanded(child: Text(widget.titulo)),
+          Expanded(child: Text(widget.titulo, style: TextStyle(fontSize: 16.0))),
         ],
       ),
       content: Column
@@ -52,7 +50,6 @@ class _DialogoConfirmacionRechazoState extends State<DialogoConfirmacionRechazo>
         mainAxisSize: MainAxisSize.min,
         children: 
         [
-          Text(widget.mensaje),
           const SizedBox(height: 12),
           Text('Descripcion Rechazo'),
           TextField(
@@ -76,8 +73,9 @@ class _DialogoConfirmacionRechazoState extends State<DialogoConfirmacionRechazo>
           child: const Text('Sí'),
         ),
         OutlinedButton(
+          style: OutlinedButton.styleFrom(backgroundColor: Colors.red.shade400),
           onPressed: () => Navigator.pop(context),
-          child: const Text('No'),
+          child: const Text('No', style: TextStyle(color: Colors.white)),
         ),
       ],
     );

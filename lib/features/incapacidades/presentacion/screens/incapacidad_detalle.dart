@@ -67,8 +67,13 @@ class _IncapacidadDetalleState extends ConsumerState<IncapacidadDetalle>
           overflow: TextOverflow.ellipsis,
           style: TextStyle(fontSize: 22),
         ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: (){
+            context.pop();
+          },
+        ),
       ),
-      drawer: SideMenu(scaffoldKey: _scaffoldKey),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Card(

@@ -4,23 +4,21 @@ import 'package:sgp_movil/conf/util/format_util.dart';
 import 'package:sgp_movil/features/atender/providers/listar_repository_provider.dart';
 import 'package:sgp_movil/features/incidencias/domain/domain.dart';
 
-final listarNotifierProvider =
-    StateNotifierProvider<ListarNotifier, ListarState>((ref) {
-      final incidenciaRepository = ref.watch(listarRepositoryProvider);
-      return ListarNotifier(incidenciaRepository);
-    });
+final listarNotifierProvider = StateNotifierProvider.family<ListarNotifier, ListarState, String>((ref, tipo) 
+{
+  final incidenciaRepository = ref.watch(listarRepositoryProvider);
+  return ListarNotifier(incidenciaRepository, tipo);
+});
 
 class ListarNotifier extends StateNotifier<ListarState> {
   final IncidenciaRepository incidenciaRepository;
+  final String tipo;
   final LoggerSingleton log = LoggerSingleton.getInstance('IncidenciaProvider');
 
-  ListarNotifier(this.incidenciaRepository) : super(ListarState.initial());
+  ListarNotifier(this.incidenciaRepository, this.tipo) : super(ListarState.initial());
 
-  Future<void> cargarInicidencias(
-    String tipo,
-    DateTime fechaInicial,
-    DateTime fechaFinal,
-  ) async {
+  Future<void> cargarInicidencias(DateTime fechaInicial, DateTime fechaFinal) async 
+  {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final incidencias = await incidenciaRepository.getInicidencias(
