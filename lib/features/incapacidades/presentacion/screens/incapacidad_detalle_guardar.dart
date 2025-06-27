@@ -29,7 +29,7 @@ class _IncapacidadDetalleState extends ConsumerState<IncapacidadDetalleGuardar>
         appBar: AppBar(
           centerTitle: true,
           title: const Text(
-            'Guardar Incapacidad',
+            'Incapacidad',
             overflow: TextOverflow.ellipsis,
             style: TextStyle(fontSize: 22),
           ),

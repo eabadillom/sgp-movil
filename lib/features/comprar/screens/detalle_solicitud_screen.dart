@@ -1,6 +1,7 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sgp_movil/conf/config.dart';
 import 'package:sgp_movil/features/comprar/providers/detalle_solicitud_provider.dart';
 import 'package:sgp_movil/features/comprar/utils/solicitud_utils.dart';
@@ -251,22 +252,46 @@ class _DetalleSolicitudScreenState
                   Divider(thickness: 1.5, color: Colors.grey[300]),
                   const SizedBox(height: 8),
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      if ((estatus == 'E' || estatus == 'R') && estatus != null)
-                        BotonAceptar(
-                          idIncidencia: widget.idIncidencia,
-                          tipo: tipo,
-                          numeroRevisor: numero ?? '0001',
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          if ((estatus == 'E' || estatus == 'R') && estatus != null)
+                            BotonAceptar(
+                              idIncidencia: widget.idIncidencia,
+                              tipo: tipo,
+                              numeroRevisor: numero ?? '0001',
+                            ),
+                          if ((estatus == 'E' || estatus == 'A') && estatus != null)
+                            BotonRechazar(
+                              idIncidencia: widget.idIncidencia,
+                              tipo: tipo,
+                              numeroRevisor: numero ?? '0001',
+                            ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.arrow_back),
+                        label: const Text('Regresar'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blueGrey,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                          textStyle: const TextStyle(fontSize: 18),
                         ),
-                      if ((estatus == 'E' || estatus == 'A') && estatus != null)
-                        BotonRechazar(
-                          idIncidencia: widget.idIncidencia,
-                          tipo: tipo,
-                          numeroRevisor: numero ?? '0001',
-                        ),
-                    ],
+                        onPressed: () {
+                          context.pop();
+                        },
+                      ),
+                    ]
                   ),
                   const SizedBox(height: 8),
                 ],

@@ -85,12 +85,12 @@ class _DashboardView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
-      padding: EdgeInsets.all(10),
+      padding: EdgeInsets.all(4),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2, // número de columnas
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
-        childAspectRatio: 1, // relación ancho/alto para ListTile
+        crossAxisSpacing: 6,
+        mainAxisSpacing: 6,
+        childAspectRatio: 1.2, // relación ancho/alto para ListTile
       ),
       itemCount: appMenuItem.length,
       itemBuilder: (context, index) {
@@ -113,15 +113,13 @@ class CustomListTile extends StatelessWidget {
     return InkWell(
       onTap: () => context.push(menuItem.link),
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(6.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(menuItem.icon, size: 26, color: colors.primary),
+            Icon(menuItem.icon, size: 28, color: colors.primary),
             const SizedBox(height: 10),
-            Text(menuItem.title, style: Theme.of(context).textTheme.bodyLarge),
-            const SizedBox(height: 5),
-            Text(menuItem.subTitle, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
+            Text(menuItem.title, style: TextStyle(fontSize: 24)),
           ],
         ),
       ),
