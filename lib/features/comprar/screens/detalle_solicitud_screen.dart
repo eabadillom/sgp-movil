@@ -163,7 +163,9 @@ class _DetalleSolicitudScreenState
           const SizedBox(height: 8),
           Card(
             elevation: 2,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Column(
@@ -189,14 +191,14 @@ class _DetalleSolicitudScreenState
 
                   if (tipo == 'PR' && talla != null)
                     TextoRicoWidget(constante: 'Talla: ', variable: talla),
-                  
+
                   const SizedBox(height: 8),
 
                   TextoRicoWidget(
                     constante: 'Fecha de captura: ',
                     variable: formatDate(fechaCaptura),
                   ),
-                  
+
                   const SizedBox(height: 8),
 
                   if (fechaModificacion != null)
@@ -204,14 +206,19 @@ class _DetalleSolicitudScreenState
                       constante: 'Fecha de Modificacion: ',
                       variable: formatDate(fechaModificacion),
                     ),
-                  
+
                   const SizedBox(height: 8),
-                  
+
                   Card(
                     elevation: 2,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -219,7 +226,7 @@ class _DetalleSolicitudScreenState
                             constante: 'Solicitante:',
                             variable: solicitante!,
                           ),
-                          
+
                           const SizedBox(height: 8),
 
                           if (estatus == 'R' && motivoRechazo != null)
@@ -233,6 +240,7 @@ class _DetalleSolicitudScreenState
                   ),
 
                   const SizedBox(height: 8),
+
                   /* El switch para determinar si un articulo o prenda esta disponible, es un deseable. Ya que se le tiene que agregar la funcion para que a
                   agregue el estado y rechace la solicitud por falta del objeto solicitado en la empresa.
                   Row(
@@ -248,7 +256,6 @@ class _DetalleSolicitudScreenState
                       ),
                     ],
                   ),*/
-
                   Divider(thickness: 1.5, color: Colors.grey[300]),
                   const SizedBox(height: 8),
 
@@ -256,19 +263,39 @@ class _DetalleSolicitudScreenState
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          if ((estatus == 'E' || estatus == 'R') && estatus != null)
-                            BotonAceptar(
-                              idIncidencia: widget.idIncidencia,
-                              tipo: tipo,
-                              numeroRevisor: numero ?? '0001',
+                          // Rechazar - izquierda o centro
+                          if ((estatus == 'E' || estatus == 'A') &&
+                              estatus != null)
+                            Expanded(
+                              child: Align(
+                                alignment:
+                                    estatus == 'E'
+                                        ? Alignment.centerLeft
+                                        : Alignment.center,
+                                child: BotonRechazar(
+                                  idIncidencia: widget.idIncidencia,
+                                  tipo: tipo,
+                                  numeroRevisor: numero ?? '0001',
+                                ),
+                              ),
                             ),
-                          if ((estatus == 'E' || estatus == 'A') && estatus != null)
-                            BotonRechazar(
-                              idIncidencia: widget.idIncidencia,
-                              tipo: tipo,
-                              numeroRevisor: numero ?? '0001',
+
+                          // Aceptar - centro o derecha
+                          if ((estatus == 'E' || estatus == 'R') &&
+                              estatus != null)
+                            Expanded(
+                              child: Align(
+                                alignment:
+                                    estatus == 'E'
+                                        ? Alignment.centerRight
+                                        : Alignment.center,
+                                child: BotonAceptar(
+                                  idIncidencia: widget.idIncidencia,
+                                  tipo: tipo,
+                                  numeroRevisor: numero ?? '0001',
+                                ),
+                              ),
                             ),
                         ],
                       ),
@@ -284,14 +311,17 @@ class _DetalleSolicitudScreenState
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 14,
+                          ),
                           textStyle: const TextStyle(fontSize: 18),
                         ),
                         onPressed: () {
                           context.pop();
                         },
                       ),
-                    ]
+                    ],
                   ),
                   const SizedBox(height: 8),
                 ],
