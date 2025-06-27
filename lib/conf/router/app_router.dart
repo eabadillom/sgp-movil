@@ -161,7 +161,7 @@ final goRouterProvider = Provider((ref) {
       final loginStatus = goRouterNotifier.loginStatus;
 
       //Pantalla de inicio de aplicacion dashboard
-      if (isGoingTo == '/splash' && loginStatus == LoginStatus.checking) {
+      if (isGoingTo == '/splash') {
         if (loginStatus == LoginStatus.authenticated) {
           return '/dashboard';
         }

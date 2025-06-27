@@ -1,7 +1,7 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sgp_movil/conf/config.dart';
 import 'package:sgp_movil/features/comprar/providers/detalle_solicitud_provider.dart';
 import 'package:sgp_movil/features/comprar/utils/solicitud_utils.dart';
@@ -50,7 +50,6 @@ class _DetalleSolicitudScreenState
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(solicitudNotifierProvider);
-    DioClient http = DioClient();
     String contexto = Environment.obtenerUrlPorNombre('SGP');
     final usuarioDetalleState =
         ref.watch(usuarioDetalleProvider).usuarioDetalle;
@@ -140,102 +139,166 @@ class _DetalleSolicitudScreenState
         FocusScope.of(context).unfocus();
       },
       behavior: HitTestBehavior.opaque,
-      child: Padding(
+      child: ListView(
         padding: const EdgeInsets.all(16),
-        child: ListView(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: ImagenDesdeInternet(
-                url: imagenUrl,
-                ancho: 200,
-                alto: 200,
-                fit: BoxFit.cover,
+        children: [
+          Center(
+            child: Container(
+              decoration: BoxDecoration(
+                boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 8)],
+                borderRadius: BorderRadius.circular(8),
               ),
-            ),
-            const SizedBox(height: 8),
-
-            TextoRicoWidget(
-              constante: '${tipo == 'PR' ? 'Uniforme' : 'Artículo'}: ',
-              variable: descripcion,
-            ),
-            const SizedBox(height: 8),
-
-            if (tipo == 'A' && unidad != null)
-              TextoRicoWidget(constante: 'Unidad: ', variable: unidad),
-            const SizedBox(height: 8),
-
-            if (tipo == 'PR' && precio != null)
-              TextoRicoWidget(
-                constante: 'Precio: ',
-                variable: '\$${precio.toStringAsFixed(2)}',
-              ),
-            const SizedBox(height: 8),
-
-            if (tipo == 'PR' && talla != null)
-              TextoRicoWidget(constante: 'Talla: ', variable: talla),
-            const SizedBox(height: 8),
-
-            TextoRicoWidget(
-              constante: 'Fecha de captura: ',
-              variable: formatDate(fechaCaptura),
-            ),
-            const SizedBox(height: 8),
-
-            if (fechaModificacion != null)
-              TextoRicoWidget(
-                constante: 'Fecha de Modificacion: ',
-                variable: formatDate(fechaModificacion!),
-              ),
-            const SizedBox(height: 8),
-
-            SolicitanteWidget(
-              constante: 'Solicitante:',
-              variable: solicitante!,
-            ),
-            const SizedBox(height: 8),
-
-            if (estatus == 'R' && motivoRechazo != null)
-              MotivoRechazoWidget(
-                constante: 'Motivo de rechazo:',
-                variable: motivoRechazo,
-              ),
-            const SizedBox(height: 16),
-            /* El switch para determinar si un articulo o prenda esta disponible, es un deseable. Ya que se le tiene que agregar la funcion para que a
-            agregue el estado y rechace la solicitud por falta del objeto solicitado en la empresa.
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Disponible',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: ImagenDesdeInternet(
+                  url: imagenUrl,
+                  ancho: 200,
+                  alto: 200,
+                  fit: BoxFit.cover,
                 ),
-                Switch(
-                  value: disponible,
-                  onChanged: (value) => setState(() => disponible = value),
-                ),
-              ],
+              ),
             ),
-            const SizedBox(height: 24),*/
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                if ((estatus == 'E' || estatus == 'A') && estatus != null)
-                  BotonRechazar(
-                    idIncidencia: widget.idIncidencia,
-                    tipo: tipo,
-                    numeroRevisor: numero ?? '0001',
+          ),
+
+          const SizedBox(height: 8),
+          Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextoRicoWidget(
+                    constante: '${tipo == 'PR' ? 'Uniforme' : 'Artículo'}: ',
+                    variable: descripcion,
                   ),
-                if ((estatus == 'E' || estatus == 'R') && estatus != null)
-                  BotonAceptar(
-                    idIncidencia: widget.idIncidencia,
-                    tipo: tipo,
-                    numeroRevisor: numero ?? '0001',
+                  const SizedBox(height: 8),
+
+                  if (tipo == 'A' && unidad != null)
+                    TextoRicoWidget(constante: 'Unidad: ', variable: unidad),
+                  const SizedBox(height: 8),
+
+                  if (tipo == 'PR' && precio != null)
+                    TextoRicoWidget(
+                      constante: 'Precio: ',
+                      variable: '\$${precio.toStringAsFixed(2)}',
+                    ),
+
+                  const SizedBox(height: 8),
+
+                  if (tipo == 'PR' && talla != null)
+                    TextoRicoWidget(constante: 'Talla: ', variable: talla),
+                  
+                  const SizedBox(height: 8),
+
+                  TextoRicoWidget(
+                    constante: 'Fecha de captura: ',
+                    variable: formatDate(fechaCaptura),
                   ),
-              ],
+                  
+                  const SizedBox(height: 8),
+
+                  if (fechaModificacion != null)
+                    TextoRicoWidget(
+                      constante: 'Fecha de Modificacion: ',
+                      variable: formatDate(fechaModificacion),
+                    ),
+                  
+                  const SizedBox(height: 8),
+                  
+                  Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SolicitanteWidget(
+                            constante: 'Solicitante:',
+                            variable: solicitante!,
+                          ),
+                          
+                          const SizedBox(height: 8),
+
+                          if (estatus == 'R' && motivoRechazo != null)
+                            MotivoRechazoWidget(
+                              constante: 'Motivo de rechazo:',
+                              variable: motivoRechazo,
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+                  /* El switch para determinar si un articulo o prenda esta disponible, es un deseable. Ya que se le tiene que agregar la funcion para que a
+                  agregue el estado y rechace la solicitud por falta del objeto solicitado en la empresa.
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Disponible',
+                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                      ),
+                      Switch(
+                        value: disponible,
+                        onChanged: (value) => setState(() => disponible = value),
+                      ),
+                    ],
+                  ),*/
+
+                  Divider(thickness: 1.5, color: Colors.grey[300]),
+                  const SizedBox(height: 8),
+
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          if ((estatus == 'E' || estatus == 'R') && estatus != null)
+                            BotonAceptar(
+                              idIncidencia: widget.idIncidencia,
+                              tipo: tipo,
+                              numeroRevisor: numero ?? '0001',
+                            ),
+                          if ((estatus == 'E' || estatus == 'A') && estatus != null)
+                            BotonRechazar(
+                              idIncidencia: widget.idIncidencia,
+                              tipo: tipo,
+                              numeroRevisor: numero ?? '0001',
+                            ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.arrow_back),
+                        label: const Text('Regresar'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blueGrey,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                          textStyle: const TextStyle(fontSize: 18),
+                        ),
+                        onPressed: () {
+                          context.pop();
+                        },
+                      ),
+                    ]
+                  ),
+                  const SizedBox(height: 8),
+                ],
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

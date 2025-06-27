@@ -26,7 +26,12 @@ class ImagenDesdeInternet extends StatelessWidget {
         return Center(child: CircularProgressIndicator());
       },
       errorBuilder: (context, error, stackTrace) {
-        return const Icon(Icons.broken_image);
+        return Image.asset(
+          'assets/images/noImage.png',
+          width: ancho,
+          height: alto,
+          fit: fit,
+        );
       },
     );
   }

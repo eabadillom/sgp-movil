@@ -66,11 +66,12 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) 
+  {
     final incidenciaPermisoState = ref.watch(incidenciaPermisoDetalleProvider);
     final detalleIncidencia = incidenciaPermisoState.incidenciaPermisoDetalle;
+    final deshabilitarBotton = detalleIncidencia?.claveEstatus == 'R' || detalleIncidencia?.claveEstatus == 'A';
     final usuario = ref.watch(usuarioDetalleProvider).usuarioDetalle;
-    final scaffoldKey = GlobalKey<ScaffoldState>();
 
     if (incidenciaPermisoState.isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -88,16 +89,13 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen> {
         key: _scaffoldKey,
         appBar: AppBar(
           title: Text('Detalle "$titulo"'),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.keyboard_return_sharp),
-              onPressed: () {
-                context.pop();
-              },
-            ),
-          ],
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: (){
+              context.pop();
+            },
+          ),
         ),
-        drawer: SideMenu(scaffoldKey: scaffoldKey),
         body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
@@ -132,128 +130,114 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen> {
                     const SizedBox(height: 20),
                     const Divider(),
                     const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment
-                              .spaceBetween, // o .center / .end / .start
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // Botón Aceptar
-                        Expanded(
-                          child: FilledButton.icon(
-                            icon: const Icon(Icons.check),
-                            label: const Text('Aceptar'),
-                            style: FilledButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                              padding: const EdgeInsets.symmetric(vertical: 12),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: FilledButton.icon(
+                                icon: const Icon(Icons.check),
+                                label: const Text('Aceptar'),
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                  textStyle: const TextStyle(fontSize: 18),
+                                ),
+                                onPressed: deshabilitarBotton ? null : () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => DialogoConfirmacion(
+                                      titulo: '¿Deseas aceptar esta incidencia?',
+                                      icono: Icons.check_circle,
+                                      color: Colors.blue,
+                                      onConfirmar: () async {
+                                        await ref.read(incidenciaPermisoDetalleProvider.notifier).actualizarIncidenciaPermiso(
+                                          idIncidencia,
+                                          {
+                                            'codigoEstado': 'A',
+                                            'empleadoRev': usuario?.numeroUsuario,
+                                          },
+                                        );
+                                        if (!context.mounted) return;
+                                        await CustomSnackBarCentrado.mostrar(
+                                          context,
+                                          mensaje: 'Incidencia aceptada',
+                                          tipo: SnackbarTipo.success,
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
-                            onPressed:
-                                (detalleIncidencia?.claveEstatus == 'R' ||
-                                        detalleIncidencia?.claveEstatus == 'A')
-                                    ? null
-                                    : () {
-                                      showDialog(
-                                        context: context,
-                                        builder:
-                                            (context) => DialogoConfirmacion(
-                                              titulo: 'Confirmar Aceptación',
-                                              mensaje:
-                                                  '¿Deseas aceptar esta incidencia?',
-                                              icono: Icons.check_circle,
-                                              color: Colors.blue,
-                                              onConfirmar: () async {
-                                                await ref
-                                                    .read(
-                                                      incidenciaPermisoDetalleProvider
-                                                          .notifier,
-                                                    )
-                                                    .actualizarIncidenciaPermiso(
-                                                      idIncidencia,
-                                                      {
-                                                        'codigoEstado': 'A',
-                                                        'empleadoRev':
-                                                            usuario
-                                                                ?.numeroUsuario,
-                                                      },
-                                                    );
-
-                                                if (!context.mounted) return;
-
-                                                ScaffoldMessenger.of(
-                                                  context,
-                                                ).showSnackBar(
-                                                  const SnackBar(
-                                                    content: Text(
-                                                      'Incidencia aceptada',
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                      );
-                                    },
-                          ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: FilledButton.icon(
+                                icon: const Icon(Icons.cancel),
+                                label: const Text('Rechazar'),
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: Colors.red,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                                  textStyle: const TextStyle(fontSize: 18),
+                                ),
+                                onPressed: deshabilitarBotton ? null : () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => DialogoConfirmacionRechazo(
+                                      titulo: '¿Deseas rechazar esta incidencia?',
+                                      icono: Icons.warning,
+                                      color: Colors.blue,
+                                      onConfirmar: (comentario) async {
+                                        await ref.read(incidenciaPermisoDetalleProvider.notifier).actualizarIncidenciaPermiso(
+                                          idIncidencia,
+                                          {
+                                            'codigoEstado': 'R',
+                                            'descripcionRechazo': comentario,
+                                            'empleadoRev': usuario?.numeroUsuario,
+                                          },
+                                        );
+                                        if (!context.mounted) return;
+                                        await CustomSnackBarCentrado.mostrar(
+                                          context,
+                                          mensaje: 'Incidencia rechazada',
+                                          tipo: SnackbarTipo.error,
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 12),
 
-                        // Botón Rechazar
-                        Expanded(
-                          child: FilledButton.icon(
-                            icon: const Icon(Icons.cancel),
-                            label: const Text('Rechazar'),
-                            style: FilledButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              padding: const EdgeInsets.symmetric(vertical: 12),
+                        const SizedBox(height: 16),
+
+                        ElevatedButton.icon(
+                          icon: const Icon(Icons.arrow_back),
+                          label: const Text('Regresar'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blueGrey,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            onPressed:
-                                (detalleIncidencia?.claveEstatus == 'R' ||
-                                        detalleIncidencia?.claveEstatus == 'A')
-                                    ? null
-                                    : () {
-                                      showDialog(
-                                        context: context,
-                                        builder:
-                                            (
-                                              context,
-                                            ) => DialogoConfirmacionRechazo(
-                                              titulo: 'Confirmar Rechazo',
-                                              mensaje:
-                                                  '¿Deseas rechazar esta incidencia?',
-                                              icono: Icons.warning,
-                                              color: Colors.red,
-                                              onConfirmar: (comentario) async {
-                                                await ref
-                                                    .read(
-                                                      incidenciaPermisoDetalleProvider
-                                                          .notifier,
-                                                    )
-                                                    .actualizarIncidenciaPermiso(
-                                                      idIncidencia,
-                                                      {
-                                                        'codigoEstado': 'R',
-                                                        'descripcionRechazo':
-                                                            comentario,
-                                                        'empleadoRev':
-                                                            usuario
-                                                                ?.numeroUsuario,
-                                                      },
-                                                    );
-
-                                                if (!context.mounted) return;
-
-                                                ScaffoldMessenger.of(
-                                                  context,
-                                                ).showSnackBar(
-                                                  const SnackBar(
-                                                    content: Text(
-                                                      'Incidencia rechazada',
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                      );
-                                    },
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                            textStyle: const TextStyle(fontSize: 18),
                           ),
+                          onPressed: () {
+                            context.pop();
+                          },
                         ),
                       ],
                     ),
@@ -270,7 +254,6 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen> {
 
 class DialogoConfirmacion extends StatelessWidget {
   final String titulo;
-  final String mensaje;
   final IconData icono;
   final Color color;
   final VoidCallback onConfirmar;
@@ -278,7 +261,6 @@ class DialogoConfirmacion extends StatelessWidget {
   const DialogoConfirmacion({
     super.key,
     required this.titulo,
-    required this.mensaje,
     required this.icono,
     required this.color,
     required this.onConfirmar,
@@ -287,15 +269,14 @@ class DialogoConfirmacion extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       title: Row(
         children: [
           Icon(icono, color: color),
-          const SizedBox(width: 8),
-          Expanded(child: Text(titulo)),
+          const SizedBox(width: 12),
+          Expanded(child: Text(titulo, style: TextStyle(fontSize: 16.0))),
         ],
       ),
-      content: Text(mensaje),
       actions: [
         FilledButton(
           style: FilledButton.styleFrom(backgroundColor: color),
@@ -306,8 +287,9 @@ class DialogoConfirmacion extends StatelessWidget {
           child: const Text('Sí'),
         ),
         OutlinedButton(
+          style: OutlinedButton.styleFrom(backgroundColor: Colors.red.shade400),
           onPressed: () => Navigator.pop(context),
-          child: const Text('No'),
+          child: const Text('No', style: TextStyle(color: Colors.white)),
         ),
       ],
     );

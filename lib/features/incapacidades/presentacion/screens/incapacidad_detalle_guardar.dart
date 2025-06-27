@@ -5,8 +5,7 @@ import 'package:sgp_movil/conf/util/format_util.dart';
 import 'package:sgp_movil/features/dashboard/presentation/providers/usuario_detalle_provider.dart';
 import 'package:sgp_movil/features/incapacidades/domain/domain.dart';
 import 'package:sgp_movil/features/incapacidades/presentacion/providers/providers.dart';
-import 'package:sgp_movil/features/shared/widgets/custom_dropdown.dart';
-import 'package:sgp_movil/features/shared/widgets/date_picker_field.dart';
+import 'package:sgp_movil/features/shared/widgets/widgets.dart';
 
 class IncapacidadDetalleGuardar extends ConsumerStatefulWidget
 {
@@ -28,7 +27,12 @@ class _IncapacidadDetalleState extends ConsumerState<IncapacidadDetalleGuardar>
       child: Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          title: const Text('Guardar Incapacidad'),
+          centerTitle: true,
+          title: const Text(
+            'Incapacidad',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 22),
+          ),
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
@@ -84,10 +88,20 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
         incapacidadDetalleGuardarProvider,
         (prev, next) {
           if(next.mostrarMensaje && next.errorMessage != null) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(next.errorMessage!)));
+            /*ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar.error(next.errorMessage!));*/
+            CustomSnackBarCentrado.mostrar(
+              context,
+              mensaje: next.errorMessage!,
+              tipo: SnackbarTipo.error,
+            );
             ref.read(incapacidadDetalleGuardarProvider.notifier).marcarMensajeMostrado();
           } else if(prev?.isLoading == true && next.isLoading == false && next.errorMessage == null) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Datos guardados correctamente')));
+            /*ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar.success('Datos guardados correctamente'));*/
+            CustomSnackBarCentrado.mostrar(
+              context,
+              mensaje: 'Datos guardados correctamente',
+              tipo: SnackbarTipo.success,
+            );
             if(mounted) context.pop(true);
           }
         },
@@ -111,7 +125,12 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
 
     final usuarioDetalleState = ref.read(usuarioDetalleProvider).usuarioDetalle;
     if (usuarioDetalleState == null || empleado == null || tpIncapacidad == null || ctrIncapacidad == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Faltan datos obligatorios')));
+      /*ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar.error('Faltan datos obligatorios'));*/
+      await CustomSnackBarCentrado.mostrar(
+        context,
+        mensaje: 'Faltan datos obligatorios',
+        tipo: SnackbarTipo.error,
+      );
       return;
     }
 

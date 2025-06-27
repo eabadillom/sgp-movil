@@ -7,32 +7,21 @@ class SolicitudArticulo extends SolicitudBase {
   final bool activo;
 
   SolicitudArticulo({
-    required int id,
-    required String estatusSolicitud,
-    required DateTime fechaCaptura,
-    DateTime? fechaModificacion,
-    String? numeroRevisor,
-    String? descripcionRechazo,
-    required String nombreSolicitante,
-    required String primerApSolicitante,
-    required String segundoApSolicitante,
-    String? rutaImagen,
+    required super.id,
+    required super.estatusSolicitud,
+    required super.fechaCaptura,
+    super.fechaModificacion,
+    super.numeroRevisor,
+    super.descripcionRechazo,
+    required super.nombreSolicitante,
+    required super.primerApSolicitante,
+    required super.segundoApSolicitante,
+    super.rutaImagen,
     required this.descripcion,
     required this.unidad,
     required this.detalle,
     required this.activo,
-  }) : super(
-         id: id,
-         estatusSolicitud: estatusSolicitud,
-         fechaCaptura: fechaCaptura,
-         fechaModificacion: fechaModificacion,
-         numeroRevisor: numeroRevisor,
-         descripcionRechazo: descripcionRechazo,
-         nombreSolicitante: nombreSolicitante,
-         primerApSolicitante: primerApSolicitante,
-         segundoApSolicitante: segundoApSolicitante,
-         rutaImagen: rutaImagen,
-       );
+  });
 
   factory SolicitudArticulo.fromJson(Map<String, dynamic> json) {
     return SolicitudArticulo(

@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sgp_movil/conf/config.dart';
 import 'package:sgp_movil/features/atender/providers/estatus_provider.dart';
-import 'package:sgp_movil/features/atender/providers/fecha_provider.dart';
 import 'package:sgp_movil/features/atender/providers/listar_provider.dart';
 import 'package:sgp_movil/features/incidencias/domain/entities/incidencia.dart';
 import 'package:sgp_movil/features/shared/shared.dart';
@@ -28,7 +27,7 @@ class _ListarIncidenciasState extends ConsumerState<ListarIncidenciasScreen> {
   final TextEditingController _fechaController = TextEditingController();
   late DateTime fechaIni;
   late DateTime fechaFin;
-  late String tipo;
+  late final String tipo;
   late String nombrePantalla;
   late String estatus;
   late String rutaDetalle;
@@ -52,9 +51,7 @@ class _ListarIncidenciasState extends ConsumerState<ListarIncidenciasScreen> {
       ref.invalidate(estatusSeleccionadoProvider);
       ref.read(estatusSeleccionadoProvider.notifier).state = 'E';
 
-      ref
-          .read(listarNotifierProvider.notifier)
-          .cargarInicidencias(tipo, fechaIni, fechaFin);
+      ref.read(listarNotifierProvider(tipo).notifier).cargarInicidencias(fechaIni, fechaFin);
     });
   }
 
@@ -77,9 +74,7 @@ class _ListarIncidenciasState extends ConsumerState<ListarIncidenciasScreen> {
         fechaIni = FormatUtil.dateFormated(nuevaFecha);
       });
 
-      ref
-          .read(listarNotifierProvider.notifier)
-          .cargarInicidencias(tipo, nuevaFecha, fechaFin);
+      ref.read(listarNotifierProvider(tipo).notifier).cargarInicidencias(nuevaFecha, fechaFin);
     }
   }
 
@@ -96,15 +91,13 @@ class _ListarIncidenciasState extends ConsumerState<ListarIncidenciasScreen> {
         fechaFin = FormatUtil.dateFormated(nuevaFecha);
       });
 
-      ref
-          .read(listarNotifierProvider.notifier)
-          .cargarInicidencias(tipo, fechaIni, nuevaFecha);
+      ref.read(listarNotifierProvider(tipo).notifier).cargarInicidencias(fechaIni, nuevaFecha);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final incidenciasState = ref.watch(listarNotifierProvider);
+    final incidenciasState = ref.watch(listarNotifierProvider(tipo));
     estatus = ref.watch(estatusSeleccionadoProvider);
 
     return GestureDetector(
@@ -114,26 +107,17 @@ class _ListarIncidenciasState extends ConsumerState<ListarIncidenciasScreen> {
         drawer: SideMenu(scaffoldKey: scaffoldKey),
         appBar: AppBar(
           centerTitle: true,
-          title: Text(nombrePantalla),
-          leading: Builder(
-            builder:
-                (context) => IconButton(
-                  icon: Icon(Icons.menu),
-                  onPressed: () => Scaffold.of(context).openDrawer(),
-                ),
+          title: Text(
+            nombrePantalla,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 22),
           ),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                ref.invalidate(listarNotifierProvider);
-                ref.invalidate(estatusSeleccionadoProvider);
-                ref.invalidate(fechaInicialProvider);
-                ref.invalidate(fechaFinalProvider);
-                context.go('/dashboard');
-              },
-            ),
-          ],
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              context.go('/dashboard');
+            },
+          ),
         ),
         body: Padding(
           padding: const EdgeInsets.all(16),
@@ -154,11 +138,9 @@ class _ListarIncidenciasState extends ConsumerState<ListarIncidenciasScreen> {
                       nuevoStatus;
                 },
               ),
+              const SizedBox(height: 6),
               BarraBusquedaNombre(
-                onChanged:
-                    (value) => ref
-                        .read(listarNotifierProvider.notifier)
-                        .setBusqueda(value),
+                onChanged: (value) => ref.read(listarNotifierProvider(tipo).notifier).setBusqueda(value),
               ),
               const SizedBox(height: 16),
               Expanded(
@@ -167,7 +149,8 @@ class _ListarIncidenciasState extends ConsumerState<ListarIncidenciasScreen> {
                     if (incidenciasState.isLoading) {
                       return const Center(child: CircularProgressIndicator());
                     } else {
-                      final filtradas = incidenciasState.filtradasPor(estatus);
+                      final filtradas = incidenciasState.incidenciasFiltradasPorNombre
+                          .where((i) => i.codigoEstadoIncidencia == estatus).toList();
                       return filtradas.isEmpty
                           ? const Center(
                             child: Text('No hay incidencias con este estado.'),

@@ -6,8 +6,6 @@ import 'package:sgp_movil/conf/util/format_util.dart';
 import 'package:sgp_movil/features/incidencias/controller/controller.dart';
 import 'package:sgp_movil/features/incidencias/domain/datasources/incidencia_datasource.dart';
 import 'package:sgp_movil/features/incidencias/domain/entities/incidencia.dart';
-import 'package:sgp_movil/features/solicitudes/controller/mappers/solicitud_articulo_mapper.dart';
-import 'package:sgp_movil/features/solicitudes/domain/domain.dart';
 
 class IncidenciaDatasourceImpl extends IncidenciaDatasource {
   final LoggerSingleton log = LoggerSingleton.getInstance(
@@ -55,11 +53,15 @@ class IncidenciaDatasourceImpl extends IncidenciaDatasource {
     httpService.setAccessToken(accessToken);
 
     try {
-      String url = '/$baseUrl/$id/estatus';
-      final response = httpService.dio.patch(
+      final String method = 'PATCH';
+      baseUrl = Environment.obtenerUrlPorNombre('Movil');
+      String url = '$baseUrl/solicitudes/$id/estatus';
+      log.logger.info('URL: $url');
+      log.logger.info('Incidencia: ${incidencia.toString()}');
+      final response = httpService.dio.request(
         url,
         data: incidencia,
-        options: Options(headers: {'Content-Type': 'application/json'}),
+        options: Options(method: method),
       );
       return response;
     } on DioException catch (e) {

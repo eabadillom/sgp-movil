@@ -10,11 +10,7 @@ Future<void> dialogoConfirmacion(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text('Confirmación', style: TextStyle(fontSize: 22.0)),
-        content: Text(
-          mensajeConfirmacion,
-          style: const TextStyle(fontSize: 18.0),
-        ),
+        title: Text(mensajeConfirmacion, style: TextStyle(fontSize: 16.0)),
         actions: <Widget>[
           ElevatedButton(
             onPressed: () {
@@ -43,7 +39,7 @@ Future<void> dialogoConfirmacion(
             ),
           ),
         ],
-        actionsAlignment: MainAxisAlignment.spaceBetween,
+        actionsAlignment: MainAxisAlignment.end,
       );
     },
   );

@@ -9,33 +9,22 @@ class SolicitudPrenda extends SolicitudBase {
   final String talla;
 
   SolicitudPrenda({
-    required int id,
-    required String estatusSolicitud,
-    required DateTime fechaCaptura,
-    DateTime? fechaModificacion,
-    String? numeroRevisor,
-    String? descripcionRechazo,
-    String? rutaImagen,
-    required String nombreSolicitante,
-    required String primerApSolicitante,
-    required String segundoApSolicitante,
+    required super.id,
+    required super.estatusSolicitud,
+    required super.fechaCaptura,
+    super.fechaModificacion,
+    super.numeroRevisor,
+    super.descripcionRechazo,
+    super.rutaImagen,
+    required super.nombreSolicitante,
+    required super.primerApSolicitante,
+    required super.segundoApSolicitante,
     required this.descripcion,
     required this.precio,
     required this.detalle,
     required this.activo,
     required this.talla,
-  }) : super(
-         id: id,
-         estatusSolicitud: estatusSolicitud,
-         fechaCaptura: fechaCaptura,
-         fechaModificacion: fechaModificacion,
-         numeroRevisor: numeroRevisor,
-         descripcionRechazo: descripcionRechazo,
-         nombreSolicitante: nombreSolicitante,
-         primerApSolicitante: primerApSolicitante,
-         segundoApSolicitante: segundoApSolicitante,
-         rutaImagen: rutaImagen,
-       );
+  });
 
   factory SolicitudPrenda.fromJson(Map<String, dynamic> json) {
     return SolicitudPrenda(

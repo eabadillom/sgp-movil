@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sgp_movil/features/comprar/providers/detalle_solicitud_provider.dart';
 import 'package:sgp_movil/features/comprar/utils/solicitud_utils.dart';
 import 'package:sgp_movil/features/comprar/widgets/dialogo_motivo_rechazo.dart';
-import 'package:sgp_movil/features/shared/widgets/dialogo_confirmacion.dart';
+import 'package:sgp_movil/features/shared/widgets/widgets.dart';
 
 class BotonRechazar extends ConsumerWidget {
   final int idIncidencia;
@@ -20,12 +20,19 @@ class BotonRechazar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ElevatedButton(
+    return ElevatedButton.icon(
+      icon: const Icon(Icons.cancel),
+      label: const Text('Rechazar'),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.red,
         foregroundColor: Colors.white,
+        shadowColor: Colors.redAccent,
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-        textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        textStyle: const TextStyle(fontSize: 18),
       ),
       onPressed: () {
         dialogoConfirmacion(
@@ -37,8 +44,7 @@ class BotonRechazar extends ConsumerWidget {
             await dialogoMotivoRechazo(
               context: context,
               onEnviar: (String? comentario) async {
-                final scaffoldMessenger = ScaffoldMessenger.of(context);
-
+                
                 try {
                   await ref
                       .read(solicitudNotifierProvider.notifier)
@@ -48,25 +54,27 @@ class BotonRechazar extends ConsumerWidget {
                         codigoEstadoIncidencia: 'R',
                         motivoRechazo: comentario,
                       );
+                  
+                  if (!context.mounted) return;
 
-                  scaffoldMessenger.showSnackBar(
-                    const SnackBar(
-                      content: Text('Solicitud rechazada exitosamente'),
-                      backgroundColor: Colors.green,
-                    ),
+                  await CustomSnackBarCentrado.mostrar(
+                    context,
+                    mensaje: 'Solicitud rechazada exitosamente',
+                    tipo: SnackbarTipo.success,
                   );
 
-                  await Future.delayed(const Duration(seconds: 2));
-
                   limpiarVariables(ref);
+                  
+                  if(!context.mounted) return;
 
                   context.go('/${obtenerPagina(tipo)}');
                 } catch (e) {
-                  scaffoldMessenger.showSnackBar(
-                    SnackBar(
-                      content: Text('Error: $e'),
-                      backgroundColor: Colors.red,
-                    ),
+                  if (!context.mounted) return;
+
+                  await CustomSnackBarCentrado.mostrar(
+                    context,
+                    mensaje: 'Error: $e',
+                    tipo: SnackbarTipo.error,
                   );
                 }
               },
@@ -74,7 +82,6 @@ class BotonRechazar extends ConsumerWidget {
           },
         );
       },
-      child: const Text('Rechazar'),
     );
   }
 }
