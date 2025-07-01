@@ -16,15 +16,12 @@ class JustificarListScreen extends ConsumerStatefulWidget {
 }
 
 class _JustificarListState extends ConsumerState<JustificarListScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _fechaController = TextEditingController();
   late DateTime fechaIni;
   late DateTime fechaFin;
   late String codigo;
   late String nombrePantalla;
-
-  int paginaActual = 0;
-  final int elementosPorPagina = 5;
-  int totalPaginas = 0;
 
   @override
   void initState() {
@@ -99,11 +96,11 @@ class _JustificarListState extends ConsumerState<JustificarListScreen> {
   @override
   Widget build(BuildContext context) {
     final registroState = ref.watch(justificarNotifierProvider);
-    totalPaginas = (registroState.registrosFiltrados.length / elementosPorPagina).ceil();
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           title: Text(nombrePantalla),
           leading: IconButton(
@@ -143,10 +140,7 @@ class _JustificarListState extends ConsumerState<JustificarListScreen> {
               else
                 Expanded(
                   child: ListaTarjetaGenerica<Registro>(
-                    items: registroState.registrosFiltrados
-                      .skip(paginaActual * elementosPorPagina)
-                      .take(elementosPorPagina)
-                      .toList(),
+                    items: registroState.registrosPaginados,
                     getTitle:
                         (registro) =>
                             '${registro.nombreEmpleado} ${registro.primerApEmpleado} ${registro.segundoApEmpleado}',
@@ -163,19 +157,24 @@ class _JustificarListState extends ConsumerState<JustificarListScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     ElevatedButton(
-                      onPressed: paginaActual > 0
+                      onPressed: registroState.paginaActual > 1
                           ? () {
-                              setState(() {
-                                paginaActual--;
-                              });
+                              ref
+                                  .read(justificarNotifierProvider.notifier)
+                                  .cambiarPagina(registroState.paginaActual - 1);
                             }
                           : null,
                       child: const Text('Anterior'),
                     ),
-                    Text('Página ${paginaActual + 1} de $totalPaginas'),
+                    Text('Página ${registroState.paginaMostrada} de ${registroState.totalPaginas}'),
                     ElevatedButton(
-                      onPressed: paginaActual + 1 < totalPaginas
-                          ? () { setState(() { paginaActual++; }); } : null,
+                      onPressed: registroState.paginaActual < registroState.totalPaginas
+                          ? () {
+                              ref
+                                  .read(justificarNotifierProvider.notifier)
+                                  .cambiarPagina(registroState.paginaActual + 1);
+                            }
+                          : null,
                       child: const Text('Siguiente'),
                     ),
                   ],

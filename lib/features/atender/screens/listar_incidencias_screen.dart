@@ -149,25 +149,55 @@ class _ListarIncidenciasState extends ConsumerState<ListarIncidenciasScreen> {
                     if (incidenciasState.isLoading) {
                       return const Center(child: CircularProgressIndicator());
                     } else {
-                      final filtradas = incidenciasState.incidenciasFiltradasPorNombre
-                          .where((i) => i.codigoEstadoIncidencia == estatus).toList();
-                      return filtradas.isEmpty
-                          ? const Center(
-                            child: Text('No hay incidencias con este estado.'),
-                          )
-                          : ListaTarjetaGenerica<Incidencia>(
-                            items: filtradas,
-                            getTitle:
-                                (incidencia) =>
+                      final filtradas = incidenciasState.paginaActualFiltrada(estatus);
+                      if(filtradas.isEmpty) {
+                        return const Center(
+                          child: Text('No hay incidencias con este estado.'),
+                        );
+                      } else {
+                        return Column(
+                          children: [
+                            Expanded(
+                              child: ListaTarjetaGenerica<Incidencia>(
+                                items: filtradas,
+                                getTitle: (incidencia) =>
                                     '${incidencia.nombreSolicitante} ${incidencia.primerApSolicitante} ${incidencia.segundoApSolicitante}',
-                            getSubtitle:
-                                (incidencia) => FormatUtil.stringToStandard(
-                                  incidencia.fechaCaptura,
-                                ),
-                            getRoute:
-                                (incidencia) =>
+                                getSubtitle: (incidencia) => FormatUtil.stringToStandard(
+                                      incidencia.fechaCaptura,
+                                    ),
+                                getRoute: (incidencia) =>
                                     '/$rutaDetalle/${incidencia.idIncidencia}/${incidencia.codigoTipoIncidencia}',
-                          );
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: incidenciasState.paginaActual > 1
+                                      ? () => ref
+                                          .read(listarNotifierProvider(tipo).notifier)
+                                          .cambiarPagina(incidenciasState.paginaActual - 1, estatus)
+                                      : null,
+                                  child: const Text('Anterior'),
+                                ),
+                                Text(
+                                  'Página ${incidenciasState.paginaActual} de ${incidenciasState.totalPaginas(estatus)}',
+                                ),
+                                ElevatedButton(
+                                  onPressed: incidenciasState.paginaActual <
+                                          incidenciasState.totalPaginas(estatus)
+                                      ? () => ref
+                                          .read(listarNotifierProvider(tipo).notifier)
+                                          .cambiarPagina(incidenciasState.paginaActual + 1, estatus)
+                                      : null,
+                                  child: const Text('Siguiente'),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      }
                     }
                   },
                 ),
