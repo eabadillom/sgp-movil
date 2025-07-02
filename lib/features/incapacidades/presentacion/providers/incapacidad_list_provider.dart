@@ -19,7 +19,7 @@ class IncapacidadNotifier extends StateNotifier<IncapacidadState>
 
   Future<void> obtenerRegistros(DateTime fechaIni, DateTime fechaFin) async
   {
-    state = state.copyWith(isLoading: true, errorMessage: null);
+    state = state.copyWith(isLoading: true, errorMessage: null, paginaActual: 1);
     
     final registrosIncapacidades = await incapacidadRepository.getListIncapacidades(FormatUtil.dateFormated(fechaIni), FormatUtil.dateFormated(fechaFin));
 
@@ -28,7 +28,15 @@ class IncapacidadNotifier extends StateNotifier<IncapacidadState>
 
   void setBusqueda(String value) 
   {
-    state = state.copyWith(busqueda: value);
+    state = state.copyWith(busqueda: value, paginaActual: 1);
+  }
+
+  void cambiarPagina(int nuevaPagina) 
+  {
+    if (nuevaPagina >= 1 && nuevaPagina <= state.totalPaginas) 
+    {
+      state = state.copyWith(paginaActual: nuevaPagina);
+    }
   }
 }
 
@@ -38,12 +46,16 @@ class IncapacidadState
   final List<Incapacidad> incapacidades;
   final String? errorMessage;
   final String busqueda;
+  final int paginaActual;
+  final int tamanioPagina;
 
   IncapacidadState({
     this.isLoading = false,
     this.incapacidades = const [],
     this.errorMessage,
     required this.busqueda,
+    this.paginaActual = 1,
+    this.tamanioPagina = 5,
   });
 
   List<Incapacidad> get registrosFiltrados 
@@ -59,6 +71,23 @@ class IncapacidadState
     }).toList();
   }
 
+  List<Incapacidad> get registrosPaginados {
+    final lista = registrosFiltrados;
+    if (lista.isEmpty) return [];
+
+    final inicio = ((paginaActual - 1) * tamanioPagina).clamp(0, lista.length);
+    final fin = (inicio + tamanioPagina).clamp(inicio, lista.length);
+
+    return lista.sublist(inicio, fin);
+  }
+
+  int get totalPaginas {
+    final total = (registrosFiltrados.length / tamanioPagina).ceil();
+    return total == 0 ? 0 : total;
+  }
+
+  int get paginaMostrada => totalPaginas == 0 ? 0 : paginaActual;
+
   factory IncapacidadState.initial() => IncapacidadState(incapacidades: [], busqueda: '');
 
   IncapacidadState copyWith({
@@ -66,11 +95,15 @@ class IncapacidadState
     List<Incapacidad>? incapacidades,
     String? errorMessage,
     String? busqueda,
+    int? paginaActual,
+    int? tamanioPagina,
   }) => IncapacidadState(
     isLoading: isLoading ?? this.isLoading,
     incapacidades: incapacidades ?? this.incapacidades,
     errorMessage: errorMessage ?? this.errorMessage,
     busqueda: busqueda ?? this.busqueda,
+    paginaActual: paginaActual ?? this.paginaActual,
+    tamanioPagina: tamanioPagina ?? this.tamanioPagina,
   );
 
 }

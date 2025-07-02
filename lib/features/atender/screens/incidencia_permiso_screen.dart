@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sgp_movil/conf/config.dart';
 import 'package:sgp_movil/features/atender/providers/incidencia_permiso_detalle_provider.dart';
+import 'package:sgp_movil/features/atender/providers/listar_provider.dart';
 import 'package:sgp_movil/features/dashboard/presentation/providers/usuario_detalle_provider.dart';
 import 'package:sgp_movil/features/justificar/justificar.dart';
 import 'package:sgp_movil/features/shared/shared.dart';
@@ -34,6 +35,8 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen> {
   late final String titulo;
   late int idIncidencia;
   late String codigoIncidencia;
+  late DateTime fechaIni;
+  late DateTime fechaFin;
 
   @override
   void initState() {
@@ -47,6 +50,9 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen> {
     if (codigoIncidencia.contains('V')) {
       titulo = 'Vacaciones';
     }
+
+    fechaIni = FormatUtil.dateFormated(DateTime.now().subtract(const Duration(days: 7)));
+    fechaFin = FormatUtil.dateFormated(DateTime.now());
 
     /*titulo = codigoIncidencia.contains('PE')
         ? 'Permiso'
@@ -182,8 +188,9 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen> {
                                                                     ?.numeroUsuario,
                                                           },
                                                         );
-                                                    if (!context.mounted)
-                                                      return;
+                                                    ref.read(listarNotifierProvider(codigoIncidencia).notifier)
+                                                      .cargarInicidencias(fechaIni, fechaFin);
+                                                    if (!context.mounted) return;
                                                     await CustomSnackBarCentrado.mostrar(
                                                       context,
                                                       mensaje:
@@ -247,8 +254,9 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen> {
                                                                     ?.numeroUsuario,
                                                           },
                                                         );
-                                                    if (!context.mounted)
-                                                      return;
+                                                    ref.read(listarNotifierProvider(codigoIncidencia).notifier)
+                                                      .cargarInicidencias(fechaIni, fechaFin);
+                                                    if (!context.mounted) return;
                                                     await CustomSnackBarCentrado.mostrar(
                                                       context,
                                                       mensaje:
@@ -327,8 +335,8 @@ class DialogoConfirmacion extends StatelessWidget {
         FilledButton(
           style: FilledButton.styleFrom(backgroundColor: color),
           onPressed: () {
-            Navigator.pop(context); // Cierra el diálogo
             onConfirmar(); // Ejecuta la acción
+            Navigator.pop(context); // Cierra el diálogo
           },
           child: const Text('Sí'),
         ),

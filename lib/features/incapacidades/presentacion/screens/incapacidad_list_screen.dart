@@ -16,15 +16,12 @@ class IncapacidadListScreen extends ConsumerStatefulWidget
 
 class _IncapacidadListState extends ConsumerState<IncapacidadListScreen> 
 {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _fechaController = TextEditingController();
   final Map<String, Color> estados = {'A': Colors.greenAccent.shade100, 'C': Colors.redAccent.shade100};
   late DateTime fechaIni;
   late DateTime fechaFin;
   late String nombrePantalla;
-
-  int paginaActual = 0;
-  final int elementosPorPagina = 5;
-  int totalPaginas = 0;
 
   @override
   void initState() 
@@ -92,11 +89,11 @@ class _IncapacidadListState extends ConsumerState<IncapacidadListScreen>
   Widget build(BuildContext context) 
   {
     final incapacidadState = ref.watch(incapacidadNotifierProvider);
-    totalPaginas = (incapacidadState.registrosFiltrados.length / elementosPorPagina).ceil();
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           centerTitle: true,
           title: Text(
@@ -141,10 +138,7 @@ class _IncapacidadListState extends ConsumerState<IncapacidadListScreen>
                     else
                       Expanded(
                         child: ListaTarjetaGenerica<Incapacidad>(
-                          items: incapacidadState.registrosFiltrados
-                            .skip(paginaActual * elementosPorPagina)
-                            .take(elementosPorPagina)
-                            .toList(),
+                          items: incapacidadState.registrosPaginados,
                           getTitle:
                               (incapacidad) =>
                                   '${incapacidad.nombreInc} ${incapacidad.primerApInc} ${incapacidad.segundoApInc}',
@@ -167,13 +161,19 @@ class _IncapacidadListState extends ConsumerState<IncapacidadListScreen>
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           ElevatedButton(
-                            onPressed: paginaActual > 0 ? () { setState(() { paginaActual--; }); } : null,
+                            onPressed: incapacidadState.paginaActual > 1
+                                ? () {
+                                    ref.read(incapacidadNotifierProvider.notifier).cambiarPagina(incapacidadState.paginaActual - 1);
+                                  }: null,
                             child: const Text('Anterior'),
                           ),
-                          Text('Página ${paginaActual + 1} de $totalPaginas'),
+                          Text('Página ${incapacidadState.paginaMostrada} de ${incapacidadState.totalPaginas}'),
                           ElevatedButton(
-                            onPressed: paginaActual + 1 < totalPaginas
-                                ? () { setState(() { paginaActual++; }); } : null,
+                            onPressed: incapacidadState.paginaActual < incapacidadState.totalPaginas
+                                ? () {
+                                    ref.read(incapacidadNotifierProvider.notifier).cambiarPagina(incapacidadState.paginaActual + 1);
+                                  }
+                                : null,
                             child: const Text('Siguiente'),
                           ),
                         ],
