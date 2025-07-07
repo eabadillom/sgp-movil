@@ -14,6 +14,7 @@ Future<void> dialogoConfirmacion(
         actions: <Widget>[
           ElevatedButton(
             onPressed: () {
+              context.pop();
               onConfirm(); // Acción de confirmación
             },
             style: ElevatedButton.styleFrom(

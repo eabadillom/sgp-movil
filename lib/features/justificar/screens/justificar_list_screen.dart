@@ -146,10 +146,13 @@ class _JustificarListState extends ConsumerState<JustificarListScreen> {
                             '${registro.nombreEmpleado} ${registro.primerApEmpleado} ${registro.segundoApEmpleado}',
                     getSubtitle:
                         (registro) =>
-                            FormatUtil.stringToStandard(registro.fechaEntrada),
-                    getRoute:
-                        (registro) =>
-                            '/detalle/${registro.id}/${registro.codigoRegistro}', // Ruta personalizada
+                            'Registrado el ${FormatUtil.stringToStandard(registro.fechaEntrada)}',
+                    onTap: (registro) async {
+                            final result = await context.push('/detalle/${registro.id}/${registro.codigoRegistro}'); // Ruta personalizada
+                            if(result == true){
+                              ref.read(justificarNotifierProvider.notifier).cargarRegistros(fechaIni, fechaFin, codigo);
+                            }
+                    }
                   ),
                 ),
                 const SizedBox(height: 12),
