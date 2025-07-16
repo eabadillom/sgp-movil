@@ -6,6 +6,8 @@ import 'package:sgp_movil/features/atender/screens/incidencia_permiso_screen.dar
 import 'package:sgp_movil/features/atender/screens/listar_incidencias_screen.dart';
 import 'package:sgp_movil/features/comprar/screens/screens.dart';
 import 'package:sgp_movil/features/dashboard/presentation/screens/dashbord_screen.dart';
+import 'package:sgp_movil/features/dashboard/presentation/screens/notification_detail_screen.dart';
+import 'package:sgp_movil/features/dashboard/presentation/screens/notifications_list_screen.dart';
 import 'package:sgp_movil/features/incapacidades/presentacion/screens/incapacidad_detalle.dart';
 import 'package:sgp_movil/features/incapacidades/presentacion/screens/incapacidad_detalle_guardar.dart';
 import 'package:sgp_movil/features/incapacidades/presentacion/screens/incapacidad_list_screen.dart';
@@ -16,12 +18,15 @@ import 'package:sgp_movil/features/login/presentation/providers/login_provider.d
 
 import 'app_router_notifier.dart';
 
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
+
 final goRouterProvider = Provider((ref) {
   final goRouterNotifier = ref.read(goRouterNotifierProvider);
   final LoggerSingleton log = LoggerSingleton.getInstance('GoRouterProvider');
   log.setupLoggin();
 
   return GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: '/dashboard',
     refreshListenable: goRouterNotifier,
     routes: [
@@ -38,6 +43,20 @@ final goRouterProvider = Provider((ref) {
       GoRoute(
         path: '/dashboard',
         builder: (context, state) => const DashbordScreen(),
+      ),
+
+      //* Notificaciones
+      GoRoute(
+        path: '/notificaciones',
+        builder: (context, state) => const NotificationsListScreen(),
+      ),
+
+      GoRoute(
+        path: '/notificaciones_detalle/:messageId',
+        builder: (context, state) {
+          final messageId = state.pathParameters['messageId']!;
+          return NotificationDetailScreen(pushMessageId: messageId);
+        },
       ),
 
       ///* Justificar Faltas

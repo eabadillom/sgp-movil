@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sgp_movil/conf/util/format_util.dart';
+import 'package:sgp_movil/features/dashboard/presentation/bloc/notifications/notifications_bloc.dart';
 import 'package:sgp_movil/features/dashboard/presentation/providers/usuario_detalle_provider.dart';
 import 'package:sgp_movil/features/login/presentation/providers/login_provider.dart';
 import 'package:sgp_movil/features/shared/shared.dart';
@@ -26,6 +29,7 @@ class SideMenuState extends ConsumerState<SideMenu>
   @override
   Widget build(BuildContext context) 
   {
+    final unreadCount = context.select((NotificationsBloc bloc) => bloc.state.unreadCount);
     final usuarioDetalleState = ref.watch(usuarioDetalleProvider).usuarioDetalle;
     final hasNotch = MediaQuery.of(context).viewPadding.top > 35;
     final textStyles = Theme.of(context).textTheme;
@@ -80,6 +84,46 @@ class SideMenuState extends ConsumerState<SideMenu>
             child: Text(
               '${usuarioDetalleState?.puesto}',
               style: textStyles.titleSmall
+            ),
+          ),
+        ),
+
+        const Padding(
+          padding: EdgeInsets.fromLTRB(28, 16, 28, 10),
+          child: Divider(),
+        ),
+
+        //Notificaciones
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+          child: FilledButton.icon(
+            onPressed: () {
+              widget.scaffoldKey.currentState?.closeDrawer();
+              context.push('/notificaciones');
+            },
+            icon: const Icon(Icons.notifications),
+            label: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('Notificaciones'),
+                if (unreadCount > 0) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '$unreadCount',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
         ),
