@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:sgp_movil/conf/constants/environment.dart';
 import 'package:sgp_movil/conf/loggers/logger_singleton.dart';
 import 'package:sgp_movil/conf/security/dio_client.dart';
 import 'package:sgp_movil/conf/service/sqlite_service.dart';
@@ -67,7 +68,7 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState>
 
   void _getFCMToken() async 
   {
-    if ( state.status != AuthorizationStatus.authorized ) return;
+    if(state.status != AuthorizationStatus.authorized) return;
   
     final token = await messaging.getToken();
     log.logger.info('Token FCM: $token');
@@ -78,7 +79,10 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState>
     if(message.notification == null) return;
 
     final id = message.messageId?.replaceAll(':', '').replaceAll('%', '') ?? '';
-    if(state.notifications.any((n) => n.messageId == id)) return;
+    if(state.notifications.any((n) => n.messageId == id)) {
+      log.logger.info('Notificación $id ya existe en el estado local, omitiendo.');
+      return;
+    }
     
     final notification = PushMessage(
       messageId: id,
@@ -88,8 +92,7 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState>
     );
 
     await SQLiteService.saveNotification(notification);
-    log.logger.info('Mensajes en Hive: ${(await SQLiteService.getNotifications()).length}');
-
+    log.logger.info('Mensaje guardado en SQLite desde handleRemoteMessage: ${notification.messageId}');
     add(NotificationReceived(notification));
   }
 
@@ -110,6 +113,7 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState>
       );
       add(NotificationStatusChanged(newSettings.authorizationStatus));
     } else {
+      log.logger.info('Permisos de notificación ya establecidos: ${settings.authorizationStatus}');
       add(NotificationStatusChanged(settings.authorizationStatus));
     }
   }
@@ -130,8 +134,7 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState>
 
     updated.sort((a, b) => b.sentDate.compareTo(a.sentDate));
 
-    log.logger.info("Load: Cargando / actualizando ${updated.length} mensajes de SQLite");
-
+    log.logger.info("Cargando / actualizando ${updated.length} mensajes de SQLite");
     emit(state.copyWith(notifications: updated));
   }
 
@@ -139,14 +142,12 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState>
   {
     final exists = state.notifications.any((n) => n.messageId == event.pushMessage.messageId);
     if(exists) return;
-    /*
-    await HiveService.saveNotification(event.pushMessage);
-    final box = await HiveService.notificacionesBox;
-    if(!box.containsKey(event.pushMessage.messageId)) {
-      await box.put(event.pushMessage.messageId, event.pushMessage);
-    }*/
 
-    emit(state.copyWith(notifications: [event.pushMessage, ...state.notifications]));
+    emit(
+      state.copyWith(
+        notifications: [event.pushMessage, ...state.notifications]
+      )
+    );
     syncFromSQLite();
   }
 
@@ -156,27 +157,11 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState>
     add(LoadStoredNotifications());
   }
 
-  /*Future<void> _onNotificationReceived(NotificationReceived event, Emitter<NotificationsState> emit) async 
-  {
-    final updatedList = List<PushMessage>.from(state.notifications);
-
-    final existing = updatedList.indexWhere((n) => n.messageId == event.pushMessage.messageId);
-    if (existing >= 0) {
-      updatedList[existing] = event.pushMessage;
-    } else {
-      updatedList.insert(0, event.pushMessage);
-    }
-
-    await SQLiteService.saveNotification(event.pushMessage);
-
-    emit(state.copyWith(notifications: updatedList));
-  }*/
-
   void _onMarkNotificationAsRead(MarkNotificationAsRead event, Emitter<NotificationsState> emit) async 
   {
     final box = await SQLiteService.getNotificationById(event.messageId);
 
-    if (box is PushMessage && !box.read) 
+    if(box is PushMessage && !box.read) 
     {
       final updated = box.copyWith(read: true);
       await SQLiteService.saveNotification(updated);
@@ -207,8 +192,6 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState>
 
   Future<void> _onClearNotifications(ClearNotifications event, Emitter<NotificationsState> emit) async 
   {
-    /*await SQLiteService.clearAll();
-    emit(state.copyWith(notifications: []));*/
     await SQLiteService.deleteNotificationRead(onlyRead: true);
 
     final updatedList = await SQLiteService.getNotifications();
@@ -264,26 +247,38 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState>
   {
     log.logger.info('Iniciando envio de token FCM');
     String accessToken = await storage.read(key: 'token') ?? '';
+
+    if (accessToken.isEmpty) {
+      log.logger.warning('JWT vacío, cancelando envío de token FCM');
+      return;
+    }
     httpService.setAccessToken(accessToken);
 
     log.logger.info('Estatus Authorization: ${state.status}');
-
     if(state.status != AuthorizationStatus.authorized) return;
   
     try {
       final String method = 'POST';
-      /*String contexto = Environment.obtenerUrlPorNombre('Movil'); 
-      String url =  '$contexto/generar/notificacion/';*/
-      String url = 'http://192.168.1.126:8080/books-api/api/setToken';
-      final data = {
+      String contexto = Environment.obtenerUrlPorNombre('Movil');
+      String url = '$contexto/generar/notificacion';
+      final token = {
         'token': tokenFCM,
       };
-      final response = await httpService.dio.request(url, data: data, options: Options(method: method));
+      final response = await httpService.dio.request(url, data: token, options: Options(method: method));
       log.logger.info('Respuesta del servidor: ${response.data}');
+    } on DioException catch (e) {
+      if(e.type == DioExceptionType.badResponse){
+        log.logger.warning('Error: ${e.response?.data}');
+      } else if (e.type == DioExceptionType.connectionTimeout) {
+        log.logger.warning('Tiempo de conexión agotado');
+      } else if (e.message?.contains('RuntimeException') == true){
+        log.logger.warning('Se detectó un RuntimeException del lado nativo');
+      } else {
+        log.logger.warning('Error de conexión de Dio: ${e.message}');
+      }
     } catch (e) {
       log.logger.warning('Error al enviar token: $e');
     }
-      log.logger.info('Token: $tokenFCM');
   }
 
 }

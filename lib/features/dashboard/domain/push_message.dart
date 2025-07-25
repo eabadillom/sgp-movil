@@ -33,11 +33,24 @@ class PushMessage
   }
 
   static PushMessage fromMap(Map<String, dynamic> map) {
+    final rawDate = map['sentDate'];
+    DateTime parsedDate;
+
+    if (rawDate == null || rawDate.toString().isEmpty) {
+      parsedDate = DateTime.now();
+    } else {
+      try {
+        parsedDate = DateTime.parse(rawDate);
+      } catch (_) {
+        parsedDate = DateTime.now();
+      }
+    }
+
     return PushMessage(
       messageId: map['messageId'],
       title: map['title'],
       body: map['body'],
-      sentDate: DateTime.parse(map['sentDate']),
+      sentDate: parsedDate,
       read: map['read'] == 1,
     );
   }

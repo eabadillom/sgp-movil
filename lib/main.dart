@@ -17,7 +17,7 @@ void main() async
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  await SQLiteService.init(); 
+  await SQLiteService.init();
 
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
@@ -133,8 +133,8 @@ class _HandleNotificationInteractionsState extends State<HandleNotificationInter
     WidgetsBinding.instance.addPostFrameCallback((_) 
     {
       final bloc = context.read<NotificationsBloc>();
-      bloc.add(RefreshRequested());
       bloc.add(RequestNotificationPermission());
+      bloc.add(RefreshRequested());
       bloc.add(LoadStoredNotifications());
       bloc.stream.listen((state) {
         final route = state.navigateToRoute;
@@ -174,13 +174,9 @@ class _HandleNotificationInteractionsState extends State<HandleNotificationInter
   {
     final bloc = context.read<NotificationsBloc>();
   
-    final messageId = message.messageId?.replaceAll(':', '').replaceAll('%', '') ?? '';
-    final alreadyExists = bloc.state.notifications.any((n) => n.messageId == messageId);
-
-    if (!alreadyExists) {
-      await bloc.handleRemoteMessage(message);
-    }
-    
+    await bloc.handleRemoteMessage(message);
+    bloc.add(RefreshRequested());
+    bloc.add(LoadStoredNotifications());
     bloc.add(NotificationNavigate('/notificaciones'));
   }
 

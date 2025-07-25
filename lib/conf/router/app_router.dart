@@ -37,7 +37,10 @@ final goRouterProvider = Provider((ref) {
       ),
 
       ///* Auth Routes
-      GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
+      GoRoute(
+        path: '/login', 
+        builder: (context, state) => const LoginScreen()
+      ),
 
       ///* Dashboard
       GoRoute(
@@ -192,9 +195,7 @@ final goRouterProvider = Provider((ref) {
 
       //Pantalla de login y cuando el usuario no esta autenticado
       if (loginStatus == LoginStatus.notAuthenticated) {
-        if (isGoingTo == '/login') return null;
-
-        return '/login';
+        return isGoingTo == '/login' ? null : '/login';
       }
 
       if (loginStatus == LoginStatus.authenticated) {

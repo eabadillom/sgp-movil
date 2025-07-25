@@ -14,7 +14,7 @@ class NotificationDetailScreen extends StatelessWidget
   {
     final bloc = context.read<NotificationsBloc>();
     final PushMessage? message = bloc.getMessageById(pushMessageId);
-    
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     if (message != null && !message.read) {
       context.read<NotificationsBloc>().add(MarkNotificationAsRead(pushMessageId));
@@ -22,7 +22,7 @@ class NotificationDetailScreen extends StatelessWidget
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Detalle de Notificación'),
+        title: Text('Detalle de la Notificación', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
       ),
       body: message != null
           ? _NotificationView(message: message)
@@ -40,6 +40,7 @@ class _NotificationView extends StatelessWidget
   @override
   Widget build(BuildContext context) 
   {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final textStyles = Theme.of(context).textTheme;
 
     return SingleChildScrollView(
@@ -47,11 +48,15 @@ class _NotificationView extends StatelessWidget
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            message!.title,
-            style: textStyles.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.primary,
+          Center(
+            child: Text(
+              message!.title,
+              textAlign: TextAlign.center,
+              style: textStyles.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+                color: isDark ? Colors.blueAccent : Colors.blueAccent.shade100,
+              ),
             ),
           ),
 
@@ -59,7 +64,10 @@ class _NotificationView extends StatelessWidget
 
           Text(
             message!.body,
-            style: textStyles.bodyLarge?.copyWith(height: 1.5),
+            textAlign: TextAlign.center,
+            style: textStyles.bodyLarge?.copyWith(
+              height: 1.5, fontSize: 16
+            ),
           ),
 
           const SizedBox(height: 20),
@@ -72,7 +80,7 @@ class _NotificationView extends StatelessWidget
               const SizedBox(width: 8),
               Text(
                 'Fecha de recepción:',
-                style: textStyles.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                style: textStyles.titleSmall?.copyWith(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ],
           ),
@@ -88,6 +96,21 @@ class _NotificationView extends StatelessWidget
 
   String _formatDate(DateTime date) 
   {
-    return '${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
+    const List<String> dias = [
+      'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'
+    ];
+    const List<String> meses = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+
+    final String diaSemana = dias[date.weekday - 1];
+    final String dia = date.day.toString();
+    final String mes = meses[date.month - 1];
+    final String anio = date.year.toString();
+    final String hora = date.hour.toString();
+    final String minuto = date.minute.toString().padLeft(2, '0');
+
+    return '$diaSemana $dia de $mes del $anio a las $hora:$minuto';
   }
 }

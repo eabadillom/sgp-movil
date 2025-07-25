@@ -125,7 +125,7 @@ class _DashbordScreenState extends ConsumerState<DashbordScreen>
             ),
             IconButton(
               icon: Icon(
-                isDarkmode ? Icons.dark_mode_outlined : Icons.light_mode_outlined,
+                isDarkmode ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
               ),
               onPressed: () {
                 ref.read(themeNotifierProvider.notifier).toggleDarkmode();

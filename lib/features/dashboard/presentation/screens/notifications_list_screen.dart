@@ -41,9 +41,11 @@ class _NotificationsListState extends State<NotificationsListScreen> with Widget
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notificaciones'),
+        title: Text('Notificaciones', overflow: TextOverflow.ellipsis, style: TextStyle(color: isDark ? Colors.white : Colors.black87),),
         actions: [
           IconButton(
             onPressed: () => _showClearConfirmation(context),
@@ -85,8 +87,6 @@ class _NotificationsListState extends State<NotificationsListScreen> with Widget
               },
               builder: (context, state) {
                 final notifications = state.notifications;
-
-                print('UI rebuild: ${notifications.length} notificaciones');
 
                 if (notifications.isEmpty) {
                   return const Center(child: Text('No hay notificaciones'));
@@ -260,7 +260,7 @@ class _NotificationsList extends StatelessWidget {
                             notification.title,
                             style: textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: isDark ? Colors.white : Colors.black87,
+                              color: isDark ? Colors.blueAccent : Colors.blueAccent.shade100,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -300,7 +300,23 @@ class _NotificationsList extends StatelessWidget {
     );
   }
 
-  String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
+  String _formatDate(DateTime date) 
+  {
+    const List<String> dias = [
+      'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'
+    ];
+    const List<String> meses = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+
+    final String diaSemana = dias[date.weekday - 1];
+    final String dia = date.day.toString();
+    final String mes = meses[date.month - 1];
+    final String anio = date.year.toString();
+    final String hora = date.hour.toString();
+    final String minuto = date.minute.toString().padLeft(2, '0');
+
+    return '$diaSemana $dia de $mes del $anio a las $hora:$minuto';
   }
 }

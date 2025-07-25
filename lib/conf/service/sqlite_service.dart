@@ -5,11 +5,18 @@ import 'package:sqflite/sqflite.dart';
 
 class SQLiteService 
 {
-  final LoggerSingleton log = LoggerSingleton.getInstance('SQLiteService');
+  static final SQLiteService _instance = SQLiteService._internal();
+  factory SQLiteService() => _instance;
+
+  SQLiteService._internal();
+
+  static LoggerSingleton log = LoggerSingleton.getInstance('SQLiteService');
   static Database? _db;
 
   static Future<void> init() async 
   {
+    if(_db != null) return;
+
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'push_messages.db');
 
@@ -18,7 +25,7 @@ class SQLiteService
       version: 1,
       onCreate: (db, version) {
         return db.execute('''
-          CREATE TABLE push_messages (
+          CREATE TABLE IF NOT EXISTS push_messages (
             messageId TEXT PRIMARY KEY,
             title TEXT,
             body TEXT,
@@ -28,6 +35,16 @@ class SQLiteService
         ''');
       },
     );
+
+    log.logger.info('Database initialized at $path');
+  }
+
+  static Database get database 
+  {
+    if(_db == null) {
+      throw Exception('Base de datos no inicializada. Llamar a init() primero.');
+    }
+    return _db!;
   }
 
   static Future<void> saveNotification(PushMessage message) async 
@@ -42,6 +59,7 @@ class SQLiteService
   static Future<List<PushMessage>> getNotifications() async 
   {
     final List<Map<String, dynamic>> maps = await _db?.query('push_messages') ?? [];
+    log.logger.info('Tam de notificaciones: ${maps.length}');
     return maps.map((m) => PushMessage.fromMap(m)).toList();
   }
 
@@ -75,7 +93,7 @@ class SQLiteService
         whereArgs: [1],
       );
     } else {
-      print('No se eliminaron las notificaciones leidas');
+      log.logger.info('No se eliminaron las notificaciones leidas');
     }
   }
 
@@ -93,6 +111,7 @@ class SQLiteService
   {
     await _db?.close();
     _db = null;
+    log.logger.info('Base de datos cerrada');
   }
 
 }
