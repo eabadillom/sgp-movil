@@ -111,7 +111,7 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
                         ),
                       ),
                       onPressed: () => {
-                        context.pop(),
+                        context.pop(false),
                       },
                     ),
 
@@ -158,14 +158,9 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
 
                               // Verifica de nuevo antes de navegar
                               if (!context.mounted) return;
-
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => JustificarListScreen(codigo: codigoRegistro),
-                                ),
-                              );
-                            } else {
+                              
+                              context.pop(true);
+                              
                               /*messenger.showSnackBar(SnackBar(content: Text(state.errorMessage!)));*/
                               CustomSnackBarCentrado.mostrar(
                                 context,

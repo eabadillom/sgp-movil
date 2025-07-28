@@ -144,7 +144,7 @@ class _IncapacidadListState extends ConsumerState<IncapacidadListScreen>
                                   '${incapacidad.nombreInc} ${incapacidad.primerApInc} ${incapacidad.segundoApInc}',
                           getSubtitle:
                               (incapacidad) =>
-                                  FormatUtil.stringToStandard(incapacidad.fechaCaptura),
+                                  'Registrado el ${FormatUtil.stringToStandard(incapacidad.fechaCaptura)}',
                           onTap: (incapacidad) async 
                           {
                             final result = await context.push('/incapacidadDetalle/${incapacidad.idIncapacidad}');

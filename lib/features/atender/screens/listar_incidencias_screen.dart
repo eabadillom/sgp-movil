@@ -162,9 +162,8 @@ class _ListarIncidenciasState extends ConsumerState<ListarIncidenciasScreen> {
                                 items: filtradas,
                                 getTitle: (incidencia) =>
                                     '${incidencia.nombreSolicitante} ${incidencia.primerApSolicitante} ${incidencia.segundoApSolicitante}',
-                                getSubtitle: (incidencia) => FormatUtil.stringToStandard(
-                                      incidencia.fechaCaptura,
-                                    ),
+                                getSubtitle: (incidencia) => 
+                                    'Registrado el ${FormatUtil.stringToStandard(incidencia.fechaCaptura)}',
                                 getRoute: (incidencia) =>
                                     '/$rutaDetalle/${incidencia.idIncidencia}/${incidencia.codigoTipoIncidencia}',
                               ),
