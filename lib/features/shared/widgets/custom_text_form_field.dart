@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
-class CustomTextFormField extends StatelessWidget 
+class CustomTextFormField extends StatefulWidget 
 {
   final String? label;
   final String? hint;
   final String? errorMessage;
   final bool obscureText;
+  final bool isPasswordField;
   final TextInputType? keyboardType;
   final Function(String)? onChanged;
   final Function(String)? onFieldSubmitted;
@@ -17,11 +18,30 @@ class CustomTextFormField extends StatelessWidget
     this.hint, 
     this.errorMessage, 
     this.obscureText = false,
+    this.isPasswordField = false,
     this.keyboardType = TextInputType.text,
     this.onChanged,
     this.onFieldSubmitted, 
     this.validator, 
   });
+
+  @override
+  State<CustomTextFormField> createState() => _CustomTextFormFieldState();
+}
+
+class _CustomTextFormFieldState extends State<CustomTextFormField> 
+{
+  late bool _obscure;
+
+  @override
+  void initState() {
+    super.initState();
+    _obscure = widget.isPasswordField ? true : widget.obscureText;
+  }
+
+  void _toggleVisibility() {
+    setState(() => _obscure = !_obscure);
+  }
 
   @override
   Widget build(BuildContext context) 
@@ -30,43 +50,61 @@ class CustomTextFormField extends StatelessWidget
 
     final border = OutlineInputBorder(
       borderSide: const BorderSide(color: Colors.transparent),
-      borderRadius: BorderRadius.circular(40)
+      borderRadius: BorderRadius.circular(40),
     );
 
     const borderRadius = Radius.circular(15);
 
     return Container(
-      // padding: const EdgeInsets.only(bottom: 0, top: 15),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: const BorderRadius.only(topLeft: borderRadius, bottomLeft: borderRadius, bottomRight: borderRadius ),
+        borderRadius: const BorderRadius.only(
+          topLeft: borderRadius,
+          bottomLeft: borderRadius,
+          bottomRight: borderRadius,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
+            color: Colors.black.withAlpha(15),
             blurRadius: 10,
-            offset: const Offset(0,5)
+            offset: const Offset(0, 5),
           )
-        ]
+        ],
       ),
       child: TextFormField(
-        onChanged: onChanged,
-        validator: validator,
-        onFieldSubmitted: onFieldSubmitted,
-        obscureText: obscureText,
-        keyboardType: keyboardType,
-        style: const TextStyle( fontSize: 20, color: Colors.black54 ),
+        onChanged: widget.onChanged,
+        validator: widget.validator,
+        onFieldSubmitted: widget.onFieldSubmitted,
+        obscureText: _obscure,
+        keyboardType: widget.keyboardType,
+        style: const TextStyle(fontSize: 20, color: Colors.black54),
         decoration: InputDecoration(
-          floatingLabelStyle: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
+          floatingLabelStyle: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
           enabledBorder: border,
           focusedBorder: border,
-          errorBorder: border.copyWith( borderSide: const BorderSide( color: Colors.transparent )),
-          focusedErrorBorder: border.copyWith( borderSide: const BorderSide( color: Colors.transparent )),
+          errorBorder: border.copyWith(
+            borderSide: const BorderSide(color: Colors.transparent),
+          ),
+          focusedErrorBorder: border.copyWith(
+            borderSide: const BorderSide(color: Colors.transparent),
+          ),
           isDense: true,
-          label: label != null ? Text(label!) : null,
-          hintText: hint,
-          errorText: errorMessage,
+          label: widget.label != null ? Text(widget.label!) : null,
+          hintText: widget.hint,
+          errorText: widget.errorMessage,
           focusColor: colors.primary,
-          // icon: Icon( Icons.supervised_user_circle_outlined, color: colors.primary, )
+          suffixIcon: widget.isPasswordField
+              ? IconButton(
+                  icon: Icon(
+                    _obscure ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  onPressed: _toggleVisibility,
+                )
+              : null,
         ),
       ),
     );

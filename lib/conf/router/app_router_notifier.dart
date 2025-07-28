@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sgp_movil/features/login/presentation/providers/login_provider.dart';
 
-final goRouterNotifierProvider = Provider((ref) 
+final goRouterNotifierProvider = ChangeNotifierProvider((ref) 
 {
   final loginNotifier = ref.read(loginProvider.notifier);
   return GoRouterNotifier(loginNotifier);
@@ -26,8 +26,10 @@ class GoRouterNotifier extends ChangeNotifier
 
   set loginStatus(LoginStatus value) 
   {
-    _loginStatus = value;
-    notifyListeners();
+    if (_loginStatus != value) {
+      _loginStatus = value;
+      notifyListeners();
+    }
   }
 
 }

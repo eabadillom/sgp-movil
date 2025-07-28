@@ -1,8 +1,11 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sgp_movil/conf/config.dart';
+import 'package:sgp_movil/features/dashboard/presentation/bloc/notifications/notifications_bloc.dart';
 import 'package:sgp_movil/features/shared/widgets/side_menu.dart';
 import 'package:sgp_movil/features/dashboard/presentation/providers/theme_provider.dart';
 
@@ -16,9 +19,35 @@ class DashbordScreen extends ConsumerStatefulWidget {
 
 class _DashbordScreenState extends ConsumerState<DashbordScreen> 
 {
+  final LoggerSingleton log = LoggerSingleton.getInstance('DashbordScreen');
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
-  Future<bool> _confirmarSalida() async {
+  @override
+  void initState() 
+  {
+    super.initState();
+    _loadToken();
+  }
+
+  Future<void> _loadToken() async 
+  {
+    final token = await FirebaseMessaging.instance.getToken();
+    if(!mounted) return;
+    final bloc = context.read<NotificationsBloc>();
+    
+    if (token != null) 
+    {
+      log.logger.info('Token FCM: $token');
+      // Enviar al backend si es necesario
+      bloc.enviarFCMToken(token);
+    } else {
+      log.logger.warning('No se pudo obtener el token FCM');
+    }
+
+  }
+
+  Future<bool> _confirmarSalida() async 
+  {
     return await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -41,6 +70,7 @@ class _DashbordScreenState extends ConsumerState<DashbordScreen>
   Widget build(BuildContext context) 
   {
     final isDarkmode = ref.watch(themeNotifierProvider).isDarkmode;
+    final unreadCount = context.select((NotificationsBloc bloc) => bloc.state.unreadCount);
 
     return PopScope(
       canPop: false,
@@ -62,9 +92,40 @@ class _DashbordScreenState extends ConsumerState<DashbordScreen>
         appBar: AppBar(
           title: const Text('Dashboard'),
           actions: [
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.notifications),
+                  onPressed: () {
+                    context.push('/notificaciones');
+                  },
+                ),
+                if (unreadCount > 0)
+                  Positioned(
+                    right: 8,
+                    top: 4,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '$unreadCount',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
             IconButton(
               icon: Icon(
-                isDarkmode ? Icons.dark_mode_outlined : Icons.light_mode_outlined,
+                isDarkmode ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
               ),
               onPressed: () {
                 ref.read(themeNotifierProvider.notifier).toggleDarkmode();
@@ -86,8 +147,8 @@ class _DashboardView extends StatelessWidget {
   Widget build(BuildContext context) {
     return GridView.builder(
       padding: EdgeInsets.all(4),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2, // número de columnas
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 220, // Mejor para que escale en tablets
         crossAxisSpacing: 6,
         mainAxisSpacing: 6,
         childAspectRatio: 1.2, // relación ancho/alto para ListTile
