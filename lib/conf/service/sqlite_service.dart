@@ -1,8 +1,7 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:path/path.dart';
 import 'package:sgp_movil/conf/loggers/logger_singleton.dart';
 import 'package:sgp_movil/features/dashboard/domain/push_message.dart';
-import 'package:sqflite_sqlcipher/sqflite.dart';
+import 'package:sqflite/sqflite.dart';
 
 class SQLiteService 
 {
@@ -15,29 +14,16 @@ class SQLiteService
   static Database? _db;
   static const _dbName = 'push_messages.db';
 
-  static Future<String> _getDatabasePassword() async 
-  {
-    final password = dotenv.env['DB_PASSWORD'];
-
-    if (password == null || password.isEmpty) {
-      throw Exception('Clave de cifrado no definida en el archivo .env (DB_PASSWORD)');
-    }
-
-    return password;
-  }
-
   static Future<void> init() async 
   {
     if(_db != null) return;
 
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, _dbName);
-    final password = await _getDatabasePassword();
 
     _db = await openDatabase(
       path,
       version: 1,
-      password: password,
       onCreate: (db, version) async 
       {
         await db.execute('''
