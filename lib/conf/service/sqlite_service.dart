@@ -44,7 +44,7 @@ class SQLiteService
   static Database get database 
   {
     if(_db == null) {
-      throw Exception('Base de datos no inicializada. Llamar a init() primero.');
+      throw Exception('Base de datos no inicializada.');
     }
     return _db!;
   }

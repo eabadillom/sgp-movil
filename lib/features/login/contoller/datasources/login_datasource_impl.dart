@@ -110,4 +110,38 @@ class LoginDatasourceImpl extends LoginDatasource {
       //throw Exception();
     }
   }
+
+  @override
+  Future<String> deshabilitar(String token) async
+  {
+    log.setupLoggin();
+    try{
+      httpService.setAccessToken(token);
+      String contexto = Environment.obtenerUrlPorNombre('Movil');
+      String url = '$contexto/deshabilitar';
+      String method = 'GET';
+
+      final response = await httpService.dio.request(url, options: Options(method: method));
+
+      if (response.statusCode == 200) {
+        log.logger.info('Respuesta ${response.data}');
+        return 'Has cerrado sesión correctamente';
+      } else {
+        log.logger.warning('Logout fallido: ${response.data}');
+        return 'Fallo al cerrar sesión';
+      }
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.receiveTimeout || e.type == DioExceptionType.sendTimeout) 
+      {
+        log.logger.warning('Problema de red detectado: ${e.message}');
+        return 'Problema de red. Intenta cerrar sesión más tarde.';
+      }
+      log.logger.warning('Error Dio: ${e.response?.data ?? e.message}');
+      return 'Fallo al cerrar sesión, contacte al administrador de sistemas';
+    } catch (e) {
+      log.logger.warning('Error general: $e');
+      return 'Error desconocido al cerrar sesión, contacte al administrador de sistemas';
+    }
+  }
+
 }

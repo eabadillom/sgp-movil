@@ -21,4 +21,10 @@ class LoginRepositoryImpl extends LoginRepository
     return dataSource.login(numeroEmpleado, nombre, password);
   }
 
+  @override
+  Future<String> deshabilitar(String token)
+  {
+    return dataSource.deshabilitar(token);
+  }
+
 }
