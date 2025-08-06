@@ -150,9 +150,23 @@ class SideMenuState extends ConsumerState<SideMenu>
         (
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: CustomFilledButton(
-            onPressed: () 
+            onPressed: () async
             {
-              ref.read(loginProvider.notifier).logout();
+              final mensaje = await ref.read(loginProvider.notifier).deshabilitar();
+
+              widget.scaffoldKey.currentState?.closeDrawer();
+
+              if(!context.mounted) return;
+
+              CustomSnackBarCentrado.mostrar(
+                context, 
+                mensaje: mensaje,
+                tipo: mensaje.toLowerCase().contains('Fallo') ? SnackbarTipo.error : SnackbarTipo.success,
+              );
+
+              if (!mensaje.toLowerCase().contains('fallo')) {
+                context.go('/login');
+              }
             },
             text: 'Cerrar sesión'
           ),

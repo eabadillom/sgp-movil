@@ -281,7 +281,7 @@ class _IncapacidadDetalleFormState extends ConsumerState<IncapacidadDetalleForm>
               controller: fechaInicioController,
               validator: (value) => value?.isEmpty ?? true ? 'Por favor selecciona una fecha' : null,
             ),
-            _buildTextField(controller: descripcionController, label: 'Descripcion'),
+            _buildTextField(controller: descripcionController, label: 'Descripción'),
 
             const SizedBox(height: 24),
 

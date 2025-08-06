@@ -23,7 +23,7 @@ const appMenuItem = <MenuItems>[
   MenuItems(
     title: 'Vacaciones',
     link: '/vacaciones',
-    icon: Icons.airplanemode_active,
+    icon: FontAwesomeIcons.suitcaseRolling,
   ),
 
   MenuItems(
@@ -51,7 +51,7 @@ const appMenuItem = <MenuItems>[
   ),
 
   MenuItems(
-    title: 'Articulos',
+    title: 'Artículos',
     link: '/articulos',
     icon: Icons.cleaning_services_rounded,
   ),
