@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:sgp_movil/conf/config.dart';
 import 'package:sgp_movil/conf/constants/environment.dart';
 import 'package:sgp_movil/conf/loggers/logger_singleton.dart';
 import 'package:sgp_movil/conf/security/dio_client.dart';
@@ -65,18 +66,10 @@ class IncidenciaDatasourceImpl extends IncidenciaDatasource {
       );
       return response;
     } on DioException catch (e) {
-      final statusCode = e.response?.statusCode;
       final data = e.response?.data;
-
-      String mensajeError;
-      if (data is String) {
-        mensajeError = data;
-      } else {
-        mensajeError = "Error desconocido del servidor.";
-      }
-
-      log.logger.warning('Error ($statusCode): $mensajeError');
-      throw Exception(mensajeError); // ← Lanza el mensaje tal cual
+      log.logger.warning(data);
+      String resultado = ErroresHttp.verificarCodigoError(e);
+      throw Exception(resultado);
     } catch (e) {
       log.logger.severe(e);
       throw Exception("Error inesperado. Contacte con el administrador.");

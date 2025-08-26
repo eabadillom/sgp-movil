@@ -60,32 +60,11 @@ class IncidenciaPermisoDetalleNotifier
         isLoading: false,
         incidenciaPermisoDetalle: incidenciaPermisoDetalle,
       );
-    } on DioException catch (e) {
-      log.logger.warning('Execpcion de actualizacion de la incidencia');
-
-      if (e.type == DioExceptionType.connectionTimeout ||
-          e.type == DioExceptionType.unknown) {
-        throw NoInternetException();
-      } else if (e.type == DioExceptionType.badResponse) {
-        throw ServerException(message: e.response?.data);
-      } else if (e.response?.statusCode == 409) {
-        throw ServerException(
-          message: 'Error: el registro de la incidencia ya existe',
-        );
-      } else {
-        throw ServerException(
-          message: 'Error, contacte con el administrador de sistemas',
-        );
-      }
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: 'Error: contacte con el administrador de sistemas',
-      );
       log.logger.warning(e);
-      throw RegistroNotFound(
-        "Error: contacte con el administrador de sistemas",
-      );
+      final mensajeError = e.toString();
+      state = state.copyWith(isLoading: false, errorMessage: mensajeError);
+      rethrow;
     }
   }
 }

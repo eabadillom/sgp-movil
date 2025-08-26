@@ -6,3 +6,4 @@ export 'security/dio_client.dart';
 export 'theme/app_theme.dart';
 export 'util/date_pikcer_util.dart';
 export 'util/format_util.dart';
+export 'util/errores_http.dart';

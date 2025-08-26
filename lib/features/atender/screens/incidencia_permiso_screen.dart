@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -411,7 +412,15 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen> {
                                                 mensaje =
                                                     'Incidencia Cancelada correctamente';
                                               } catch (e) {
-                                                mensaje = e.toString();
+                                                String mensjaeError =
+                                                    e.toString();
+                                                String mensajeFinal =
+                                                    mensjaeError.replaceAll(
+                                                      'Exception: ',
+                                                      '',
+                                                    );
+                                                mensaje = mensajeFinal;
+
                                                 tipo = SnackbarTipo.error;
                                               } finally {
                                                 if (context.mounted) {
