@@ -33,7 +33,7 @@ class IncidenciaPermisoDetalleDatasourceImpl
     } on DioException catch (e) {
       final data = e.response?.data;
       log.logger.warning(data);
-      String resultado = ErroresHttp.verificarCodigoError(e);
+      String resultado = ErroresHttp.obtenerMensajeError(e);
       throw Exception(resultado);
     } catch (e) {
       log.logger.severe(e);
