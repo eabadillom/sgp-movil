@@ -66,10 +66,18 @@ class IncidenciaDatasourceImpl extends IncidenciaDatasource {
       );
       return response;
     } on DioException catch (e) {
+      final statusCode = e.response?.statusCode;
       final data = e.response?.data;
-      log.logger.warning(data);
-      String resultado = ErroresHttp.obtenerMensajeError(e);
-      throw Exception(resultado);
+
+      String mensajeError;
+      if (data is String) {
+        mensajeError = data;
+      } else {
+        mensajeError = "Error desconocido del servidor.";
+      }
+
+      log.logger.warning('Error ($statusCode): $mensajeError');
+      throw Exception(mensajeError); // ← Lanza el mensaje tal cual
     } catch (e) {
       log.logger.severe(e);
       throw Exception("Error inesperado. Contacte con el administrador.");
