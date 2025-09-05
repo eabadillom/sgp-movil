@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -51,7 +52,9 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen> {
       titulo = 'Vacaciones';
     }
 
-    fechaIni = FormatUtil.dateFormated(DateTime.now().subtract(const Duration(days: 7)));
+    fechaIni = FormatUtil.dateFormated(
+      DateTime.now().subtract(const Duration(days: 7)),
+    );
     fechaFin = FormatUtil.dateFormated(DateTime.now());
 
     /*titulo = codigoIncidencia.contains('PE')
@@ -84,11 +87,11 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    if (incidenciaPermisoState.errorMessage != null) {
+    /*if (incidenciaPermisoState.errorMessage != null) {
       return const Scaffold(
         body: Center(child: Text('Error al cargar el detalle de incidencia')),
       );
-    }
+    }*/
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -188,9 +191,18 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen> {
                                                                     ?.numeroUsuario,
                                                           },
                                                         );
-                                                    ref.read(listarNotifierProvider(codigoIncidencia).notifier)
-                                                      .cargarInicidencias(fechaIni, fechaFin);
-                                                    if (!context.mounted) return;
+                                                    ref
+                                                        .read(
+                                                          listarNotifierProvider(
+                                                            codigoIncidencia,
+                                                          ).notifier,
+                                                        )
+                                                        .cargarInicidencias(
+                                                          fechaIni,
+                                                          fechaFin,
+                                                        );
+                                                    if (!context.mounted)
+                                                      return;
                                                     await CustomSnackBarCentrado.mostrar(
                                                       context,
                                                       mensaje:
@@ -254,9 +266,18 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen> {
                                                                     ?.numeroUsuario,
                                                           },
                                                         );
-                                                    ref.read(listarNotifierProvider(codigoIncidencia).notifier)
-                                                      .cargarInicidencias(fechaIni, fechaFin);
-                                                    if (!context.mounted) return;
+                                                    ref
+                                                        .read(
+                                                          listarNotifierProvider(
+                                                            codigoIncidencia,
+                                                          ).notifier,
+                                                        )
+                                                        .cargarInicidencias(
+                                                          fechaIni,
+                                                          fechaFin,
+                                                        );
+                                                    if (!context.mounted)
+                                                      return;
                                                     await CustomSnackBarCentrado.mostrar(
                                                       context,
                                                       mensaje:
@@ -274,24 +295,149 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen> {
 
                         const SizedBox(height: 16),
 
-                        ElevatedButton.icon(
-                          icon: const Icon(Icons.arrow_back),
-                          label: const Text('Regresar'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blueGrey,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 14,
-                            ),
-                            textStyle: const TextStyle(fontSize: 18),
-                          ),
-                          onPressed: () {
-                            context.pop();
-                          },
+                        Row(
+                          mainAxisAlignment:
+                              (detalleIncidencia?.claveEstatus == 'E' ||
+                                      detalleIncidencia?.claveEstatus == 'R')
+                                  ? MainAxisAlignment.center
+                                  : MainAxisAlignment.spaceBetween,
+                          children: [
+                            // Botón REGRESAR - usa Expanded solo si también se muestra el botón "Cancelar"
+                            if (codigoIncidencia.contains('V') &&
+                                detalleIncidencia?.claveEstatus == 'A')
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  icon: const Icon(Icons.arrow_back),
+                                  label: const Text('Regresar'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blueGrey,
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 24,
+                                      vertical: 14,
+                                    ),
+                                    textStyle: const TextStyle(fontSize: 18),
+                                  ),
+                                  onPressed: () {
+                                    context.pop();
+                                  },
+                                ),
+                              )
+                            else
+                              ElevatedButton.icon(
+                                icon: const Icon(Icons.arrow_back),
+                                label: const Text('Regresar'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blueGrey,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 14,
+                                  ),
+                                  textStyle: const TextStyle(fontSize: 18),
+                                ),
+                                onPressed: () {
+                                  context.pop();
+                                },
+                              ),
+
+                            // Separador solo si se mostrará el botón "Cancelar"
+                            if (codigoIncidencia.contains('V') &&
+                                detalleIncidencia?.claveEstatus == 'A')
+                              const SizedBox(width: 12),
+
+                            // Botón CANCELAR - condicional
+                            if (codigoIncidencia.contains('V') &&
+                                detalleIncidencia?.claveEstatus == 'A')
+                              Expanded(
+                                child: FilledButton.icon(
+                                  icon: const Icon(Icons.delete),
+                                  label: const Text('Cancelar'),
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 24,
+                                      vertical: 14,
+                                    ),
+                                    textStyle: const TextStyle(fontSize: 18),
+                                  ),
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder:
+                                          (context) => DialogoConfirmacion(
+                                            titulo:
+                                                '¿Deseas cancelar esta incidencia?',
+                                            icono: Icons.warning,
+                                            color: Colors.blue,
+                                            onConfirmar: () async {
+                                              String mensaje = '';
+                                              SnackbarTipo tipo =
+                                                  SnackbarTipo.success;
+                                              try {
+                                                await ref
+                                                    .read(
+                                                      incidenciaPermisoDetalleProvider
+                                                          .notifier,
+                                                    )
+                                                    .actualizarIncidenciaPermiso(
+                                                      idIncidencia,
+                                                      {
+                                                        'codigoEstado': 'C',
+                                                        'empleadoRev':
+                                                            usuario
+                                                                ?.numeroUsuario,
+                                                      },
+                                                    );
+                                                ref
+                                                    .read(
+                                                      listarNotifierProvider(
+                                                        codigoIncidencia,
+                                                      ).notifier,
+                                                    )
+                                                    .cargarInicidencias(
+                                                      fechaIni,
+                                                      fechaFin,
+                                                    );
+                                                mensaje =
+                                                    'Incidencia Cancelada correctamente';
+                                              } catch (e) {
+                                                String mensjaeError =
+                                                    e.toString();
+                                                String mensajeFinal =
+                                                    mensjaeError.replaceAll(
+                                                      'Exception: ',
+                                                      '',
+                                                    );
+                                                mensaje = mensajeFinal;
+
+                                                tipo = SnackbarTipo.error;
+                                              } finally {
+                                                if (context.mounted) {
+                                                  await CustomSnackBarCentrado.mostrar(
+                                                    context,
+                                                    mensaje: mensaje,
+                                                    tipo: tipo,
+                                                  );
+                                                }
+                                              }
+                                            },
+                                          ),
+                                    );
+                                  },
+                                ),
+                              ),
+                          ],
                         ),
                       ],
                     ),
@@ -310,7 +456,7 @@ class DialogoConfirmacion extends StatelessWidget {
   final String titulo;
   final IconData icono;
   final Color color;
-  final VoidCallback onConfirmar;
+  final Future<void> Function() onConfirmar;
 
   const DialogoConfirmacion({
     super.key,
@@ -334,9 +480,9 @@ class DialogoConfirmacion extends StatelessWidget {
       actions: [
         FilledButton(
           style: FilledButton.styleFrom(backgroundColor: color),
-          onPressed: () {
-            onConfirmar(); // Ejecuta la acción
-            Navigator.pop(context); // Cierra el diálogo
+          onPressed: () async {
+            await onConfirmar(); // Espera antes de cerrar el diálogo
+            if (context.mounted) Navigator.pop(context);
           },
           child: const Text('Sí'),
         ),

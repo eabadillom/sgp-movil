@@ -37,7 +37,7 @@ class DioClient {
         receiveTimeout: Duration(seconds: 15), // 15 segundos
         validateStatus: (status) {
           // Devuelve `true` si el estado es exitoso o si es el código 400
-          return (status! >= 200 && status < 300) || status == 400;
+          return (status! >= 200 && status < 300);
         },
         headers: {'Content-Type': 'application/json'},
       ),
