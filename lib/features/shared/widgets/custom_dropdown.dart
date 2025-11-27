@@ -33,7 +33,7 @@ class CustomDropdown<T> extends StatelessWidget
         border: OutlineInputBorder(),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       ),
-      value: value,
+      initialValue: value,
       isExpanded: true,
       items: items.map((item) {
         final Widget iconWidget;

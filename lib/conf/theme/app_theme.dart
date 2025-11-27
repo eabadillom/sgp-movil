@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 const colorSeed = Color(0xff424CB8);
 const scaffoldBackgroundColor = Color.fromARGB(255, 247, 247, 248);
@@ -35,12 +34,21 @@ class AppTheme
 
     ///* Texts
     textTheme: TextTheme(
-      titleLarge: GoogleFonts.montserratAlternates()
-        .copyWith(fontSize: 40, fontWeight: FontWeight.bold),
-      titleMedium: GoogleFonts.montserratAlternates()
-        .copyWith(fontSize: 30, fontWeight: FontWeight.bold),
-      titleSmall: GoogleFonts.montserratAlternates()
-        .copyWith(fontSize: 20)
+      titleLarge: TextStyle(
+        fontFamily: "MontserratAlternates",
+        fontSize: 40,
+        fontWeight: FontWeight.bold,
+      ),
+      titleMedium: TextStyle(
+        fontFamily: "MontserratAlternates",
+        fontSize: 30,
+        fontWeight: FontWeight.bold,
+      ),
+      titleSmall: TextStyle(
+        fontFamily: "MontserratAlternates",
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      ),
     ),
 
     ///* Scaffold Background Color
@@ -50,17 +58,23 @@ class AppTheme
     filledButtonTheme: FilledButtonThemeData(
       style: ButtonStyle(
         textStyle: WidgetStatePropertyAll(
-          GoogleFonts.montserratAlternates()
-            .copyWith(fontWeight: FontWeight.w700)
-          )
-      )
+          TextStyle(
+            fontFamily: "MontserratAlternates",
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
     ),
 
     ///* AppBar
     appBarTheme: AppBarTheme(
-      color: isDarkmode ? const Color(0xFF1F1F1F) : scaffoldBackgroundColor,
-      titleTextStyle: GoogleFonts.montserratAlternates()
-        .copyWith(fontSize: 25, fontWeight: FontWeight.bold, color: isDarkmode ? Colors.white : Colors.black),
+      backgroundColor: isDarkmode ? const Color(0xFF1F1F1F) : scaffoldBackgroundColor,
+      titleTextStyle: TextStyle(
+        fontFamily: "MontserratAlternates",
+        fontSize: 25,
+        fontWeight: FontWeight.bold,
+        color: isDarkmode ? Colors.white : Colors.black,
+      ),
       iconTheme: IconThemeData(
         color: isDarkmode ? Colors.white : Colors.black,
       ),

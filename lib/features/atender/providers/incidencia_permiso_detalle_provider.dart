@@ -1,8 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sgp_movil/conf/loggers/logger_singleton.dart';
 import 'package:sgp_movil/features/atender/providers/incidencia_repository_provider.dart';
-import 'package:sgp_movil/features/incapacidades/controller/errors/registro_errores.dart';
 import 'package:sgp_movil/features/incidencias/domain/domain.dart';
 
 final incidenciaPermisoDetalleProvider = StateNotifierProvider<

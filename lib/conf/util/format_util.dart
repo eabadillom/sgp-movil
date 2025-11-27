@@ -17,6 +17,13 @@ class FormatUtil {
     return parsed;
   }
 
+  static DateTime dateFormatedWithHour(DateTime fecha) {
+    DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
+    String formatted = formatter.format(fecha.toUtc().add(Duration(hours: -6)));
+    DateTime parsed = formatter.parse(formatted);
+    return parsed;
+  }
+
   static DateTime stringToDateTime(String fecha)
   {
     DateFormat formatter = DateFormat('dd-MM-yyyy');
@@ -35,8 +42,9 @@ class FormatUtil {
   }
 
   static String stringToStandard(DateTime fecha) {
-    String formatter = DateFormat('dd-MM-yyyy').format(fecha);
-    return formatter;
+    final formatter = DateFormat('dd-MMM-yyyy', 'es');
+    final formatted = formatter.format(fecha).toUpperCase();
+    return formatted;
   }
 
   static String fechaHoy()

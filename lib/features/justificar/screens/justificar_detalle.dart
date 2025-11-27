@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sgp_movil/conf/config.dart';
+import 'package:intl/intl.dart';
+import 'package:sgp_movil/conf/util/format_util.dart';
 import 'package:sgp_movil/features/justificar/providers/justificar_detalle_provider.dart';
 import 'package:sgp_movil/features/justificar/justificar.dart';
 import 'package:sgp_movil/features/shared/widgets/widgets.dart';
@@ -88,10 +89,9 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
                 ...[
                   renderEtiqueta('Empleado', '${detalle?.nombreEmpleado ?? ''} ${detalle?.primerApEmpleado ?? ''} ${detalle?.segundoApEmpleado ?? ''}'),
                   renderEtiqueta('Planta', detalle?.plantaEmpleado ?? ''),
-                  renderEtiqueta('Entrada', FormatUtil.formatearFecha(detalle?.fechaEntrada)),
-                  renderEtiqueta('Salida', FormatUtil.formatearFecha(detalle?.fechaSalida))
+                  calendarDayCard(detalle?.fechaEntrada, detalle?.fechaSalida),
                 ].whereType<Widget>(),
-                
+
                 const SizedBox(height: 32),
                 
                 Row(
@@ -181,4 +181,69 @@ class _JusitificarDetalleState extends ConsumerState<JusitificarDetalle> {
       ),
     );
   }
+}
+
+Widget calendarDayCard(DateTime? fechaEntrada, DateTime? fechaSalida) {
+  if (fechaEntrada == null) {
+    return const Text("Sin fecha registrada");
+  }
+
+  DateTime? entrada = FormatUtil.dateFormatedWithHour(fechaEntrada);
+  DateTime? salida = fechaSalida != null ? FormatUtil.dateFormatedWithHour(fechaSalida) : null;
+  
+  final dia = entrada.day;
+  final mes = DateFormat('MMM', 'es').format(entrada).toUpperCase();
+  
+  final horaEntrada = DateFormat('HH:mm').format(entrada);
+  final horaSalida = salida != null ? DateFormat('HH:mm').format(salida) : null;
+
+  return Container(
+    padding: const EdgeInsets.all(12),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: Colors.grey.shade300),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black12,
+          blurRadius: 4,
+          offset: Offset(0, 2),
+        )
+      ],
+    ),
+    child: Row(
+      children: [
+        Container(
+          width: 60,
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.red.shade100,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Column(
+            children: [
+              Text(
+                mes, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                '$dia', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(width: 12),
+
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Entrada: $horaEntrada", style: const TextStyle(fontSize: 16), ),
+
+            if(horaSalida != null)
+              Text("Salida: $horaSalida", style: const TextStyle(fontSize: 16), ),
+          ],
+        )
+      ],
+    ),
+  );
 }
