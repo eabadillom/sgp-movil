@@ -14,8 +14,7 @@ class IncapacidadDetalleMapper
     folio: json["folio"],
     diasAutorizados: json["diasAutorizados"],
     descripcion: json["descripcion"],
-    fechaIni: DateTime.parse(json["fechaIni"]),
-    fechaFin: DateTime.parse(json["fechaFin"]),
+    periodo: (json['periodo'] as List<dynamic>?)?.map((d) => DateTime.parse(d)).toList() ?? [],
     estatusIncapacidad: json["estatusIncapacidad"],
   );
 
@@ -32,8 +31,7 @@ class IncapacidadDetalleMapper
     "folio": entity.folio,
     "diasAutorizados": entity.diasAutorizados,
     "descripcion": entity.descripcion,
-    "fechaIni": entity.fechaIni.toIso8601String(),
-    "fechaFin": entity.fechaFin.toIso8601String(),
+    "periodo": entity.periodo.map((d) => d.toIso8601String()).toList(),
     "estatusIncapacidad": entity.estatusIncapacidad,
   };
 

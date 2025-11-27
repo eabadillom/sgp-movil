@@ -11,8 +11,7 @@ class IncapacidadDetalle
   final String folio;
   final int diasAutorizados;
   final String descripcion;
-  final DateTime fechaIni;
-  final DateTime fechaFin;
+  List<DateTime> periodo;
   final String estatusIncapacidad;
 
   IncapacidadDetalle({
@@ -27,8 +26,7 @@ class IncapacidadDetalle
     required this.folio,
     required this.diasAutorizados,
     required this.descripcion,
-    required this.fechaIni,
-    required this.fechaFin,
+    required this.periodo,
     required this.estatusIncapacidad,
   });
 }

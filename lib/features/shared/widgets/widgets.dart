@@ -13,3 +13,4 @@ export 'geometrical_background.dart';
 export 'lista_tarjeta_generica.dart';
 export 'selector_periodo_fecha.dart';
 export 'side_menu.dart';
+export 'periodo_calendario.dart';

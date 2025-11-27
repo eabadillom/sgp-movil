@@ -4,8 +4,7 @@ class IncidenciaPermisoDetalle
   String nombreEmpleado;
   String primerApEmpleado;
   String segundoApEmpleado;
-  DateTime fechaInicio;
-  DateTime? fechaFin;
+  List<DateTime> periodo;
   String claveEstatus;
   String? descripcionRechazo;
 
@@ -14,8 +13,7 @@ class IncidenciaPermisoDetalle
     required this.nombreEmpleado,
     required this.primerApEmpleado,
     required this.segundoApEmpleado,
-    required this.fechaInicio,
-    this.fechaFin,
+    required this.periodo,
     required this.claveEstatus,
     this.descripcionRechazo
   });

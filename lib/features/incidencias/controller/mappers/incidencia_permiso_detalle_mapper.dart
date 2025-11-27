@@ -7,9 +7,7 @@ class IncidenciaPermisoDetalleMapper {
     nombreEmpleado: json['nombreSolicitante'],
     primerApEmpleado: json['primerApSolicitante'],
     segundoApEmpleado: json['segundoApSolicitante'],
-    fechaInicio: DateTime.parse(json['fechaInicio']),
-    fechaFin:
-        json['fechaFin'] != null ? DateTime.parse(json['fechaFin']) : null,
+    periodo: (json['periodo'] as List<dynamic>?)?.map((d) => DateTime.parse(d)).toList() ?? [],
     descripcionRechazo: json['descripcionRechazo'] ?? '',
   );
 
@@ -21,9 +19,7 @@ class IncidenciaPermisoDetalleMapper {
     nombreEmpleado: json['nombreSolicitante'],
     primerApEmpleado: json['primerApSolicitante'],
     segundoApEmpleado: json['segundoApSolicitante'],
-    fechaInicio: DateTime.parse(json['fechaInicio']),
-    fechaFin:
-        json['fechaFin'] != null ? DateTime.parse(json['fechaFin']) : null,
+    periodo: (json['periodo'] as List<dynamic>?)?.map((d) => DateTime.parse(d)).toList() ?? [],
     descripcionRechazo: json['descripcionRechazo'] ?? '',
   );
 }

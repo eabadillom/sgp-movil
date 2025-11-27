@@ -34,6 +34,7 @@ dependencies:
   equatable: ^2.0.7
   flutter_local_notifications: ^19.3.0
   cupertino_icons: ^1.0.6
+  table_calendar: ^3.0.9
 
 dev_dependencies:
   change_app_package_name: ^1.5.0 
@@ -59,4 +60,26 @@ flutter:
     - assets/gifs/
     - assets/images/
     - assets/icons/
-    - google_fonts/montserrat_alternates/
+    - assets/fonts/montserrat_alternates/
+  
+  fonts:
+    - family: MontserratAlternates
+      fonts:
+        - asset: assets/fonts/montserrat_alternates/MontserratAlternates-Black.ttf
+        - asset: assets/fonts/montserrat_alternates/MontserratAlternates-BlackItalic.ttf
+        - asset: assets/fonts/montserrat_alternates/MontserratAlternates-Bold.ttf
+        - asset: assets/fonts/montserrat_alternates/MontserratAlternates-BoldItalic.ttf
+        - asset: assets/fonts/montserrat_alternates/MontserratAlternates-ExtraBold.ttf
+        - asset: assets/fonts/montserrat_alternates/MontserratAlternates-ExtraBoldItalic.ttf
+        - asset: assets/fonts/montserrat_alternates/MontserratAlternates-ExtraLight.ttf
+        - asset: assets/fonts/montserrat_alternates/MontserratAlternates-ExtraLightItalic.ttf
+        - asset: assets/fonts/montserrat_alternates/MontserratAlternates-Italic.ttf
+        - asset: assets/fonts/montserrat_alternates/MontserratAlternates-Light.ttf
+        - asset: assets/fonts/montserrat_alternates/MontserratAlternates-LightItalic.ttf
+        - asset: assets/fonts/montserrat_alternates/MontserratAlternates-Medium.ttf
+        - asset: assets/fonts/montserrat_alternates/MontserratAlternates-MediumItalic.ttf
+        - asset: assets/fonts/montserrat_alternates/MontserratAlternates-Regular.ttf
+        - asset: assets/fonts/montserrat_alternates/MontserratAlternates-SemiBold.ttf
+        - asset: assets/fonts/montserrat_alternates/MontserratAlternates-SemiBoldItalic.ttf
+        - asset: assets/fonts/montserrat_alternates/MontserratAlternates-Thin.ttf
+        - asset: assets/fonts/montserrat_alternates/MontserratAlternates-ThinItalic.ttf

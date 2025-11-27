@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sgp_movil/conf/util/format_util.dart';
 import 'package:sgp_movil/features/dashboard/presentation/providers/usuario_detalle_provider.dart';
 import 'package:sgp_movil/features/incapacidades/controller/controller.dart';
 import 'package:sgp_movil/features/incapacidades/presentacion/providers/incapacidad_detalle_provider.dart';
@@ -53,9 +52,9 @@ class _IncapacidadDetalleState extends ConsumerState<IncapacidadDetalle>
       return Scaffold(body: Center(child: Text('Error al cargar los datos')));
     }
 
-    Widget? renderEtiqueta(String label, String? value) {
+    Widget? renderEtiqueta(String label, String? value, Color? backgroundColor) {
       if (value == null || value.trim().isEmpty) return null;
-      return EtiquetaRegistroWidget(label: label, value: value);
+      return EtiquetaRegistroWidget(label: label, value: value, backgroundColor: backgroundColor,);
     }
 
     return Scaffold(
@@ -91,16 +90,15 @@ class _IncapacidadDetalleState extends ConsumerState<IncapacidadDetalle>
                   ),
 
                 ...[
-                  renderEtiqueta('Tipo Incapacidad', detalleIncapacidad?.tipoIncapacidad),
-                  renderEtiqueta('Control Incapacidad', detalleIncapacidad?.controlIncapacidad),
-                  renderEtiqueta('Riesgo de Trabajo', detalleIncapacidad?.riesgoTrabajo),
-                  renderEtiqueta('Tipo Riesgo', detalleIncapacidad?.tipoRiesgo),
-                  renderEtiqueta('Folio', detalleIncapacidad?.folio),
-                  renderEtiqueta('Dias Autorizados', detalleIncapacidad?.diasAutorizados.toString()),
-                  renderEtiqueta('Descripción', detalleIncapacidad?.descripcion),
-                  renderEtiqueta('Fecha Inicio', FormatUtil.formatearFechaSimple(detalleIncapacidad?.fechaIni)),
-                  renderEtiqueta('Fecha Fin', FormatUtil.formatearFechaSimple(detalleIncapacidad?.fechaFin)),
-                  renderEtiqueta('Estatus', detalleIncapacidad?.estatusIncapacidad),
+                  renderEtiqueta('Tipo Incapacidad', detalleIncapacidad?.tipoIncapacidad, null),
+                  renderEtiqueta('Control Incapacidad', detalleIncapacidad?.controlIncapacidad, null),
+                  renderEtiqueta('Riesgo de Trabajo', detalleIncapacidad?.riesgoTrabajo, null),
+                  renderEtiqueta('Tipo Riesgo', detalleIncapacidad?.tipoRiesgo, null),
+                  renderEtiqueta('Folio', detalleIncapacidad?.folio, null),
+                  renderEtiqueta('Descripción', detalleIncapacidad?.descripcion, null),
+                  if (detalleIncapacidad != null && detalleIncapacidad.periodo.isNotEmpty)
+                      PeriodoCalendario(fechas: detalleIncapacidad.periodo),
+                  renderEtiqueta('Estatus', detalleIncapacidad?.estatusIncapacidad, Colors.teal.shade400),
                 ].whereType<Widget>(), // Elimina los null
 
                 const SizedBox(height: 20),
@@ -147,16 +145,11 @@ class _IncapacidadDetalleState extends ConsumerState<IncapacidadDetalle>
                             tipo: SnackbarTipo.success,
                           );
 
-                          /*final snackBarController = ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar.success('Incapacidad actualizada'));
-                          await snackBarController.closed;*/
-
                           if(!context.mounted) return;
 
                           context.pop(true);
                         } catch (e) {
                           if (!context.mounted) return;
-
-                          /*ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar.error('Error: $e'));*/
 
                           await CustomSnackBarCentrado.mostrar(
                             context,
