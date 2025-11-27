@@ -42,8 +42,9 @@ class FormatUtil {
   }
 
   static String stringToStandard(DateTime fecha) {
-    String formatter = DateFormat('dd-MM-yyyy').format(fecha);
-    return formatter;
+    final formatter = DateFormat('dd-MMM-yyyy', 'es');
+    final formatted = formatter.format(fecha).toUpperCase();
+    return formatted;
   }
 
   static String fechaHoy()
