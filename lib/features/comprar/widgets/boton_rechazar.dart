@@ -39,8 +39,6 @@ class BotonRechazar extends ConsumerWidget {
           context,
           '¿Estás seguro de rechazar esta solicitud?',
           () async {
-            Navigator.of(context).pop(); // Cierra el diálogo de confirmación
-
             await dialogoMotivoRechazo(
               context: context,
               onEnviar: (String? comentario) async {
@@ -66,7 +64,7 @@ class BotonRechazar extends ConsumerWidget {
                   limpiarVariables(ref);
                   
                   if(!context.mounted) return;
-
+                  
                   context.go('/${obtenerPagina(tipo)}');
                 } catch (e) {
                   if (!context.mounted) return;

@@ -13,10 +13,10 @@ class KeyValueStorageServiceImpl
 
     switch(T) 
     {
-      case int:
+      case const (int):
         return prefs.getInt(key) as T?;      
 
-      case String:
+      case const (String):
         return prefs.getString(key) as T?;
 
       default:
@@ -36,11 +36,11 @@ class KeyValueStorageServiceImpl
 
     switch(T) 
     {
-      case int:
+      case const (int):
         prefs.setInt(key, value as int);
         break;
 
-      case String:
+      case const (String):
         prefs.setString(key, value as String);
         break;
 

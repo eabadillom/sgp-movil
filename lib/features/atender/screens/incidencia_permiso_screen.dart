@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -56,10 +55,6 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen> {
       DateTime.now().subtract(const Duration(days: 7)),
     );
     fechaFin = FormatUtil.dateFormated(DateTime.now());
-
-    /*titulo = codigoIncidencia.contains('PE')
-        ? 'Permiso'
-        : 'Vacaciones';*/
 
     Future.microtask(() {
       ref
@@ -121,21 +116,12 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen> {
                       value:
                           '${detalleIncidencia?.nombreEmpleado ?? ''} ${detalleIncidencia?.primerApEmpleado ?? ''} ${detalleIncidencia?.segundoApEmpleado ?? ''}',
                     ),
-                    EtiquetaRegistroWidget(
-                      label: 'Fecha Inicio',
-                      value: FormatUtil.formatearFechaSimple(
-                        detalleIncidencia?.fechaInicio,
-                      ),
-                    ),
-                    EtiquetaRegistroWidget(
-                      label: 'Fecha Fin',
-                      value: FormatUtil.formatearFechaSimple(
-                        detalleIncidencia?.fechaFin,
-                      ),
-                    ),
+                    if (detalleIncidencia != null && detalleIncidencia.periodo.isNotEmpty)
+                      PeriodoCalendario(fechas: detalleIncidencia.periodo),
                     EtiquetaRegistroWidget(
                       label: 'Estatus',
                       value: estados[detalleIncidencia?.claveEstatus] ?? 'N/A',
+                      backgroundColor: Colors.teal.shade400
                     ),
                     const SizedBox(height: 20),
                     const Divider(),
@@ -201,8 +187,9 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen> {
                                                           fechaIni,
                                                           fechaFin,
                                                         );
-                                                    if (!context.mounted)
+                                                    if (!context.mounted) {
                                                       return;
+                                                    }
                                                     await CustomSnackBarCentrado.mostrar(
                                                       context,
                                                       mensaje:
@@ -276,8 +263,9 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen> {
                                                           fechaIni,
                                                           fechaFin,
                                                         );
-                                                    if (!context.mounted)
+                                                    if (!context.mounted) {
                                                       return;
+                                                    }
                                                     await CustomSnackBarCentrado.mostrar(
                                                       context,
                                                       mensaje:
@@ -376,61 +364,31 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen> {
                                       context: context,
                                       builder:
                                           (context) => DialogoConfirmacion(
-                                            titulo:
-                                                '¿Deseas cancelar esta incidencia?',
+                                            titulo: '¿Deseas cancelar esta incidencia?',
                                             icono: Icons.warning,
                                             color: Colors.blue,
                                             onConfirmar: () async {
                                               String mensaje = '';
-                                              SnackbarTipo tipo =
-                                                  SnackbarTipo.success;
+                                              SnackbarTipo tipo = SnackbarTipo.success;
                                               try {
-                                                await ref
-                                                    .read(
-                                                      incidenciaPermisoDetalleProvider
-                                                          .notifier,
-                                                    )
-                                                    .actualizarIncidenciaPermiso(
-                                                      idIncidencia,
-                                                      {
-                                                        'codigoEstado': 'C',
-                                                        'empleadoRev':
-                                                            usuario
-                                                                ?.numeroUsuario,
-                                                      },
+                                                await ref.read(incidenciaPermisoDetalleProvider.notifier,).actualizarIncidenciaPermiso(
+                                                      idIncidencia, {'codigoEstado': 'C','empleadoRev': usuario?.numeroUsuario,},
                                                     );
-                                                ref
-                                                    .read(
-                                                      listarNotifierProvider(
-                                                        codigoIncidencia,
-                                                      ).notifier,
-                                                    )
-                                                    .cargarInicidencias(
-                                                      fechaIni,
-                                                      fechaFin,
-                                                    );
-                                                mensaje =
-                                                    'Incidencia Cancelada correctamente';
+                                                ref.read(listarNotifierProvider(codigoIncidencia,).notifier,).cargarInicidencias(fechaIni,fechaFin,);
+                                                mensaje = 'Incidencia Cancelada correctamente';
                                               } catch (e) {
-                                                String mensjaeError =
-                                                    e.toString();
-                                                String mensajeFinal =
-                                                    mensjaeError.replaceAll(
-                                                      'Exception: ',
-                                                      '',
-                                                    );
+                                                String mensjaeError = e.toString();
+                                                String mensajeFinal = mensjaeError.replaceAll('Exception: ', '', );
                                                 mensaje = mensajeFinal;
 
                                                 tipo = SnackbarTipo.error;
                                               } finally {
                                                 if (context.mounted) {
-                                                  await CustomSnackBarCentrado.mostrar(
-                                                    context,
-                                                    mensaje: mensaje,
-                                                    tipo: tipo,
-                                                  );
+                                                  await CustomSnackBarCentrado.mostrar(context,mensaje: mensaje, tipo: tipo,);
                                                 }
                                               }
+                                              if(!context.mounted) return;
+                                              context.pop();
                                             },
                                           ),
                                     );
