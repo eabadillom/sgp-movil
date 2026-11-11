@@ -20,19 +20,13 @@ class BotonRechazar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ElevatedButton.icon(
+    return FilledButton.icon(
       icon: const Icon(Icons.cancel),
       label: const Text('Rechazar'),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.red,
+      style: FilledButton.styleFrom(
+        backgroundColor: Colors.red.shade700,
         foregroundColor: Colors.white,
-        shadowColor: Colors.redAccent,
-        elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-        textStyle: const TextStyle(fontSize: 18),
+        minimumSize: const Size.fromHeight(48),
       ),
       onPressed: () {
         dialogoConfirmacion(
@@ -42,7 +36,6 @@ class BotonRechazar extends ConsumerWidget {
             await dialogoMotivoRechazo(
               context: context,
               onEnviar: (String? comentario) async {
-                
                 try {
                   await ref
                       .read(solicitudNotifierProvider.notifier)
@@ -52,7 +45,7 @@ class BotonRechazar extends ConsumerWidget {
                         codigoEstadoIncidencia: 'R',
                         motivoRechazo: comentario,
                       );
-                  
+
                   if (!context.mounted) return;
 
                   await CustomSnackBarCentrado.mostrar(
@@ -62,9 +55,9 @@ class BotonRechazar extends ConsumerWidget {
                   );
 
                   limpiarVariables(ref);
-                  
-                  if(!context.mounted) return;
-                  
+
+                  if (!context.mounted) return;
+
                   context.go('/${obtenerPagina(tipo)}');
                 } catch (e) {
                   if (!context.mounted) return;

@@ -1,37 +1,42 @@
 import 'package:flutter/material.dart';
 
-class BarraBusquedaNombre extends StatelessWidget {
+class BarraBusquedaNombre extends StatelessWidget 
+{
   final void Function(String) onChanged;
   final String hintText;
   final TextEditingController? controller;
+  final bool autofocus;
+  final FocusNode? focusNode;
 
   const BarraBusquedaNombre({
     super.key,
     required this.onChanged,
     this.hintText = 'Buscar por nombre',
     this.controller,
+    this.autofocus = false,
+    this.focusNode,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) 
+  {
     return TextField(
       controller: controller,
+      autofocus: autofocus,
+      focusNode: focusNode,
       decoration: InputDecoration(
-        labelText: hintText, // Texto que aparece como etiqueta arriba
-        hintText:
-            'Buscar por nombre (p.e. Juan)', // Placeholder dentro del campo
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        prefixIcon: const Icon(Icons.search),
-        suffixIcon:
-            controller != null
-                ? IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () {
-                    controller!.clear();
-                    onChanged('');
-                  },
-                )
-                : null,
+        hintText: hintText,
+        prefixIcon: const Icon(Icons.search_rounded),
+        suffixIcon: controller != null ? 
+          IconButton(
+            tooltip: 'Limpiar búsqueda',
+            icon: const Icon(Icons.delete_rounded),
+            onPressed: () 
+            {
+              controller!.clear();
+              onChanged('');
+            },
+          ) : null,
       ),
       onChanged: onChanged,
     );

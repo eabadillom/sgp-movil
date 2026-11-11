@@ -5,9 +5,7 @@ import 'package:sgp_movil/conf/config.dart';
 import 'package:sgp_movil/features/atender/screens/incidencia_permiso_screen.dart';
 import 'package:sgp_movil/features/atender/screens/listar_incidencias_screen.dart';
 import 'package:sgp_movil/features/comprar/screens/screens.dart';
-import 'package:sgp_movil/features/dashboard/presentation/screens/dashbord_screen.dart';
-import 'package:sgp_movil/features/dashboard/presentation/screens/notification_detail_screen.dart';
-import 'package:sgp_movil/features/dashboard/presentation/screens/notifications_list_screen.dart';
+import 'package:sgp_movil/features/dashboard/presentation/screens/screens.dart';
 import 'package:sgp_movil/features/incapacidades/presentacion/screens/incapacidad_detalle.dart';
 import 'package:sgp_movil/features/incapacidades/presentacion/screens/incapacidad_detalle_guardar.dart';
 import 'package:sgp_movil/features/incapacidades/presentacion/screens/incapacidad_list_screen.dart';
@@ -20,20 +18,21 @@ import 'app_router_notifier.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
-final goRouterProvider = Provider((ref) {
+final goRouterProvider = Provider((ref) 
+{
   final goRouterNotifier = ref.read(goRouterNotifierProvider);
   final LoggerSingleton log = LoggerSingleton.getInstance('GoRouterProvider');
   log.setupLoggin();
 
   return GoRouter(
     navigatorKey: rootNavigatorKey,
-    initialLocation: '/dashboard',
+    initialLocation: '/splash',
     refreshListenable: goRouterNotifier,
     routes: [
       ///* Primera pantalla de validación de datos
       GoRoute(
         path: '/splash',
-        builder: (context, state) => const CheckLoginStatusScreen(),
+        builder: (context, state) => const SplashScreen(),
       ),
 
       ///* Auth Routes
@@ -100,32 +99,33 @@ final goRouterProvider = Provider((ref) {
         },
       ),
 
+      ///* Atender uniformes
       GoRoute(
         path: '/uniformes',
         builder: (cotext, state) {
           String tipo = "PR";
           String rutaDetalle = 'detalleSolicitud';
           return ListarIncidenciasScreen(
-            key: ValueKey("uniformes_${DateTime.now().millisecondsSinceEpoch}"),
             tipo: tipo,
             rutaDetalle: rutaDetalle,
           );
         },
       ),
 
+      ///*Atender articulos
       GoRoute(
         path: '/articulos',
         builder: (context, state) {
           String tipo = "A";
           String rutaDetalle = "detalleSolicitud";
           return ListarIncidenciasScreen(
-            key: ValueKey("uniformes_${DateTime.now().millisecondsSinceEpoch}"),
             tipo: tipo,
             rutaDetalle: rutaDetalle,
           );
         },
       ),
 
+      ///*Atender incapacidades
       GoRoute(
         path: '/incapacidades',
         builder: (context, state) {
@@ -176,33 +176,36 @@ final goRouterProvider = Provider((ref) {
           return IncapacidadDetalleGuardar();
         },
       ),
+
+      ///* Cambio de Contraseña
+      GoRoute(
+        path: '/cambiarContrasenia',
+        builder: (context, state) {
+          return CambiarContraseniaScreen();
+        },
+      ),
     ],
 
-    redirect: (context, state) {
-      final isGoingTo = state.matchedLocation;
+    redirect: (context, state) 
+    {
+      final location = state.matchedLocation;
       final loginStatus = goRouterNotifier.loginStatus;
 
-      //Pantalla de inicio de aplicacion dashboard
-      if (isGoingTo == '/splash') {
-        if (loginStatus == LoginStatus.authenticated) {
-          return '/dashboard';
-        }
+      final isGoingToLogin = location == '/login';
+      final isGoingToSplash = location == '/splash';
 
-        if (loginStatus == LoginStatus.notAuthenticated) {
-          return '/login';
-        }
+      if (loginStatus == LoginStatus.notAuthenticated) // Usuario NO autenticado
+      {
+        return isGoingToLogin ? null : '/login';
       }
 
-      //Pantalla de login y cuando el usuario no esta autenticado
-      if (loginStatus == LoginStatus.notAuthenticated) {
-        return isGoingTo == '/login' ? null : '/login';
-      }
-
-      if (loginStatus == LoginStatus.authenticated) {
-        if (isGoingTo == '/login' || isGoingTo == '/splash') {
+      if (loginStatus == LoginStatus.authenticated) // Usuario autenticado
+      {
+        if (isGoingToLogin || isGoingToSplash) {
           return '/dashboard';
         }
       }
+
       return null;
     },
   );

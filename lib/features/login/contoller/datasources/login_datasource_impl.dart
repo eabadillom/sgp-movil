@@ -4,16 +4,14 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:sgp_movil/conf/config.dart';
 import 'package:sgp_movil/features/login/contoller/controller.dart';
-import 'package:sgp_movil/features/login/contoller/mappers/login_usuario_mapper.dart';
 import 'package:sgp_movil/features/login/domain/domain.dart';
 
-class LoginDatasourceImpl extends LoginDatasource {
+class LoginDatasourceImpl {
   final DioClient httpService = DioClient();
   final LoggerSingleton log = LoggerSingleton.getInstance(
     'LoginDatasourceImpl',
   );
 
-  @override
   Future<int> checkTokenStatus(String token) async {
     log.setupLoggin();
     final int status;
@@ -60,12 +58,11 @@ class LoginDatasourceImpl extends LoginDatasource {
     }
   }
 
-  @override
   Future<LoginUsuario> login(
     String numeroEmpleado,
     String nombre,
-    String contrasenia,
-  ) async {
+    String contrasenia) async 
+  {
     log.setupLoggin();
     try {
       httpService.setBasicAuth(nombre, contrasenia);
@@ -76,7 +73,7 @@ class LoginDatasourceImpl extends LoginDatasource {
       final response = await httpService.dio.request(
         url,
         data: {'numeroUsuario': numeroEmpleado},
-        options: Options(method: 'GET'),
+        options: Options(method: 'POST'),
       );
 
       LoginUsuario loginUsuario = LoginUsuarioMapper.tokenJsonToEntity(
@@ -111,7 +108,6 @@ class LoginDatasourceImpl extends LoginDatasource {
     }
   }
 
-  @override
   Future<String> deshabilitar(String token) async
   {
     log.setupLoggin();

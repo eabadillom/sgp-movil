@@ -20,12 +20,10 @@ class LoginNotifier extends StateNotifier<LoginState>
 {
   final LoggerSingleton log = LoggerSingleton.getInstance('LoginProvider'); 
   final storage = SecureStorageService();
-  final LoginRepository loginRepository;
+  final LoginRepositoryImpl loginRepository;
   final Ref ref;
 
-  LoginNotifier({required this.loginRepository, required this.ref}): super(
-    LoginState()){checkLoginStatus();
-  } 
+  LoginNotifier({required this.loginRepository, required this.ref}): super(LoginState()){checkLoginStatus();} 
 
   Future<void> loginUser(String numeroEmpleado, String nombre, String contrasenia) async 
   {

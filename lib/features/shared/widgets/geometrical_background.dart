@@ -1,15 +1,20 @@
 import 'dart:math' show pi;
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sgp_movil/conf/theme/app_theme.dart';
+import 'package:sgp_movil/features/dashboard/presentation/providers/theme_provider.dart';
 
-class GeometricalBackground extends StatelessWidget 
+class GeometricalBackground extends ConsumerWidget 
 {
   final Widget child;
   const GeometricalBackground({super.key, required this.child});
 
   @override
-  Widget build(BuildContext context)
+  Widget build(BuildContext context, WidgetRef ref)
   {
     final size = MediaQuery.of(context).size;
+    final isDarkmode = ref.watch(themeNotifierProvider).isDarkmode;
+    final colors = AppTheme(isDarkmode: isDarkmode, selectedColor: 8);
     final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
     final borderSize = size.width / 7; // Este es el tamaño para colocar 7 elementos
 
@@ -31,9 +36,7 @@ class GeometricalBackground extends StatelessWidget
           // Background with shapes
           Container(
             height: size.height * 0.7,
-            decoration: const BoxDecoration(
-              color: Color.fromARGB(223, 213, 211, 219),
-            ),
+            decoration: BoxDecoration(color: colors.selectedColorValue),
             child: Column(
               children: [
                 ShapeRow(shapeWidgets: shapeWidgets),

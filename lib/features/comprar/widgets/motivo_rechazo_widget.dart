@@ -14,17 +14,27 @@ class MotivoRechazoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           constante,
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+          style: theme.textTheme.titleSmall?.copyWith(
+            color: colors.onSurface,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
         ),
         const SizedBox(height: 8),
         Text(
           variable,
-          style: const TextStyle(fontSize: 18),
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: colors.onSurface,
+            fontSize: 18,
+          ),
           softWrap: true,
           overflow: TextOverflow.visible,
         ),

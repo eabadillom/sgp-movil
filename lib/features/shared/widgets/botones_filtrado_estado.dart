@@ -1,39 +1,48 @@
 import 'package:flutter/material.dart';
 
-class BotonesFiltradoEstado extends StatelessWidget {
+class BotonesFiltradoEstado extends StatelessWidget 
+{
   final String estadoSeleccionado;
   final Function(String) onEstadoSeleccionado;
 
-  BotonesFiltradoEstado({
+  const BotonesFiltradoEstado({
     super.key,
     required this.estadoSeleccionado,
     required this.onEstadoSeleccionado,
   });
 
-  final Map<String, String> estadoApiMap = {
-    'Pendiente': 'E',
-    'Atendido': 'A',
-    'Rechazado': 'R',
-  };
+  static const List<String> _estados = ['E', 'A', 'R'];
 
   @override
-  Widget build(BuildContext context) {
-    final estados = ['Pendiente', 'Atendido', 'Rechazado'];
+  Widget build(BuildContext context) 
+  {
+    final selectedIndex = _estados.indexOf(estadoSeleccionado);
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children:
-          estados.map((estado) {
-            final seleccionado = estadoApiMap[estado] == estadoSeleccionado;
-            return ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: seleccionado ? Colors.blue : Colors.grey[300],
-                foregroundColor: seleccionado ? Colors.white : Colors.black,
-              ),
-              onPressed: () => onEstadoSeleccionado(estadoApiMap[estado]!),
-              child: Text(estado),
-            );
-          }).toList(),
+    return NavigationBar(
+      selectedIndex: selectedIndex < 0 ? 0 : selectedIndex,
+      labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+      onDestinationSelected: (index) 
+      {
+        onEstadoSeleccionado(_estados[index]);
+      },
+      destinations: const 
+      [
+        NavigationDestination(
+          icon: Icon(Icons.pending_actions_outlined),
+          selectedIcon: Icon(Icons.pending_actions),
+          label: 'Pendiente',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.task_alt_outlined),
+          selectedIcon: Icon(Icons.task_alt),
+          label: 'Atendido',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.cancel_outlined),
+          selectedIcon: Icon(Icons.cancel),
+          label: 'Rechazado',
+        ),
+      ],
     );
   }
 }

@@ -9,7 +9,8 @@ import 'package:sgp_movil/features/dashboard/presentation/bloc/notifications/not
 import 'package:sgp_movil/features/shared/widgets/side_menu.dart';
 import 'package:sgp_movil/features/dashboard/presentation/providers/theme_provider.dart';
 
-class DashbordScreen extends ConsumerStatefulWidget {
+class DashbordScreen extends ConsumerStatefulWidget 
+{
   static const name = 'dashboard_screen';
   const DashbordScreen({super.key});
 
@@ -34,7 +35,7 @@ class _DashbordScreenState extends ConsumerState<DashbordScreen>
     final token = await FirebaseMessaging.instance.getToken();
     if(!mounted) return;
     final bloc = context.read<NotificationsBloc>();
-    
+
     if (token != null) 
     {
       log.logger.info('Token FCM: $token');
@@ -74,10 +75,11 @@ class _DashbordScreenState extends ConsumerState<DashbordScreen>
 
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (bool didPop, Object? result) async {
+      onPopInvokedWithResult: (bool didPop, Object? result) async 
+      {
         final salir = await _confirmarSalida();
         if (salir) {
-          if(!context.mounted) return;
+          if (!context.mounted) return;
 
           if (Navigator.of(context).canPop()) {
             Navigator.of(context).pop();
@@ -91,13 +93,16 @@ class _DashbordScreenState extends ConsumerState<DashbordScreen>
         key: scaffoldKey,
         appBar: AppBar(
           title: const Text('Dashboard'),
-          actions: [
+          actions: 
+          [
             Stack(
               alignment: Alignment.center,
-              children: [
+              children: 
+              [
                 IconButton(
                   icon: const Icon(Icons.notifications),
-                  onPressed: () {
+                  onPressed: () 
+                  {
                     context.push('/notificaciones');
                   },
                 ),
@@ -106,7 +111,10 @@ class _DashbordScreenState extends ConsumerState<DashbordScreen>
                     right: 8,
                     top: 4,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.red,
                         borderRadius: BorderRadius.circular(12),
@@ -127,24 +135,27 @@ class _DashbordScreenState extends ConsumerState<DashbordScreen>
               icon: Icon(
                 isDarkmode ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
               ),
-              onPressed: () {
+              onPressed: () 
+              {
                 ref.read(themeNotifierProvider.notifier).toggleDarkmode();
               },
             ),
           ],
         ),
-        body: const _DashboardView(),
+        body: _DashboardView(),
         drawer: SideMenu(scaffoldKey: scaffoldKey),
       ),
     );
   }
 }
 
-class _DashboardView extends StatelessWidget {
+class _DashboardView extends StatelessWidget 
+{
   const _DashboardView();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) 
+  {
     return GridView.builder(
       padding: EdgeInsets.all(4),
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
@@ -154,30 +165,32 @@ class _DashboardView extends StatelessWidget {
         childAspectRatio: 1.2, // relación ancho/alto para ListTile
       ),
       itemCount: appMenuItem.length,
-      itemBuilder: (context, index) {
-        final menuItem = appMenuItem[index];
-        return Card(elevation: 2, child: CustomListTile(menuItem: menuItem));
-      },
+      itemBuilder: (context, index) => Card(elevation: 2, child: CustomListTile(menuItem: appMenuItem[index])),
     );
   }
 }
 
-class CustomListTile extends StatelessWidget {
+class CustomListTile extends StatelessWidget 
+{
   const CustomListTile({super.key, required this.menuItem});
 
   final MenuItems menuItem;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) 
+  {
     final colors = Theme.of(context).colorScheme;
 
     return InkWell(
       onTap: () => context.push(menuItem.link),
+      splashColor: colors.primary.withValues(alpha: 0.1),
+      borderRadius: BorderRadius.circular(15),
       child: Padding(
         padding: const EdgeInsets.all(6.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: 
+          [
             Icon(menuItem.icon, size: 28, color: colors.primary),
             const SizedBox(height: 10),
             Text(menuItem.title, style: TextStyle(fontSize: 24)),

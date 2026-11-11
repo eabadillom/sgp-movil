@@ -46,7 +46,7 @@ dev_dependencies:
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/images/ferbo.png"
+  image_path: "assets/images/ferbo_fondo_usuarios.png"
   min_sdk_android: 21
 
 flutter_native_splash:

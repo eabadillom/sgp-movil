@@ -18,7 +18,7 @@ class LoginScreen extends StatefulWidget
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver
+class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver 
 {
   @override
   void initState() {
@@ -65,31 +65,33 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: Scaffold(
           body: GeometricalBackground(
-            child: SingleChildScrollView(
-              physics: const ClampingScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 90),
-                  Image.asset(
-                    'assets/images/login.png',
-                    width: 400,
-                    height: 200,
-                    colorBlendMode: BlendMode.darken,
-                  ),
-                  const SizedBox(height: 50),
-                  Container(
-                    height: size.height - 260,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: scaffoldBackgroundColor,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(100),
-                      ),
+            child: SafeArea(
+              child: SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 90),
+                    Image.asset(
+                      'assets/images/login.png',
+                      width: 400,
+                      height: 200,
+                      colorBlendMode: BlendMode.darken,
                     ),
-                    child: const _LoginForm(),
-                  ),
-                ],
+                    const SizedBox(height: 50),
+                    Container(
+                      height: size.height - 260,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: scaffoldBackgroundColor,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(100),
+                        ),
+                      ),
+                      child: const _LoginForm(),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

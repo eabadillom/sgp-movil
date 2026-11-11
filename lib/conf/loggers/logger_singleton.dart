@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
 class LoggerSingleton 
@@ -26,7 +27,7 @@ class LoggerSingleton
 
     Logger.root.onRecord.listen((LogRecord rec) 
     {
-      print('${rec.level.name}: ${rec.time}: ${rec.message}');
+      debugPrint('${rec.level.name}: ${rec.time}: ${rec.message}');
     });
   }
 

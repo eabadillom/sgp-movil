@@ -19,17 +19,13 @@ class BotonAceptar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ElevatedButton.icon(
+    return FilledButton.icon(
       icon: const Icon(Icons.check),
       label: const Text('Autorizar'),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.blue,
+      style: FilledButton.styleFrom(
+        backgroundColor: Colors.green.shade700,
         foregroundColor: Colors.white,
-        shadowColor: Colors.blueAccent,
-        elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        textStyle: const TextStyle(fontSize: 18),
+        minimumSize: const Size.fromHeight(48),
       ),
       onPressed: () async {
         try {
