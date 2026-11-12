@@ -5,6 +5,7 @@ import 'package:sgp_movil/conf/config.dart';
 import 'package:sgp_movil/features/atender/screens/incidencia_permiso_screen.dart';
 import 'package:sgp_movil/features/atender/screens/listar_incidencias_screen.dart';
 import 'package:sgp_movil/features/comprar/screens/screens.dart';
+import 'package:sgp_movil/features/dashboard/domain/push_message.dart';
 import 'package:sgp_movil/features/dashboard/presentation/screens/screens.dart';
 import 'package:sgp_movil/features/incapacidades/presentacion/screens/incapacidad_detalle.dart';
 import 'package:sgp_movil/features/incapacidades/presentacion/screens/incapacidad_detalle_guardar.dart';
@@ -13,8 +14,6 @@ import 'package:sgp_movil/features/justificar/screens/justificar_list_screen.dar
 import 'package:sgp_movil/features/justificar/screens/justificar_detalle.dart';
 import 'package:sgp_movil/features/login/login.dart';
 import 'package:sgp_movil/features/login/presentation/providers/login_provider.dart';
-
-import 'app_router_notifier.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -57,7 +56,11 @@ final goRouterProvider = Provider((ref)
         path: '/notificaciones_detalle/:messageId',
         builder: (context, state) {
           final messageId = state.pathParameters['messageId']!;
-          return NotificationDetailScreen(pushMessageId: messageId);
+          final notification = state.extra;
+          return NotificationDetailScreen(
+            pushMessageId: messageId,
+            notification: notification is PushMessage ? notification : null,
+          );
         },
       ),
 

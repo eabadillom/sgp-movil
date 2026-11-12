@@ -6,17 +6,18 @@ import 'package:sgp_movil/features/dashboard/presentation/bloc/notifications/not
 class NotificationDetailScreen extends StatelessWidget 
 {
   final String pushMessageId;
+  final PushMessage? notification;
 
-  const NotificationDetailScreen({super.key, required this.pushMessageId});
+  const NotificationDetailScreen({super.key, required this.pushMessageId, this.notification});
 
   @override
   Widget build(BuildContext context) 
   {
     final bloc = context.read<NotificationsBloc>();
-    final PushMessage? message = bloc.getMessageById(pushMessageId);
+    final PushMessage? message = notification ?? bloc.getMessageById(pushMessageId);
 
     if (message != null && !message.read) {
-      context.read<NotificationsBloc>().add(MarkNotificationAsRead(pushMessageId));
+      context.read<NotificationsBloc>().add(MarkNotificationAsRead(message.messageId));
     }
 
     return Scaffold(

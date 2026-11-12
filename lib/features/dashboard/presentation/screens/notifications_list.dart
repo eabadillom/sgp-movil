@@ -117,7 +117,11 @@ class NotificationsList extends StatelessWidget
                   child: InkWell(
                     onTap: () 
                     {
-                      context.push('/notificaciones_detalle/${notification.messageId}');
+                      final encodedMessageId = Uri.encodeComponent(notification.messageId);
+                      context.push(
+                        '/notificaciones_detalle/$encodedMessageId',
+                        extra: notification,
+                      );
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(16),

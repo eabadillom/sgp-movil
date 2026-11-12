@@ -51,7 +51,7 @@ class SQLiteService
 
   static Future<void> saveNotification(PushMessage message) async 
   {
-    await _db?.insert(
+    await database.insert(
       'push_messages',
       message.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,

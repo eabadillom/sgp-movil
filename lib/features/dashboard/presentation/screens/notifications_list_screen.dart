@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:sgp_movil/features/dashboard/presentation/bloc/notifications/notifications_bloc.dart';
 import 'package:sgp_movil/features/dashboard/presentation/screens/screens.dart';
 import 'package:sgp_movil/features/shared/shared.dart';
@@ -15,7 +14,7 @@ class NotificationsListScreen extends StatefulWidget
   State<NotificationsListScreen> createState() => _NotificationsListState();
 }
 
-class _NotificationsListState extends State<NotificationsListScreen> with WidgetsBindingObserver 
+class _NotificationsListState extends State<NotificationsListScreen>
 {
   String _searchTerm = '';
   int _filterIndex = 0; // 0: todas, 1: leídas, 2: no leídas
@@ -25,25 +24,7 @@ class _NotificationsListState extends State<NotificationsListScreen> with Widget
   void initState() 
   {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
     context.read<NotificationsBloc>().add(LoadStoredNotifications());
-  }
-
-  @override
-  void dispose() 
-  {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) 
-  {
-    if (state == AppLifecycleState.resumed) 
-    {
-      context.read<NotificationsBloc>().add(RefreshRequested());
-      context.read<NotificationsBloc>().add(LoadStoredNotifications());
-    }
   }
 
   @override
@@ -137,17 +118,7 @@ class _NotificationsListState extends State<NotificationsListScreen> with Widget
             children: 
             [
               Expanded(
-                child: BlocConsumer<NotificationsBloc, NotificationsState>(
-                  listenWhen: (previous, current) => previous.navigateToRoute != current.navigateToRoute,
-                  listener: (context, state) 
-                  {
-                    final route = state.navigateToRoute;
-                    if (route != null) {
-                      context.push(route);
-
-                      context.read<NotificationsBloc>().add(NotificationNavigated());
-                    }
-                  },
+                child: BlocBuilder<NotificationsBloc, NotificationsState>(
                   builder: (context, state) 
                   {
                     final notifications = state.notifications;

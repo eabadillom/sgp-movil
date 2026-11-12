@@ -6,6 +6,8 @@ class PushMessage
   final DateTime sentDate;
   final bool read;
 
+  bool get hasContent => title.trim().isNotEmpty || body.trim().isNotEmpty;
+
   PushMessage({
     required this.messageId,
     required this.title,
