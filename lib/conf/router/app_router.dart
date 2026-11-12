@@ -147,21 +147,25 @@ final goRouterProvider = Provider((ref)
       ),
 
       GoRoute(
-        path: '/detalleSolicitud/:idIncidencia/:codigoTipoIncidencia',
+        path: '/detalleSolicitud/:idIncidencia/:codigoTipoIncidencia/:fechaIni/:fechaFin',
         builder: (constext, state) {
           final idIncidencia = state.pathParameters['idIncidencia']!;
           final tipo = state.pathParameters['codigoTipoIncidencia']!;
           final int id = int.tryParse(idIncidencia) ?? 0;
-          return DetalleSolicitudScreen(idIncidencia: id, tipoIncidencia: tipo);
+          DateTime? fechaIni = DateTime.tryParse(state.pathParameters['fechaIni']!);
+          DateTime? fechaFin = DateTime.tryParse(state.pathParameters['fechaFin']!);
+          return DetalleSolicitudScreen(idIncidencia: id, tipoIncidencia: tipo, fechaIni: fechaIni!, fechaFin: fechaFin!);
         },
       ),
 
       GoRoute(
-        path: '/incidenciaPermisoDetalle/:idParametro/:codigo',
+        path: '/incidenciaPermisoDetalle/:idParametro/:codigo/:fechaIni/:fechaFin',
         builder: (context, state) {
           int id = int.tryParse(state.pathParameters['idParametro']!) ?? 0;
           String codigo = state.pathParameters['codigo']!;
-          return IncidenciaPermisoScreen(id: id, codigo: codigo);
+          DateTime? fechaIni = DateTime.tryParse(state.pathParameters['fechaIni']!);
+          DateTime? fechaFin = DateTime.tryParse(state.pathParameters['fechaFin']!);
+          return IncidenciaPermisoScreen(id: id, codigo: codigo, fechaIni: fechaIni!, fechaFin: fechaFin!);
         },
       ),
 

@@ -139,7 +139,7 @@ class _BusquedaExpandibleState extends State<BusquedaExpandible>
                       tooltip: 'Limpiar búsqueda',
                       visualDensity: VisualDensity.compact,
                       onPressed: _clearSearch,
-                      icon: const Icon(Icons.delete_rounded),
+                      icon: const Icon(Icons.cancel_sharp),
                     ),
                   IconButton(
                     tooltip: 'Cerrar búsqueda',

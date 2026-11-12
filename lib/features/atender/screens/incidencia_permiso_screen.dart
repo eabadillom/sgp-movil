@@ -12,12 +12,10 @@ class IncidenciaPermisoScreen extends ConsumerStatefulWidget
 {
   final int id;
   final String codigo;
+  final DateTime fechaIni;
+  final DateTime fechaFin;
 
-  const IncidenciaPermisoScreen({
-    super.key,
-    required this.id,
-    required this.codigo,
-  });
+  const IncidenciaPermisoScreen({super.key, required this.id, required this.codigo, required this.fechaIni, required this.fechaFin});
 
   @override
   ConsumerState<IncidenciaPermisoScreen> createState() => _IncidenciaPermisoScreen();
@@ -48,9 +46,8 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen>
 
     titulo = codigoIncidencia.contains('PE') ? 'Permiso' : codigoIncidencia.contains('V') ? 'Vacaciones' : 'Incidencia';
 
-    final hoy = DateTime.now();
-    fechaFin = DateTime(hoy.year, hoy.month, hoy.day);
-    fechaIni = fechaFin?.subtract(Duration(days: fechaFin!.weekday - DateTime.monday));
+    fechaIni = widget.fechaIni;
+    fechaFin = widget.fechaFin;
 
     Future.microtask(() 
     {
@@ -157,12 +154,7 @@ class _IncidenciaPermisoScreen extends ConsumerState<IncidenciaPermisoScreen>
         ),
         body: SafeArea(
           child: SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(
-              16,
-              16,
-              16,
-              MediaQuery.of(context).viewPadding.bottom + 32,
-            ),
+            padding: EdgeInsets.fromLTRB(16, 16, 16, MediaQuery.of(context).viewPadding.bottom + 32),
             child: Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 720),

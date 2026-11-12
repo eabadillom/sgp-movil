@@ -30,11 +30,6 @@ class _IncapacidadListState extends ConsumerState<IncapacidadListScreen>
     final hoy = DateTime.now();
     fechaFin = DateTime(hoy.year, hoy.month, hoy.day);
     fechaIni = fechaFin!.subtract(Duration(days: fechaFin!.weekday - DateTime.monday));
-
-    Future.microtask(() 
-    {
-      ref.read(incapacidadNotifierProvider.notifier).obtenerRegistros(fechaIni!, fechaFin!);
-    });
   }
 
   @override

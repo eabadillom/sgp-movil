@@ -14,8 +14,10 @@ class DetalleSolicitudScreen extends ConsumerStatefulWidget
 {
   final int idIncidencia;
   final String tipoIncidencia;
-
-  const DetalleSolicitudScreen({super.key, required this.idIncidencia, required this.tipoIncidencia});
+  final DateTime fechaIni;
+  final DateTime fechaFin;
+  
+  const DetalleSolicitudScreen({super.key, required this.idIncidencia, required this.tipoIncidencia, required this.fechaIni, required this.fechaFin});
 
   @override
   ConsumerState<DetalleSolicitudScreen> createState() => _DetalleSolicitudScreenState();
@@ -25,11 +27,17 @@ class _DetalleSolicitudScreenState extends ConsumerState<DetalleSolicitudScreen>
 {
   final TextEditingController _motivoRechazoController = TextEditingController();
   bool disponible = false;
-
+  late DateTime? fechaIni;
+  late DateTime? fechaFin;
+  
   @override
   void initState() 
   {
     super.initState();
+
+    fechaIni = widget.fechaIni;
+    fechaFin = widget.fechaFin;
+
     Future.microtask(() 
     {
       ref.read(solicitudNotifierProvider.notifier).obtenerSolicitud(widget.tipoIncidencia, widget.idIncidencia);
@@ -141,12 +149,7 @@ class _DetalleSolicitudScreenState extends ConsumerState<DetalleSolicitudScreen>
       },
       behavior: HitTestBehavior.opaque,
       child: ListView(
-        padding: EdgeInsets.fromLTRB(
-          16,
-          16,
-          16,
-          MediaQuery.of(context).viewPadding.bottom + 32,
-        ),
+        padding: EdgeInsets.fromLTRB(16, 16, 16, MediaQuery.of(context).viewPadding.bottom + 32),
         children: 
         [
           Center(
@@ -283,6 +286,8 @@ class _DetalleSolicitudScreenState extends ConsumerState<DetalleSolicitudScreen>
                                   idIncidencia: widget.idIncidencia,
                                   tipo: tipo,
                                   numeroRevisor: numero ?? '0001',
+                                  fechaIni: fechaIni!,
+                                  fechaFin: fechaFin!,
                                 ),
                               ),
                             ),
@@ -296,6 +301,8 @@ class _DetalleSolicitudScreenState extends ConsumerState<DetalleSolicitudScreen>
                                   idIncidencia: widget.idIncidencia,
                                   tipo: tipo,
                                   numeroRevisor: numero ?? '0001',
+                                  fechaIni: fechaIni!,
+                                  fechaFin: fechaFin!,
                                 ),
                               ),
                             ),

@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sgp_movil/features/atender/providers/listar_provider.dart';
 import 'package:sgp_movil/features/comprar/providers/detalle_solicitud_provider.dart';
 import 'package:sgp_movil/features/comprar/utils/utils.dart';
 import 'package:sgp_movil/features/shared/widgets/widgets.dart';
 
-class BotonAceptar extends ConsumerWidget {
+class BotonAceptar extends ConsumerWidget 
+{
   final int idIncidencia;
   final String tipo;
   final String numeroRevisor;
+  final DateTime fechaIni;
+  final DateTime fechaFin;
 
-  const BotonAceptar({
-    super.key,
-    required this.idIncidencia,
-    required this.tipo,
-    required this.numeroRevisor,
-  });
+  const BotonAceptar({super.key, required this.idIncidencia, required this.tipo, required this.numeroRevisor, required this.fechaIni, required this.fechaFin});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context, WidgetRef ref) 
+  {
     return FilledButton.icon(
       icon: const Icon(Icons.check),
       label: const Text('Autorizar'),
@@ -27,37 +27,25 @@ class BotonAceptar extends ConsumerWidget {
         foregroundColor: Colors.white,
         minimumSize: const Size.fromHeight(48),
       ),
-      onPressed: () async {
+      onPressed: () async 
+      {
         try {
-          await ref
-              .read(solicitudNotifierProvider.notifier)
-              .actualizarSolicitud(
-                id: idIncidencia,
-                numeroRevisor: numeroRevisor,
-                codigoEstadoIncidencia: 'A',
-                motivoRechazo: null,
-              );
-
+          await ref.read(solicitudNotifierProvider.notifier).actualizarSolicitud(id: idIncidencia, numeroRevisor: numeroRevisor, codigoEstadoIncidencia: 'A', motivoRechazo: null);
+          ref.read(listarNotifierProvider(tipo).notifier).cargarInicidencias(fechaIni, fechaFin);
+          
           if (!context.mounted) return;
 
-          await CustomSnackBarCentrado.mostrar(
-            context,
-            mensaje: 'Solicitud aceptada exitosamente',
-            tipo: SnackbarTipo.success,
-          );
+          await CustomSnackBarCentrado.mostrar(context, mensaje: 'Solicitud aceptada exitosamente', tipo: SnackbarTipo.success);
 
           limpiarVariables(ref);
 
           if (!context.mounted) return;
+
           context.go('/${obtenerPagina(tipo)}');
         } catch (e) {
           if (!context.mounted) return;
 
-          await CustomSnackBarCentrado.mostrar(
-            context,
-            mensaje: 'Error: $e',
-            tipo: SnackbarTipo.error,
-          );
+          await CustomSnackBarCentrado.mostrar(context, mensaje: 'Error: $e', tipo: SnackbarTipo.error);
         }
       },
     );

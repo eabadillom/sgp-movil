@@ -5,6 +5,13 @@ Todos los cambios importantes en este proyecto serán documentados en este archi
 Este proyecto sigue versionado semántico (SemVer) y el formato de [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
 ---
+## [1.1.1] - 2026-11-12
+
+### Changed
+* Se corrige como se modifica y muestran las notificaciones.
+* Se corrige la consulta de las incapacidades.
+* Se corrige el actualizar de las listas de permisos/vacaciones/articulos/uniformes al aprobar o cancelar un elemento.
+
 ## [1.1.0] - 2026-11-11
 
 ### Added
