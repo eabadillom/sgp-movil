@@ -12,14 +12,27 @@ class TextoRicoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
     return Text.rich(
       TextSpan(
         children: [
           TextSpan(
             text: constante,
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            style: theme.textTheme.titleSmall?.copyWith(
+              color: colors.onSurface,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          TextSpan(text: variable, style: const TextStyle(fontSize: 20)),
+          TextSpan(
+            text: variable,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: colors.onSurface,
+              fontSize: 20,
+            ),
+          ),
         ],
       ),
     );

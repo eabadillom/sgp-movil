@@ -12,14 +12,28 @@ class SolicitanteWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           constante,
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          style: theme.textTheme.titleSmall?.copyWith(
+            color: colors.onSurface,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        Text(variable, style: const TextStyle(fontSize: 20), softWrap: true),
+        Text(
+          variable,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: colors.onSurface,
+            fontSize: 20,
+          ),
+          softWrap: true,
+        ),
       ],
     );
   }

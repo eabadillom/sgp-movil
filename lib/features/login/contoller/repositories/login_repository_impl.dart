@@ -1,27 +1,22 @@
 import 'package:sgp_movil/features/login/domain/domain.dart';
 import '../controller.dart';
 
-class LoginRepositoryImpl extends LoginRepository
+class LoginRepositoryImpl 
 {
-  final LoginDatasource dataSource;
+  final LoginDatasourceImpl dataSource;
 
-  LoginRepositoryImpl({
-    LoginDatasource? dataSource
-  }) : dataSource = dataSource ?? LoginDatasourceImpl();
+  LoginRepositoryImpl({LoginDatasourceImpl? dataSource}) : dataSource = dataSource ?? LoginDatasourceImpl();
 
-  @override
   Future<int> checkTokenStatus(String token) 
   {
     return dataSource.checkTokenStatus(token);
   }
 
-  @override
   Future<LoginUsuario> login(String numeroEmpleado, String nombre, String password) 
   {
     return dataSource.login(numeroEmpleado, nombre, password);
   }
 
-  @override
   Future<String> deshabilitar(String token)
   {
     return dataSource.deshabilitar(token);

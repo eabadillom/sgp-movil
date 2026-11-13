@@ -10,50 +10,55 @@ import 'package:sgp_movil/features/comprar/widgets/widgets.dart';
 import 'package:sgp_movil/features/dashboard/presentation/providers/usuario_detalle_provider.dart';
 import 'package:sgp_movil/features/shared/widgets/imagen_desde_internet.dart';
 
-class DetalleSolicitudScreen extends ConsumerStatefulWidget {
+class DetalleSolicitudScreen extends ConsumerStatefulWidget 
+{
   final int idIncidencia;
   final String tipoIncidencia;
-
-  const DetalleSolicitudScreen({
-    super.key,
-    required this.idIncidencia,
-    required this.tipoIncidencia,
-  });
+  final DateTime fechaIni;
+  final DateTime fechaFin;
+  
+  const DetalleSolicitudScreen({super.key, required this.idIncidencia, required this.tipoIncidencia, required this.fechaIni, required this.fechaFin});
 
   @override
-  ConsumerState<DetalleSolicitudScreen> createState() =>
-      _DetalleSolicitudScreenState();
+  ConsumerState<DetalleSolicitudScreen> createState() => _DetalleSolicitudScreenState();
 }
 
-class _DetalleSolicitudScreenState
-    extends ConsumerState<DetalleSolicitudScreen> {
-  final TextEditingController _motivoRechazoController =
-      TextEditingController();
+class _DetalleSolicitudScreenState extends ConsumerState<DetalleSolicitudScreen> 
+{
+  final TextEditingController _motivoRechazoController = TextEditingController();
   bool disponible = false;
-
+  late DateTime? fechaIni;
+  late DateTime? fechaFin;
+  
   @override
-  void initState() {
+  void initState() 
+  {
     super.initState();
-    Future.microtask(() {
-      ref
-          .read(solicitudNotifierProvider.notifier)
-          .obtenerSolicitud(widget.tipoIncidencia, widget.idIncidencia);
+
+    fechaIni = widget.fechaIni;
+    fechaFin = widget.fechaFin;
+
+    Future.microtask(() 
+    {
+      ref.read(solicitudNotifierProvider.notifier).obtenerSolicitud(widget.tipoIncidencia, widget.idIncidencia);
     });
   }
 
   @override
-  void dispose() {
+  void dispose() 
+  {
     _motivoRechazoController.dispose();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) 
+  {
     final state = ref.watch(solicitudNotifierProvider);
     String contexto = Environment.obtenerUrlPorNombre('SGP');
-    final usuarioDetalleState =
-        ref.watch(usuarioDetalleProvider).usuarioDetalle;
-    if (state.errorMessage != null) {
+    final usuarioDetalleState = ref.watch(usuarioDetalleProvider).usuarioDetalle;
+    if (state.errorMessage != null) 
+    {
       return Scaffold(
         appBar: AppBar(title: const Text('Error')),
         body: Center(child: Text(state.errorMessage!)),
@@ -66,12 +71,12 @@ class _DetalleSolicitudScreenState
 
     Widget contenido;
 
-    if (state.solicitud is SolicitudArticuloDetalle) {
+    if (state.solicitud is SolicitudArticuloDetalle) 
+    {
       final articulo = (state.solicitud as SolicitudArticuloDetalle).data;
       contenido = _buildContenido(
         descripcion: articulo.descripcion,
-        imagenUrl:
-            '$contexto/${articulo.rutaImagen}${articulo.descripcion}.jpg',
+        imagenUrl: '$contexto/${articulo.rutaImagen}${articulo.descripcion}.jpg',
         detalle: articulo.detalle,
         tipo: 'A',
         unidad: articulo.unidad,
@@ -81,10 +86,10 @@ class _DetalleSolicitudScreenState
         disponibleInit: articulo.activo,
         estatus: articulo.estatusSolicitud,
         numero: usuarioDetalleState?.numeroUsuario,
-        solicitante:
-            '${articulo.nombreSolicitante} ${articulo.primerApSolicitante} ${articulo.segundoApSolicitante}',
+        solicitante: '${articulo.nombreSolicitante} ${articulo.primerApSolicitante} ${articulo.segundoApSolicitante}',
       );
-    } else if (state.solicitud is SolicitudPrendaDetalle) {
+    } else if (state.solicitud is SolicitudPrendaDetalle) 
+    {
       final prenda = (state.solicitud as SolicitudPrendaDetalle).data;
       contenido = _buildContenido(
         descripcion: prenda.descripcion,
@@ -99,8 +104,7 @@ class _DetalleSolicitudScreenState
         disponibleInit: prenda.activo,
         estatus: prenda.estatusSolicitud,
         numero: usuarioDetalleState?.numeroUsuario,
-        solicitante:
-            '${prenda.nombreSolicitante} ${prenda.primerApSolicitante} ${prenda.segundoApSolicitante}',
+        solicitante: '${prenda.nombreSolicitante} ${prenda.primerApSolicitante} ${prenda.segundoApSolicitante}',
       );
     } else {
       return const Scaffold(
@@ -129,23 +133,34 @@ class _DetalleSolicitudScreenState
     required String? estatus,
     required String? solicitante,
     required String? numero,
-  }) {
-    if (_motivoRechazoController.text.isEmpty && motivoRechazo != null) {
+  }) 
+  {
+    final colors = Theme.of(context).colorScheme;
+
+    if (_motivoRechazoController.text.isEmpty && motivoRechazo != null) 
+    {
       _motivoRechazoController.text = motivoRechazo;
     }
     disponible = disponibleInit;
     return GestureDetector(
-      onTap: () {
+      onTap: () 
+      {
         FocusScope.of(context).unfocus();
       },
       behavior: HitTestBehavior.opaque,
       child: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
+        padding: EdgeInsets.fromLTRB(16, 16, 16, MediaQuery.of(context).viewPadding.bottom + 32),
+        children: 
+        [
           Center(
             child: Container(
               decoration: BoxDecoration(
-                boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 8)],
+                boxShadow: [
+                  BoxShadow(
+                    color: colors.shadow.withValues(alpha: 0.18),
+                    blurRadius: 8,
+                  ),
+                ],
                 borderRadius: BorderRadius.circular(8),
               ),
               child: ClipRRect(
@@ -162,9 +177,11 @@ class _DetalleSolicitudScreenState
 
           const SizedBox(height: 8),
           Card(
+            color: colors.surfaceContainerLow,
             elevation: 2,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
+              side: BorderSide(color: colors.outlineVariant),
             ),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -210,9 +227,11 @@ class _DetalleSolicitudScreenState
                   const SizedBox(height: 8),
 
                   Card(
+                    color: colors.surface,
                     elevation: 2,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
+                      side: BorderSide(color: colors.outlineVariant),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -222,18 +241,12 @@ class _DetalleSolicitudScreenState
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SolicitanteWidget(
-                            constante: 'Solicitante:',
-                            variable: solicitante!,
-                          ),
+                          SolicitanteWidget(constante: 'Solicitante:', variable: solicitante!,),
 
                           const SizedBox(height: 8),
 
                           if (estatus == 'R' && motivoRechazo != null)
-                            MotivoRechazoWidget(
-                              constante: 'Motivo de rechazo:',
-                              variable: motivoRechazo,
-                            ),
+                            MotivoRechazoWidget(constante: 'Motivo de rechazo:', variable: motivoRechazo),
                         ],
                       ),
                     ),
@@ -256,7 +269,7 @@ class _DetalleSolicitudScreenState
                       ),
                     ],
                   ),*/
-                  Divider(thickness: 1.5, color: Colors.grey[300]),
+                  Divider(thickness: 1.5, color: colors.outlineVariant),
                   const SizedBox(height: 8),
 
                   Column(
@@ -265,35 +278,31 @@ class _DetalleSolicitudScreenState
                       Row(
                         children: [
                           // Rechazar - izquierda o centro
-                          if ((estatus == 'E' || estatus == 'A') &&
-                              estatus != null)
+                          if ((estatus == 'E' || estatus == 'A') && estatus != null)
                             Expanded(
                               child: Align(
-                                alignment:
-                                    estatus == 'E'
-                                        ? Alignment.centerLeft
-                                        : Alignment.center,
+                                alignment: estatus == 'E' ? Alignment.centerLeft : Alignment.center,
                                 child: BotonRechazar(
                                   idIncidencia: widget.idIncidencia,
                                   tipo: tipo,
                                   numeroRevisor: numero ?? '0001',
+                                  fechaIni: fechaIni!,
+                                  fechaFin: fechaFin!,
                                 ),
                               ),
                             ),
-
+                          const SizedBox(width: 12),
                           // Aceptar - centro o derecha
-                          if ((estatus == 'E' || estatus == 'R') &&
-                              estatus != null)
+                          if ((estatus == 'E' || estatus == 'R') && estatus != null)
                             Expanded(
                               child: Align(
-                                alignment:
-                                    estatus == 'E'
-                                        ? Alignment.centerRight
-                                        : Alignment.center,
+                                alignment: estatus == 'E' ? Alignment.centerRight : Alignment.center,
                                 child: BotonAceptar(
                                   idIncidencia: widget.idIncidencia,
                                   tipo: tipo,
                                   numeroRevisor: numero ?? '0001',
+                                  fechaIni: fechaIni!,
+                                  fechaFin: fechaFin!,
                                 ),
                               ),
                             ),
@@ -302,22 +311,19 @@ class _DetalleSolicitudScreenState
 
                       const SizedBox(height: 16),
 
-                      ElevatedButton.icon(
+                      OutlinedButton.icon(
                         icon: const Icon(Icons.arrow_back),
                         label: const Text('Regresar'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blueGrey,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 14,
-                          ),
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor: Colors.grey.shade600,
+                          foregroundColor: Colors.grey.shade200,
+                          side: BorderSide(color: Colors.grey.shade600, width: 1.5),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                           textStyle: const TextStyle(fontSize: 18),
                         ),
-                        onPressed: () {
+                        onPressed: () 
+                        {
                           context.pop();
                         },
                       ),

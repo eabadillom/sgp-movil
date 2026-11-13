@@ -8,6 +8,7 @@ import 'package:sgp_movil/conf/loggers/logger_singleton.dart';
 import 'package:sgp_movil/conf/security/dio_client.dart';
 import 'package:sgp_movil/conf/service/sqlite_service.dart';
 import 'package:sgp_movil/features/dashboard/domain/push_message.dart';
+import 'package:sgp_movil/features/dashboard/presentation/bloc/notifications/remote_message_mapper.dart';
 import 'package:sgp_movil/features/shared/controller/services/secure_storage_service_impl.dart';
 import 'package:sgp_movil/firebase_options.dart';
 
@@ -48,7 +49,7 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState>
     // Solicitar permisos al arrancar por primera vez la app
     on<RequestNotificationPermission>(_onRequestNotificationPermission);
   }
-  
+
   static Future<void> initializeFCM() async 
   {
     if(Firebase.apps.isEmpty) {
@@ -76,20 +77,24 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState>
 
   Future<void> handleRemoteMessage(RemoteMessage message) async
   {
-    if(message.notification == null) return;
-
-    final id = message.messageId?.replaceAll(':', '').replaceAll('%', '') ?? '';
-    if(state.notifications.any((n) => n.messageId == id)) {
-      log.logger.info('Notificación $id ya existe en el estado local, omitiendo.');
+    final notification = pushMessageFromRemoteMessage(message);
+    if (state.notifications.any((n) => n.messageId == notification.messageId)) 
+    {
+      log.logger.info('Notificación ${notification.messageId} ya existe en el estado local, omitiendo.');
       return;
     }
-    
-    final notification = PushMessage(
-      messageId: id,
-      title: message.notification!.title ?? '',
-      body: message.notification!.body ?? '',
-      sentDate: message.sentTime ?? DateTime.now(),
-    );
+
+    final storedNotification = await SQLiteService.getNotificationById(notification.messageId);
+    if (storedNotification != null && storedNotification.hasContent) {
+      log.logger.info('Notificación ${notification.messageId} ya existe en SQLite; se reutiliza.');
+      add(NotificationReceived(storedNotification));
+      return;
+    }
+
+    if(!notification.hasContent) {
+      log.logger.warning('Mensaje FCM sin título ni cuerpo; se omite: ${notification.messageId}');
+      return;
+    }
 
     await SQLiteService.saveNotification(notification);
     log.logger.info('Mensaje guardado en SQLite desde handleRemoteMessage: ${notification.messageId}');
@@ -125,12 +130,16 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState>
 
   Future<void> _onLoadStoredMessages(LoadStoredNotifications event, Emitter<NotificationsState> emit) async 
   {
-    final storedMessages = await SQLiteService.getNotifications();
+    final storedMessages = (await SQLiteService.getNotifications()).where((message) => message.hasContent);
 
-    final existingIds = state.notifications.map((n) => n.messageId).toSet();
-    final newOnes = storedMessages.where((m) => !existingIds.contains(m.messageId)).toList();
-
-    final updated = [...newOnes, ...state.notifications];
+    final updatedById = <String, PushMessage>{
+      for (final message in state.notifications)
+        if (message.hasContent) message.messageId: message,
+    };
+    for (final message in storedMessages) {
+      updatedById[message.messageId] = message;
+    }
+    final updated = updatedById.values.toList();
 
     updated.sort((a, b) => b.sentDate.compareTo(a.sentDate));
 

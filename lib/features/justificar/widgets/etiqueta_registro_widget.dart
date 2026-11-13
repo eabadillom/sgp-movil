@@ -1,44 +1,68 @@
 import 'package:flutter/material.dart';
 
-class EtiquetaRegistroWidget extends StatelessWidget {
+class EtiquetaRegistroWidget extends StatelessWidget 
+{
   final String label;
   final String value;
   final Color? backgroundColor;
 
-  const EtiquetaRegistroWidget({
-    super.key,
-    required this.label,
-    required this.value,
-    this.backgroundColor,
-  });
+  const EtiquetaRegistroWidget({super.key, required this.label, required this.value, this.backgroundColor});
 
   @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+  Widget build(BuildContext context) 
+  {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final badgeColor = backgroundColor;
+    final badgeTextColor = badgeColor == null ? colors.onSurface : badgeColor.computeLuminance() > 0.5 ? Colors.black87 : Colors.white;
+
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ConstrainedBox(
-            constraints: const BoxConstraints(minWidth: 100),
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: 
+        [
+          Align(
+            alignment: Alignment.centerLeft,
             child: Text(
-              '$label:',
-              style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold,fontSize: 16.0,),
-            ),
-          ),
-          const SizedBox(height: 6),
-          Center(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: backgroundColor != null ? BoxDecoration(color: backgroundColor ?? Colors.blue.shade100, borderRadius: BorderRadius.circular(8),) : null,
-              child: Text(
-                value,
-                style: textTheme.bodyMedium?.copyWith(fontSize: 16.0, color: Colors.black87,),
-                softWrap: true,
-                overflow: TextOverflow.visible,
+              label,
+              textAlign: TextAlign.left,
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: colors.onSurfaceVariant,
+                fontWeight: FontWeight.w700,
               ),
             ),
+          ),
+          const SizedBox(height: 4),
+          Align(
+            alignment: Alignment.center,
+            child: badgeColor == null ? 
+              Text(
+                value,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: colors.onSurface,
+                  fontWeight: FontWeight.normal,
+                ),
+              ) : 
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: badgeColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  value,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: badgeTextColor,
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+              ),
           ),
         ],
       ),

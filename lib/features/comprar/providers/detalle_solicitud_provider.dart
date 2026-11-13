@@ -7,38 +7,33 @@ import 'package:sgp_movil/features/solicitudes/domain/entities/solicitudarticulo
 import 'package:sgp_movil/features/solicitudes/domain/entities/solicitudprenda.dart';
 import 'package:sgp_movil/features/solicitudes/domain/repositories/solicitud_repository.dart';
 
-final solicitudNotifierProvider = StateNotifierProvider<
-  DetalleSolicitudNotifier,
-  DetalleSolicitudState
->((ref) {
+final solicitudNotifierProvider = StateNotifierProvider.autoDispose<DetalleSolicitudNotifier, DetalleSolicitudState>((ref) 
+{
   final solicitudRepository = ref.watch(solicitudRepositoryProvider);
   final incidenciaRepository = ref.watch(incidenciaRepositoryProvider);
+
   return DetalleSolicitudNotifier(solicitudRepository, incidenciaRepository);
 });
 
-class DetalleSolicitudNotifier extends StateNotifier<DetalleSolicitudState> {
+class DetalleSolicitudNotifier extends StateNotifier<DetalleSolicitudState> 
+{
   final SolicitudRepository solicitudRepository;
   final IncidenciaRepository incidenciaRepository;
   final LoggerSingleton log = LoggerSingleton.getInstance('SolicitudNotifier');
 
-  DetalleSolicitudNotifier(this.solicitudRepository, this.incidenciaRepository)
-    : super(DetalleSolicitudState.initial());
+  DetalleSolicitudNotifier(this.solicitudRepository, this.incidenciaRepository) : super(DetalleSolicitudState.initial());
 
-  Future<void> obtenerSolicitud(String tipo, int id) async {
+  Future<void> obtenerSolicitud(String tipo, int id) async 
+  {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
     try {
-      final solicitudDetalle = await solicitudRepository.obtenerSolicitud(
-        tipo,
-        id,
-      );
+      final solicitudDetalle = await solicitudRepository.obtenerSolicitud(tipo, id);
 
       SolicitudDetalle solicitud;
 
       if (tipo == "A") {
-        solicitud = SolicitudArticuloDetalle(
-          solicitudDetalle as SolicitudArticulo,
-        );
+        solicitud = SolicitudArticuloDetalle(solicitudDetalle as SolicitudArticulo);
       } else if (tipo == "PR") {
         solicitud = SolicitudPrendaDetalle(solicitudDetalle as SolicitudPrenda);
       } else {
@@ -55,12 +50,8 @@ class DetalleSolicitudNotifier extends StateNotifier<DetalleSolicitudState> {
     }
   }
 
-  Future<void> actualizarSolicitud({
-    required int id,
-    required String numeroRevisor,
-    required String codigoEstadoIncidencia,
-    String? motivoRechazo,
-  }) async {
+  Future<void> actualizarSolicitud({required int id, required String numeroRevisor, required String codigoEstadoIncidencia, String? motivoRechazo,}) async 
+  {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
     try {
@@ -73,11 +64,7 @@ class DetalleSolicitudNotifier extends StateNotifier<DetalleSolicitudState> {
           'motivoRechazo': motivoRechazo,
       };
 
-      await incidenciaRepository.actualizarIncidencia(
-        'solicitudes',
-        id,
-        incidencia,
-      );
+      await incidenciaRepository.actualizarIncidencia('solicitudes', id, incidencia);
 
       state = state.copyWith(isLoading: false);
     } catch (e) {

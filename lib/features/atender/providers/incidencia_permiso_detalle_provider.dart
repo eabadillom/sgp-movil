@@ -3,32 +3,26 @@ import 'package:sgp_movil/conf/loggers/logger_singleton.dart';
 import 'package:sgp_movil/features/atender/providers/incidencia_repository_provider.dart';
 import 'package:sgp_movil/features/incidencias/domain/domain.dart';
 
-final incidenciaPermisoDetalleProvider = StateNotifierProvider<
-  IncidenciaPermisoDetalleNotifier,
-  IncidenciaPermisoDetalleState
->((ref) {
-  final incidenciaPermisoDetalleRepository = ref.watch(
-    incidenciaPermisoDetalleRepositoryProvider,
-  );
+final incidenciaPermisoDetalleProvider = StateNotifierProvider.autoDispose<IncidenciaPermisoDetalleNotifier, IncidenciaPermisoDetalleState>((ref) 
+{
+  final incidenciaPermisoDetalleRepository = ref.watch(incidenciaPermisoDetalleRepositoryProvider);
+  
   return IncidenciaPermisoDetalleNotifier(incidenciaPermisoDetalleRepository);
 });
 
-class IncidenciaPermisoDetalleNotifier
-    extends StateNotifier<IncidenciaPermisoDetalleState> {
+class IncidenciaPermisoDetalleNotifier extends StateNotifier<IncidenciaPermisoDetalleState> 
+{
   final IncidenciaPermisoDetalleRepository incidenciaPermisoDetalleRepository;
-  final LoggerSingleton log = LoggerSingleton.getInstance(
-    'IncidenciaPermisoDetalleNotifier',
-  );
+  final LoggerSingleton log = LoggerSingleton.getInstance('IncidenciaPermisoDetalleNotifier');
 
-  IncidenciaPermisoDetalleNotifier(this.incidenciaPermisoDetalleRepository)
-    : super(IncidenciaPermisoDetalleState.initial());
+  IncidenciaPermisoDetalleNotifier(this.incidenciaPermisoDetalleRepository) : super(IncidenciaPermisoDetalleState.initial());
 
-  Future<void> obtenerIncidenciaPermiso(int idIncidencia) async {
+  Future<void> obtenerIncidenciaPermiso(int idIncidencia) async 
+  {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
     try {
-      final incidenciaPermisoDetalle = await incidenciaPermisoDetalleRepository
-          .obtenerIncidenciaPermiso(idIncidencia);
+      final incidenciaPermisoDetalle = await incidenciaPermisoDetalleRepository.obtenerIncidenciaPermiso(idIncidencia);
 
       state = state.copyWith(
         isLoading: false,
@@ -45,14 +39,11 @@ class IncidenciaPermisoDetalleNotifier
     }
   }
 
-  Future<void> actualizarIncidenciaPermiso(
-    int idIncidencia,
-    Map<String, dynamic> incidencia,
-  ) async {
+  Future<void> actualizarIncidenciaPermiso(int idIncidencia, Map<String, dynamic> incidencia) async 
+  {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
-      final incidenciaPermisoDetalle = await incidenciaPermisoDetalleRepository
-          .actualizarIncidenciaPermiso(idIncidencia, incidencia);
+      final incidenciaPermisoDetalle = await incidenciaPermisoDetalleRepository.actualizarIncidenciaPermiso(idIncidencia, incidencia);
 
       state = state.copyWith(
         isLoading: false,
@@ -67,7 +58,8 @@ class IncidenciaPermisoDetalleNotifier
   }
 }
 
-class IncidenciaPermisoDetalleState {
+class IncidenciaPermisoDetalleState 
+{
   final bool isLoading;
   final IncidenciaPermisoDetalle? incidenciaPermisoDetalle;
   final String? errorMessage;
@@ -78,8 +70,7 @@ class IncidenciaPermisoDetalleState {
     this.errorMessage,
   });
 
-  factory IncidenciaPermisoDetalleState.initial() =>
-      IncidenciaPermisoDetalleState();
+  factory IncidenciaPermisoDetalleState.initial() => IncidenciaPermisoDetalleState();
 
   IncidenciaPermisoDetalleState copyWith({
     bool? isLoading,
@@ -87,8 +78,7 @@ class IncidenciaPermisoDetalleState {
     String? errorMessage,
   }) => IncidenciaPermisoDetalleState(
     isLoading: isLoading ?? this.isLoading,
-    incidenciaPermisoDetalle:
-        incidenciaPermisoDetalle ?? this.incidenciaPermisoDetalle,
+    incidenciaPermisoDetalle: incidenciaPermisoDetalle ?? this.incidenciaPermisoDetalle,
     errorMessage: errorMessage ?? this.errorMessage,
   );
 }
