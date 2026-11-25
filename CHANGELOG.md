@@ -5,6 +5,10 @@ Todos los cambios importantes en este proyecto serán documentados en este archi
 Este proyecto sigue versionado semántico (SemVer) y el formato de [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
 ---
+## [1.1.2] - 2026-11-25
+* Se agrega pantalla para la consulta de empleados con registro de asistencia durante un periodo.
+* Se agrega pantalla para ver el detalle de 1 empleado durante un periodo de asistencia
+
 ## [1.1.1] - 2026-11-12
 
 ### Changed
