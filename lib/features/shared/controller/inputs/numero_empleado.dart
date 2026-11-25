@@ -10,7 +10,7 @@ class NumeroEmpleado extends FormzInput<String, NumeroEmpleadoError>
   const NumeroEmpleado.pure() : super.pure('');
 
   // Call super.dirty to represent a modified form input.
-  const NumeroEmpleado.dirty(super.value) : super.dirty();
+  NumeroEmpleado.dirty(String value) : super.dirty(value.trim());
 
   String? get errorMessage 
   {

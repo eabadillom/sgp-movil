@@ -10,7 +10,7 @@ class Nombre extends FormzInput<String, NombreError>
   const Nombre.pure() : super.pure('');
 
   // Call super.dirty to represent a modified form input.
-  const Nombre.dirty(super.value) : super.dirty();
+  Nombre.dirty(String value) : super.dirty(value.trim());
 
   String? get errorMessage 
   {
@@ -25,8 +25,10 @@ class Nombre extends FormzInput<String, NombreError>
   @override
   NombreError? validator(String value) 
   {  
-    if (value.isEmpty || value.trim().isEmpty) return NombreError.empty;
+    final cleanValue = value.trim();
 
+    if (cleanValue.isEmpty) return NombreError.empty;
+  
     return null;
   }
 }

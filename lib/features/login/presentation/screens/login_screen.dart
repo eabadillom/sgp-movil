@@ -112,7 +112,7 @@ class _LoginForm extends ConsumerWidget
 
     ref.listen(loginProvider, (previous, next)
     {
-      if(next.errorMessage.isEmpty) return;
+      if(next.errorMessage.isEmpty || next.errorMessage == previous?.errorMessage) return;
       CustomSnackBarCentrado.mostrar(
         context,
         mensaje: next.errorMessage,

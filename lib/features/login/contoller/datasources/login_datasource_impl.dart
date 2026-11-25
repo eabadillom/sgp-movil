@@ -6,13 +6,13 @@ import 'package:sgp_movil/conf/config.dart';
 import 'package:sgp_movil/features/login/contoller/controller.dart';
 import 'package:sgp_movil/features/login/domain/domain.dart';
 
-class LoginDatasourceImpl {
+class LoginDatasourceImpl 
+{
   final DioClient httpService = DioClient();
-  final LoggerSingleton log = LoggerSingleton.getInstance(
-    'LoginDatasourceImpl',
-  );
+  final LoggerSingleton log = LoggerSingleton.getInstance('LoginDatasourceImpl');
 
-  Future<int> checkTokenStatus(String token) async {
+  Future<int> checkTokenStatus(String token) async 
+  {
     log.setupLoggin();
     final int status;
     try {
@@ -35,9 +35,7 @@ class LoginDatasourceImpl {
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
         log.logger.warning('Error 400: $e');
-        throw CustomError(
-          e.response?.data['message'] ?? 'Solicitud malformada',
-        );
+        throw CustomError(e.response?.data['message'] ?? 'Solicitud malformada');
       }
 
       if (e.response?.statusCode == 401) {
@@ -58,10 +56,7 @@ class LoginDatasourceImpl {
     }
   }
 
-  Future<LoginUsuario> login(
-    String numeroEmpleado,
-    String nombre,
-    String contrasenia) async 
+  Future<LoginUsuario> login(String numeroEmpleado, String nombre, String contrasenia) async 
   {
     log.setupLoggin();
     try {
@@ -70,30 +65,20 @@ class LoginDatasourceImpl {
       //final response = await httpService.dio.get('/generar', queryParameters: {'numeroEmpleado': numeroEmpleado});
       String contexto = Environment.obtenerUrlPorNombre('Movil');
       String url = '$contexto/generar';
-      final response = await httpService.dio.request(
-        url,
-        data: {'numeroUsuario': numeroEmpleado},
-        options: Options(method: 'POST'),
-      );
+      final response = await httpService.dio.request(url, data: {'numeroUsuario': numeroEmpleado}, options: Options(method: 'POST'));
 
-      LoginUsuario loginUsuario = LoginUsuarioMapper.tokenJsonToEntity(
-        response.data,
-      );
+      LoginUsuario loginUsuario = LoginUsuarioMapper.tokenJsonToEntity(response.data);
 
       return loginUsuario;
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) {
         log.logger.warning('Error 401: $e');
-        throw CustomError(
-          e.response?.data['message'] ?? 'Credenciales incorrectas',
-        );
+        throw CustomError(e.response?.data['message'] ?? 'Credenciales incorrectas');
       }
 
       if (e.response?.statusCode == 400) {
         log.logger.warning('Error 400: $e');
-        throw CustomError(
-          e.response?.data['message'] ?? 'Solicitud malformada',
-        );
+        throw CustomError(e.response?.data['message'] ?? 'Solicitud malformada');
       }
 
       if (e.type == DioExceptionType.connectionTimeout) {
@@ -101,6 +86,8 @@ class LoginDatasourceImpl {
         throw CustomError('Revisar conexión a internet');
       }
       throw Exception();
+    } on CustomError {
+      rethrow;
     } catch (e) {
       log.logger.warning('Error de conexión de internet: $e');
       throw CustomError('Contacte a su administrador de sistemas');
@@ -108,10 +95,11 @@ class LoginDatasourceImpl {
     }
   }
 
-  Future<String> deshabilitar(String token) async
+  Future<String> deshabilitar(String token) async 
   {
     log.setupLoggin();
-    try{
+    try 
+    {
       httpService.setAccessToken(token);
       String contexto = Environment.obtenerUrlPorNombre('Movil');
       String url = '$contexto/deshabilitar';

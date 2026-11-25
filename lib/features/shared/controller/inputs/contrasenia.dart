@@ -14,7 +14,7 @@ class Contrasenia extends FormzInput<String, ContraseniaError>
   const Contrasenia.pure() : super.pure('');
 
   // Call super.dirty to represent a modified form input.
-  const Contrasenia.dirty(super.value) : super.dirty();
+  Contrasenia.dirty(String value) : super.dirty(value.trim());
 
   String? get errorMessage 
   {
@@ -29,7 +29,9 @@ class Contrasenia extends FormzInput<String, ContraseniaError>
   @override
   ContraseniaError? validator(String value) 
   {
-    if (value.isEmpty || value.trim().isEmpty) return ContraseniaError.empty;
+    final cleanValue = value.trim();
+
+    if (cleanValue.isEmpty) return ContraseniaError.empty;
 
     return null;
   }

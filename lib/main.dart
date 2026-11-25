@@ -80,8 +80,8 @@ class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver
     return MaterialApp.router(
       routerConfig: appRouter,
       theme: appTheme.getTheme(),
-      locale: const Locale('es', 'ES'),
-      supportedLocales: const [Locale('es', 'ES')],
+      locale: const Locale('es', 'MX'),
+      supportedLocales: const [Locale('es', 'MX')],
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
