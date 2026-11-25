@@ -55,4 +55,11 @@ const appMenuItem = <MenuItems>[
     link: '/articulos',
     icon: Icons.cleaning_services_rounded,
   ),
+
+  MenuItems(
+    title: 'Asistencia',
+    link: '/asistenciaEmpleado',
+    icon: Icons.access_time_filled_sharp,
+  ),
+
 ];

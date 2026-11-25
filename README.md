@@ -21,6 +21,8 @@ Aplicación movil para el Sistema de Gestión de Personal (SGP)
  - Detalle de los uniformes (Autorizar o Rechazar un uniforme)
 - Articulos
  - Detalle de los articulos (Autorizar o Rechazar un articulo)
+- Asistencia
+ - Detalle de la asistencia del empleado
 
 ## Nota 1
 Crear el archivo .env basado en el .env.template y colocar la dirección IP

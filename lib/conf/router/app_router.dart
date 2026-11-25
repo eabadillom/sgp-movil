@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sgp_movil/conf/config.dart';
+import 'package:sgp_movil/features/asistencia/presentation/screens/empleado_asistencia_screen.dart';
+import 'package:sgp_movil/features/asistencia/presentation/screens/empleado_asistencie_detalle_screen.dart';
 import 'package:sgp_movil/features/atender/screens/incidencia_permiso_screen.dart';
 import 'package:sgp_movil/features/atender/screens/listar_incidencias_screen.dart';
 import 'package:sgp_movil/features/comprar/screens/screens.dart';
@@ -17,8 +19,7 @@ import 'package:sgp_movil/features/login/presentation/providers/login_provider.d
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
-final goRouterProvider = Provider((ref) 
-{
+final goRouterProvider = Provider((ref) {
   final goRouterNotifier = ref.read(goRouterNotifierProvider);
   final LoggerSingleton log = LoggerSingleton.getInstance('GoRouterProvider');
   log.setupLoggin();
@@ -35,10 +36,7 @@ final goRouterProvider = Provider((ref)
       ),
 
       ///* Auth Routes
-      GoRoute(
-        path: '/login', 
-        builder: (context, state) => const LoginScreen()
-      ),
+      GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
 
       ///* Dashboard
       GoRoute(
@@ -108,10 +106,7 @@ final goRouterProvider = Provider((ref)
         builder: (cotext, state) {
           String tipo = "PR";
           String rutaDetalle = 'detalleSolicitud';
-          return ListarIncidenciasScreen(
-            tipo: tipo,
-            rutaDetalle: rutaDetalle,
-          );
+          return ListarIncidenciasScreen(tipo: tipo, rutaDetalle: rutaDetalle);
         },
       ),
 
@@ -121,10 +116,7 @@ final goRouterProvider = Provider((ref)
         builder: (context, state) {
           String tipo = "A";
           String rutaDetalle = "detalleSolicitud";
-          return ListarIncidenciasScreen(
-            tipo: tipo,
-            rutaDetalle: rutaDetalle,
-          );
+          return ListarIncidenciasScreen(tipo: tipo, rutaDetalle: rutaDetalle);
         },
       ),
 
@@ -147,25 +139,45 @@ final goRouterProvider = Provider((ref)
       ),
 
       GoRoute(
-        path: '/detalleSolicitud/:idIncidencia/:codigoTipoIncidencia/:fechaIni/:fechaFin',
+        path:
+            '/detalleSolicitud/:idIncidencia/:codigoTipoIncidencia/:fechaIni/:fechaFin',
         builder: (constext, state) {
           final idIncidencia = state.pathParameters['idIncidencia']!;
           final tipo = state.pathParameters['codigoTipoIncidencia']!;
           final int id = int.tryParse(idIncidencia) ?? 0;
-          DateTime? fechaIni = DateTime.tryParse(state.pathParameters['fechaIni']!);
-          DateTime? fechaFin = DateTime.tryParse(state.pathParameters['fechaFin']!);
-          return DetalleSolicitudScreen(idIncidencia: id, tipoIncidencia: tipo, fechaIni: fechaIni!, fechaFin: fechaFin!);
+          DateTime? fechaIni = DateTime.tryParse(
+            state.pathParameters['fechaIni']!,
+          );
+          DateTime? fechaFin = DateTime.tryParse(
+            state.pathParameters['fechaFin']!,
+          );
+          return DetalleSolicitudScreen(
+            idIncidencia: id,
+            tipoIncidencia: tipo,
+            fechaIni: fechaIni!,
+            fechaFin: fechaFin!,
+          );
         },
       ),
 
       GoRoute(
-        path: '/incidenciaPermisoDetalle/:idParametro/:codigo/:fechaIni/:fechaFin',
+        path:
+            '/incidenciaPermisoDetalle/:idParametro/:codigo/:fechaIni/:fechaFin',
         builder: (context, state) {
           int id = int.tryParse(state.pathParameters['idParametro']!) ?? 0;
           String codigo = state.pathParameters['codigo']!;
-          DateTime? fechaIni = DateTime.tryParse(state.pathParameters['fechaIni']!);
-          DateTime? fechaFin = DateTime.tryParse(state.pathParameters['fechaFin']!);
-          return IncidenciaPermisoScreen(id: id, codigo: codigo, fechaIni: fechaIni!, fechaFin: fechaFin!);
+          DateTime? fechaIni = DateTime.tryParse(
+            state.pathParameters['fechaIni']!,
+          );
+          DateTime? fechaFin = DateTime.tryParse(
+            state.pathParameters['fechaFin']!,
+          );
+          return IncidenciaPermisoScreen(
+            id: id,
+            codigo: codigo,
+            fechaIni: fechaIni!,
+            fechaFin: fechaFin!,
+          );
         },
       ),
 
@@ -191,10 +203,43 @@ final goRouterProvider = Provider((ref)
           return CambiarContraseniaScreen();
         },
       ),
+
+      ///* Incidencias de Empleado (Asistencia)
+      GoRoute(
+        path: '/asistenciaEmpleado',
+        builder: (context, state) {
+          return EmpleadoAsistenciaScreen();
+        },
+      ),
+
+      ///* Incidencias del Detall Empleado (Asistencia)
+      GoRoute(
+        path: '/detalleAsistenciaEmpleado',
+        name: 'detalleAsistenciaEmpleado',
+        builder: (context, state) {
+          final idEmpleado = int.tryParse(state.uri.queryParameters['idEmpleado'] ?? '');
+          final fechaInicio = DateTime.tryParse(state.uri.queryParameters['fechaInicio'] ?? '');
+          final fechaFin = DateTime.tryParse(state.uri.queryParameters['fechaFin'] ?? '');
+
+          if (idEmpleado == null || fechaInicio == null || fechaFin == null || fechaInicio.isAfter(fechaFin)) 
+          {
+            return const Scaffold(
+              body: Center(
+                child: Text('Los parámetros del detalle de asistencia no son válidos.'),
+              ),
+            );
+          }
+
+          return EmpleadoAsistencieDetalleScreen(
+            idEmpleado: idEmpleado,
+            fechaInicio: fechaInicio,
+            fechaFin: fechaFin,
+          );
+        },
+      ),
     ],
 
-    redirect: (context, state) 
-    {
+    redirect: (context, state) {
       final location = state.matchedLocation;
       final loginStatus = goRouterNotifier.loginStatus;
 
